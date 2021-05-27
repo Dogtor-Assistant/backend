@@ -1,0 +1,18 @@
+name: Sync Repo
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  gitlab:
+    runs-on: ubuntu-latest
+    steps:
+      - name: git-sync
+        uses: wei/git-sync@v3
+        with:
+          source_repo: "git@github.com:Dogtor-Assistant/backend.git"
+          source_branch: "main"
+          destination_repo: "git@gitlab.lrz.de:seba-master-2021/team-10/backend.git"
+          destination_branch: "main"
+          ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
