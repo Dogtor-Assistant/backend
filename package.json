@@ -6,8 +6,8 @@
   "scripts": {
     "start": "nodemon src/index.ts",
     "build": "tsc --project .",
-    "lint": "eslint . --ignore-pattern node_modules/ --ext .js,.ts",
-    "autofix": "eslint . --ignore-pattern node_modules/ --ext .js,.ts --fix"
+    "lint": "eslint ./src --ignore-pattern node_modules/ --ext .js,.ts",
+    "autofix": "eslint ./src --ignore-pattern node_modules/ --ext .js,.ts --fix"
   },
   "repository": {
     "type": "git",
