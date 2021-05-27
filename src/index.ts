@@ -1,7 +1,7 @@
 import express from 'express';
 
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT != null ? parseInt(process.env.PORT, 10) : 8000;
 
 app.get('/', (req, res) => res.send('Hello World'));
 
