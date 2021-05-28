@@ -144,3 +144,45 @@ export const router = (() => {
     );
     return router;
 })();
+
+export async function authenticationRequired(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+) {
+    if (request.headers.authorization != null) {
+        const token = request.headers.authorization.split(' ')[1];
+        try {
+            const { id } = await authenticated(token, TOKEN_SECRET);
+            request.authenticated = { id };
+            next();
+        } catch {
+            // do nothing (fall through to sending 401)
+        }
+    }
+
+    response.status(401).send({
+        error: 'Unauthorized',
+        message: 'No token provided in the request',
+    });
+}
+
+export async function authenticationOptional(
+    request: Request,
+    response: Response,
+    next: NextFunction,
+) {
+    if (request.headers.authorization != null) {
+        const token = request.headers.authorization.split(' ')[1];
+        try {
+            const { id } = await authenticated(token, TOKEN_SECRET);
+            request.authenticated = { id };
+            next();
+        } catch {
+            // do nothing (fall through to setting the authenticated user to null)
+        }
+    }
+
+    request.authenticated = null;
+    next();
+}
