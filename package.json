@@ -2,12 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Backend for the Dogtor Platform",
-  "main": "build/index.js",
   "scripts": {
     "build": "tsc --project .",
     "dev:start": "npm-run-all build start",
     "dev": "nodemon --watch src -e ts,ejs --exec npm run dev:start",
-    "start": "node .",
+    "start": "NODE_PATH=./build node ./build/index.js",
     "lint": "eslint ./src --ignore-pattern node_modules/ --ext .js,.ts",
     "autofix": "eslint ./src --ignore-pattern node_modules/ --ext .js,.ts --fix"
   },
