@@ -4,6 +4,7 @@ import type { Request, Response } from 'utils/types';
 import { urlencoded } from 'body-parser';
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
+import Keyv from 'keyv';
 import {
     REFRESH_TOKEN_SECRET,
     TOKEN_SECRET,
@@ -37,6 +38,11 @@ type TokenInfo = {
     accessToken?: string,
 }
 
+const accessTokenExpirationInMinutes = 3600;
+const refreshTokenExpirationInMinutes = 2592000;
+const consumedAccessTokens = new Keyv<true>({ ttl: accessTokenExpirationInMinutes * 60 * 1000 });
+const consumedRefreshTokens = new Keyv<true>({ ttl: refreshTokenExpirationInMinutes * 60 * 1000 });
+
 async function authenticated(token: string, secret: string): Promise<TokenInfo> {
     return new Promise((resolve, reject) => {
         jwt.verify(token, secret, (error, value) => {
@@ -59,7 +65,7 @@ function createAuthenticatedToken(id: string): TokenSuccess {
         { id },
         TOKEN_SECRET,
         {
-            expiresIn: 3600,
+            expiresIn: accessTokenExpirationInMinutes,
         },
     );
 
@@ -67,13 +73,13 @@ function createAuthenticatedToken(id: string): TokenSuccess {
         { accessToken, id },
         REFRESH_TOKEN_SECRET,
         {
-            expiresIn: 2592000,
+            expiresIn: refreshTokenExpirationInMinutes,
         },
     );
 
     return {
         'access_token' : accessToken,
-        'expires_in': 3600,
+        'expires_in': accessTokenExpirationInMinutes,
         'refresh_token': refreshToken,
         'token_type' : 'bearer',
     };
@@ -114,9 +120,24 @@ export const router = (() => {
     
             case 'refresh_token': {
                 try {
-                    const { id } = await authenticated(body.refresh_token, REFRESH_TOKEN_SECRET);
+                    const isConsumed = await consumedRefreshTokens.get(body.refresh_token) ?? false;
+                    if (isConsumed) {
+                        response.status(401).send(
+                            {
+                                'error' : 'invalid_grant',
+                                'error_description' : 'refresh token consumed twice',
+                            },
+                        );
+                        return;
+                    }
 
-                    // TODO: blacklist previus accessToken and refresh token
+                    const { id, accessToken } = await authenticated(body.refresh_token, REFRESH_TOKEN_SECRET);
+
+                    consumedRefreshTokens.set(body.refresh_token, true);
+                    if (accessToken != null) {
+                        consumedAccessTokens.set(accessToken, true);
+                    }
+
                     response.send(
                         createAuthenticatedToken(id),
                     );
@@ -152,13 +173,24 @@ export async function authenticationRequired(
 ) {
     if (request.headers.authorization != null) {
         const token = request.headers.authorization.split(' ')[1];
-        try {
-            const { id } = await authenticated(token, TOKEN_SECRET);
-            request.authenticated = { id };
-            next();
-        } catch {
-            // do nothing (fall through to sending 401)
+        const isConsumed = await consumedAccessTokens.get(token) ?? false;
+
+        if (!isConsumed) {
+            try {
+                const { id } = await authenticated(token, TOKEN_SECRET);
+                request.authenticated = { id };
+                next();
+                return;
+            } catch {
+                // do nothing (fall through to sending 401)
+            }
         }
+
+        response.status(401).send({
+            error: 'Unauthorized',
+            message: 'Invalid token',
+        });
+        return;
     }
 
     response.status(401).send({
@@ -174,13 +206,24 @@ export async function authenticationOptional(
 ) {
     if (request.headers.authorization != null) {
         const token = request.headers.authorization.split(' ')[1];
-        try {
-            const { id } = await authenticated(token, TOKEN_SECRET);
-            request.authenticated = { id };
-            next();
-        } catch {
-            // do nothing (fall through to setting the authenticated user to null)
+        const isConsumed = await consumedAccessTokens.get(token) ?? false;
+
+        if (!isConsumed) {
+            try {
+                const { id } = await authenticated(token, TOKEN_SECRET);
+                request.authenticated = { id };
+                next();
+                return;
+            } catch {
+                // do nothing (fall through to setting the authenticated user to null)
+            }
         }
+
+        response.status(401).send({
+            error: 'Unauthorized',
+            message: 'Invalid token',
+        });
+        return;
     }
 
     request.authenticated = null;
