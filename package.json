@@ -8,7 +8,8 @@
     "dev": "nodemon --watch src -e ts,ejs --exec npm run dev:start",
     "start": "NODE_PATH=./build node ./build/index.js",
     "lint": "eslint ./src --ignore-pattern node_modules/ --ext .js,.ts",
-    "autofix": "eslint ./src --ignore-pattern node_modules/ --ext .js,.ts --fix"
+    "autofix": "eslint ./src --ignore-pattern node_modules/ --ext .js,.ts --fix",
+    "exportSchema": "ts-node ./scripts/exportSchema.ts"
   },
   "repository": {
     "type": "git",
