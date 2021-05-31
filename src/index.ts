@@ -37,7 +37,7 @@ app.use(
                 const newArgs: ExecutionArgs = { ...args, contextValue: context(request) };
                 return execute(newArgs);
             },
-            graphiql: false,
+            graphiql: true,
             rootValue: {},
             schema: Schema,
         },
