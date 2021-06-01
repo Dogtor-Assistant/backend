@@ -7,3 +7,7 @@ generates:
       - typescript-resolvers
       - add: 
           content: /* eslint-disable */
+    config:
+      useTypeImports: true
+      immutableTypes: true
+      avoidOptionals: true

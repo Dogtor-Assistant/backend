@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { GraphQLResolveInfo } from 'graphql';
+import type { GraphQLResolveInfo } from 'graphql';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
@@ -14,8 +14,8 @@ export type Scalars = {
 };
 
 export type Query = {
-  __typename?: 'Query';
-  greeting: Scalars['String'];
+  readonly __typename?: 'Query';
+  readonly greeting: Scalars['String'];
 };
 
 
@@ -109,11 +109,11 @@ export type ResolversParentTypes = {
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  greeting?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  greeting: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
-  Query?: QueryResolvers<ContextType>;
+  Query: QueryResolvers<ContextType>;
 };
 
 
