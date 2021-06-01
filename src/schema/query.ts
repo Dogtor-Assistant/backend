@@ -11,7 +11,7 @@ const Query = new GraphQLObjectType<Record<string, never>, Context>(
     {
         fields: {
             'greeting': {
-                resolve(source, args, context) {
+                resolve(_0, _1, context) {
                     if (context.authenticated != null) {
                         return `Hello, User ${context.authenticated.id}`;
                     }
