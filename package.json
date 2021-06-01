@@ -11,7 +11,7 @@
     "autofix": "eslint ./src --ignore-pattern node_modules/ --ext .js,.ts --fix",
     "exportSchema": "ts-node ./scripts/exportSchema.ts",
     "codegen": "graphql-codegen",
-    "codegenWatch": "nodemon --watch src/typeDefs.ts --exec npm run codegen"
+    "codegenWatch": "nodemon --watch src/typeDefs.ts --watch codegen.yml --exec npm run codegen"
   },
   "repository": {
     "type": "git",
