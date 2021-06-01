@@ -1,9 +1,10 @@
 
-import Schema from '../src/schema';
+import { typeDefs } from '../src/typeDefs';
 
 import fs from 'fs';
-import { printSchema } from 'graphql';
+import { buildASTSchema, printSchema } from 'graphql';
 
-const sdl = printSchema(Schema);
+const schema = buildASTSchema(typeDefs);
+const sdl = printSchema(schema);
 
 fs.writeFileSync('schema.graphql', sdl);

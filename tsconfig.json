@@ -1,6 +1,11 @@
 {
     "compilerOptions": {
         "baseUrl": "./src",
+        "paths": {
+            "@resolvers": [
+                "utils/resolvers.ts"
+            ],
+        },
         "target": "es6",
         "allowJs": true,
         "skipLibCheck": true,
