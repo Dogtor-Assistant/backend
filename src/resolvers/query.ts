@@ -3,21 +3,20 @@ import type { QueryResolvers } from '@resolvers';
 import type { Context } from 'context';
 
 const Query: QueryResolvers<Context> = {
-    greeting(_0, _1, context) {
-        if (context.authenticated != null) {
-            return `Hello, User ${context.authenticated.id}`;
+    greeting(_0, _1, { authenticated }) {
+        if (authenticated != null) {
+            return `Hello, User ${authenticated.id}`;
         }
 
         return 'Hello World';
     },
-    me(_0, _1, context) {
-        if (context.authenticated == null) {
+    me(_0, _1, { authenticated }) {
+        if (authenticated == null) {
             return null;
         }
 
         return {
-            __typename: 'User',
-            id: context.authenticated.id,
+            id: authenticated.id,
         };
     },
     node(_, { id }) {
