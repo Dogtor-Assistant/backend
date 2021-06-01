@@ -20,6 +20,12 @@ const Query: QueryResolvers<Context> = {
             id: context.authenticated.id,
         };
     },
+    node(_, { id }) {
+        // TODO: perform lookup
+        return {
+            id,
+        };
+    },
 };
 
 export default Query;

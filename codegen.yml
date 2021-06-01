@@ -11,3 +11,5 @@ generates:
       useTypeImports: true
       immutableTypes: true
       avoidOptionals: true
+      onlyResolveTypeForInterfaces: true
+      skipTypename: true
