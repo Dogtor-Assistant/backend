@@ -16,6 +16,12 @@ export type Scalars = {
 export type Query = {
   readonly __typename?: 'Query';
   readonly greeting: Scalars['String'];
+  readonly me: Maybe<User>;
+};
+
+export type User = {
+  readonly __typename?: 'User';
+  readonly id: Scalars['String'];
 };
 
 
@@ -98,6 +104,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  User: ResolverTypeWrapper<User>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
 
@@ -105,15 +112,23 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String'];
+  User: User;
   Boolean: Scalars['Boolean'];
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   greeting: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  me: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+};
+
+export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  id: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
   Query: QueryResolvers<ContextType>;
+  User: UserResolvers<ContextType>;
 };
 
 
