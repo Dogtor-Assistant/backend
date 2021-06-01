@@ -2,6 +2,7 @@
 import type { Context } from 'context';
 
 import {
+    GraphQLNonNull,
     GraphQLObjectType,
     GraphQLString,
 } from 'graphql';
@@ -17,7 +18,7 @@ const Query = new GraphQLObjectType<Record<string, never>, Context>(
 
                     return 'Hello World';
                 },
-                type: GraphQLString,
+                type: GraphQLNonNull(GraphQLString),
             },
         },
         name: 'Query',
