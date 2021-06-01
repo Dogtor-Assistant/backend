@@ -8,14 +8,14 @@ export const typeDefs = gql`
         id: ID!
     }
 
+    type User implements Node {
+        id: ID!
+    }
+
     type Query {
         greeting: String!
         me: User
         node(id: ID!): Node
-    }
-
-    type User implements Node {
-        id: ID!
     }
 
     schema {
