@@ -1,7 +1,6 @@
 import type { UserResolvers } from '@resolvers';
-import type { Context } from 'context';
 
-const User: UserResolvers<Context> = {
+const User: UserResolvers = {
     id({ id }) {
         return id;
     },

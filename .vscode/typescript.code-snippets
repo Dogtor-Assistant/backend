@@ -3,9 +3,8 @@
         "prefix": "res",
         "body": [
             "import type { ${TM_FILENAME_BASE/.*/${0:/capitalize}/}Resolvers } from '@resolvers';",
-            "import type { Context } from 'context';",
             "",
-            "const ${TM_FILENAME_BASE/.*/${0:/capitalize}/}: ${TM_FILENAME_BASE/.*/${0:/capitalize}/}Resolvers<Context> = {",
+            "const ${TM_FILENAME_BASE/.*/${0:/capitalize}/}: ${TM_FILENAME_BASE/.*/${0:/capitalize}/}Resolvers = {",
             "    $0",
             "}",
             "",

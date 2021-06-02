@@ -1,8 +1,7 @@
 
 import type { QueryResolvers } from '@resolvers';
-import type { Context } from 'context';
 
-const Query: QueryResolvers<Context> = {
+const Query: QueryResolvers = {
     greeting(_0, _1, { authenticated }) {
         if (authenticated != null) {
             return `Hello, User ${authenticated.id}`;

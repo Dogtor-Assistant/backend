@@ -13,3 +13,4 @@ generates:
       avoidOptionals: true
       onlyResolveTypeForInterfaces: true
       skipTypename: true
+      contextType: context#Context
