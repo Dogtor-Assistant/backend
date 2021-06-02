@@ -1,6 +1,7 @@
 import { authenticationRequired, router as auth } from 'authentication';
 import cors from 'cors';
 import express from 'express';
+import mongoose from 'mongoose';
 
 const app = express();
 const PORT = process.env.PORT != null ? parseInt(process.env.PORT, 10) : 8000;
@@ -26,6 +27,18 @@ app.get('/secret', authenticationRequired, (req, res) => {
     return res.send(`Secret for user ${id}: 42`);
 });
 
+// database connection
+const dbURI = 'mongodb://dogtorAdmin:DogtorFun!@snf-883170.vm.okeanos.grnet.gr:27017/dogtorDB';
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true }, err => {
+    if (err) {
+        console.log(err);
+        console.log('💾[database]: An error occured while trying to connect');
+    }
+    else {
+        console.log('💾[database]: Connected to database successfully');
+    }
+});
+
 app.listen(PORT, () => {
-    console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
+    console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
 });
