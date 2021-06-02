@@ -14,3 +14,4 @@ generates:
       onlyResolveTypeForInterfaces: true
       skipTypename: true
       contextType: context#Context
+      useIndexSignature: true
