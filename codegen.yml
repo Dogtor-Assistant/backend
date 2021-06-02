@@ -12,6 +12,6 @@ generates:
       immutableTypes: true
       avoidOptionals: true
       onlyResolveTypeForInterfaces: true
-      skipTypename: true
+      nonOptionalTypename: true
       contextType: context#Context
       useIndexSignature: true

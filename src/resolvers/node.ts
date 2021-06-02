@@ -1,9 +1,8 @@
 import type { NodeResolvers } from '@resolvers';
 
 const Node: NodeResolvers = {
-    __resolveType() {
-        // TODO: use some euristic to detect the type based on the ID
-        return 'User';
+    __resolveType({ __typename }) {
+        return __typename;
     },
 };
 

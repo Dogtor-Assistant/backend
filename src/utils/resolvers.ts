@@ -20,6 +20,7 @@ export type Node = {
 };
 
 export type Query = {
+  readonly __typename: 'Query';
   readonly greeting: Scalars['String'];
   readonly me: Maybe<User>;
   readonly node: Maybe<Node>;
@@ -31,6 +32,7 @@ export type QueryNodeArgs = {
 };
 
 export type User = Node & {
+  readonly __typename: 'User';
   readonly id: Scalars['ID'];
 };
 
