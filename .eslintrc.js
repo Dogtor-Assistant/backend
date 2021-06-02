@@ -11,6 +11,7 @@ module.exports = {
     },
     plugins: ['simple-import-sort', '@typescript-eslint', 'sort-keys-fix'],
     rules: {
+        '@typescript-eslint/consistent-type-imports': 'error',
         // Allow for return type inference (I'm lazy)
         '@typescript-eslint/explicit-module-boundary-types': 'off',
         'array-bracket-spacing': ['error', 'never'],
