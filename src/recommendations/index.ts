@@ -7,6 +7,8 @@ import type {
     UserMedicalData,
 } from './types';
 
+import defaultStrategy from './strategy';
+
 function evaluateRule(rule: InferenceRule, data: UserMedicalData): InferenceRuleResult {
     if (typeof rule === 'string') {
         return rule;
@@ -47,7 +49,7 @@ function evaluateStrategy(strategy: RecommendationStrategy, data: UserMedicalDat
 class RecommendationService {
     _strategy: RecommendationStrategy
     
-    constructor(strategy: RecommendationStrategy) {
+    constructor(strategy: RecommendationStrategy = defaultStrategy) {
         this._strategy = strategy;
     }
 
