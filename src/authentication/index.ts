@@ -5,10 +5,7 @@ import { urlencoded } from 'body-parser';
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import Keyv from 'keyv';
-import {
-    REFRESH_TOKEN_SECRET,
-    TOKEN_SECRET,
-} from 'utils/constants';
+import { REFRESH_TOKEN_SECRET, TOKEN_SECRET } from 'utils/constants';
 
 type Grant = {
     'grant_type' : 'password',
