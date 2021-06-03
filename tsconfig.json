@@ -2,6 +2,9 @@
     "compilerOptions": {
         "baseUrl": "./src",
         "target": "es6",
+        "lib": [
+            "es2019"
+        ],
         "allowJs": true,
         "skipLibCheck": true,
         "allowSyntheticDefaultImports": true,
