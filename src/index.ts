@@ -31,6 +31,8 @@ const apollo = new ApolloServer(
         context: ({ req }) => {
             return context(req);
         },
+        introspection: true,
+        playground: true,
         resolvers,
         typeDefs,
     },
