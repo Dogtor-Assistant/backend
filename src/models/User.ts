@@ -1,9 +1,12 @@
-import mongoose from 'mongoose';
-import ObjectId from 'mongoose';
+import { IDoctor } from './Doctor';
+import { IPatient } from './Patient';
 
-const userSchema = new mongoose.Schema({
+import { Document, Model, model, Schema } from 'mongoose';
+
+const UserSchema: Schema = new Schema({
     doctorRef: {
-        type: String,
+        ref: 'Doctor',
+        type: Schema.Types.ObjectId,
     },
     email: {
         required: true,
@@ -23,10 +26,22 @@ const userSchema = new mongoose.Schema({
         type: String,
     },
     patientRef: {
-        type: String,
+        ref: 'Patient',
+        type: Schema.Types.ObjectId,
     },
+}, {
+    timestamps: true,
 });
 
-const User = mongoose.model('user', userSchema);
+export interface IUser extends Document {
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    patientRef?: IPatient['_id'],
+    doctorRef?: IDoctor['_id'],
+}
+
+const User: Model<IUser> = model('User', UserSchema);
 
 export default User;

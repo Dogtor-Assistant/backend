@@ -48,9 +48,9 @@ mongoose.connect(dbURI, { useCreateIndex: true, useNewUrlParser: true, useUnifie
     }
     else {
         console.log('💾[database]: Connected to database successfully');
+        
+        app.listen(PORT, () => {
+            console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
+        });
     }
-});
-
-app.listen(PORT, () => {
-    console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
 });

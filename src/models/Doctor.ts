@@ -1,7 +1,9 @@
-import mongoose from 'mongoose';
-import ObjectId from 'mongoose';
+import { IReview } from './Review';
+import { IService } from './Service';
 
-const addressSchema = new mongoose.Schema({
+import { Document, Model, model, Schema } from 'mongoose';
+
+const AddressSchema: Schema = new Schema({
     city: {
         required: true,
         type: String,
@@ -18,38 +20,64 @@ const addressSchema = new mongoose.Schema({
         required: true,
         type: Number,
     },
+}, {
+    _id: false,
 });
 
-const miniServiceSchema = new mongoose.Schema({
+interface IAddress extends Document {
+    city: string,
+    streetName: string,
+    streetNumber: number,
+    zipcode: number,
+}
+
+const MiniServiceSchema: Schema = new Schema({
     serviceId: {
         required: true,
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
     },
     serviceName: {
         required: true,
         type: String,
     },
+}, {
+    _id: false,
 });
 
-const miniReviewSchema = new mongoose.Schema({
+interface IMiniService extends Document {
+    serviceId: IService['_id'],
+    serviceName: IService['name'],
+}
+
+const MiniReviewSchema: Schema = new Schema({
     reviewContent: {
         required: true,
         type: String,
     },
     reviewId: {
         required: true,
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
     },
     reviewRating: {
+        enum: [0, 1, 2, 3, 4, 5],
         required: true,
         type: Number,
     },
+}, {
+    _id: false,
 });
 
-const slotSchema = new mongoose.Schema({
+interface IMiniReview extends Document {
+    reviewContent: IReview['content'],
+    reviewId: IReview['_id'],
+    reviewRating: IReview['rating'],
+}
+
+const SlotSchema: Schema = new Schema({
     day: {
+        enum: [0, 1, 2, 3, 4, 5, 6],
         required: true,
-        type: String,
+        type: Number,
     },
     slotStart: {
         required: true,
@@ -59,16 +87,34 @@ const slotSchema = new mongoose.Schema({
         required: true,
         type: String,
     },
+}, {
+    _id: false,
 });
 
-const doctorSchema = new mongoose.Schema({
+interface ISlot extends Document {
+    day: Day,
+    slotStart: string,
+    slotStop: string,
+}
+
+enum Day {
+    MONDAY = 0,
+    TUESDAY = 1,
+    WEDNESDAY = 2,
+    THURSDAY = 3,
+    FRIDAY = 4,
+    SATURDAY = 5,
+    SUNDAY = 6
+}
+
+const DoctorSchema: Schema = new Schema({
     address: {
         required: true,
-        type: addressSchema,
+        type: AddressSchema,
     },
     offeredSlots: {
-        default: {},
-        type: [slotSchema],
+        default: [],
+        type: [SlotSchema],
     },
     phoneNumber: {
         required: true,
@@ -76,21 +122,39 @@ const doctorSchema = new mongoose.Schema({
         unique: true,
     },
     specialities: {
+        required: true,
         type: [String],
     },
     starRating: {
+        default: 0,
         type: Number,
     },
     topReviews: {
-        type: [miniReviewSchema],
+        default: [],
+        type: [MiniReviewSchema],
     },
     topServices: {
-        type: [miniServiceSchema],
+        default: [],
+        type: [MiniServiceSchema],
     },
     webpage: {
         type: String,
     },
+}, {
+    timestamps: true,
 });
 
-const Doctor = mongoose.model('doctor', doctorSchema);
-module.exports = Doctor;
+export interface IDoctor extends Document {
+    address: IAddress,
+    phoneNumber: string,
+    webpage?: string,
+    specialities: Array<string>,
+    topServices?: Array<IMiniService>,
+    topReviews?: Array<IMiniReview>,
+    starRating?: number,
+    offeredSlots?: Array<ISlot>,
+}
+
+const Doctor: Model<IDoctor> = model('Doctor', DoctorSchema);
+
+export default Doctor;
