@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import { Document, Model, model, Schema } from 'mongoose';
 
-const addressSchema = new mongoose.Schema({
+const AddressSchema: Schema = new Schema({
     city: {
         required: true,
         type: String,
@@ -17,39 +17,51 @@ const addressSchema = new mongoose.Schema({
         required: true,
         type: Number,
     },
+}, {
+    _id: false,
 });
 
-const patientSchema = new mongoose.Schema({
+interface IAddress extends Document {
+    city: string,
+    streetName: string,
+    streetNumber: number,
+    zipcode: number,
+}
+
+const PatientSchema: Schema = new Schema({
     activityLevel: {
+        enum: [0, 1, 2, 3, 4],
         type: Number,
     },
     address: {
         required: true,
-        type: addressSchema,
+        type: AddressSchema,
     },
     allergies: {
+        default: [],
         type: [String],
     },
     birthDate: {
         type: Date,
     },
     gender: {
-        type: String,
+        enum: [0, 1],
+        type: Number,
     },
     height: {
         type: Number,
     },
     insurance: {
+        enum: [0, 1],
         required: true,
-        type: String,
-    },
-    lastUpdate: {
-        type: Date,
+        type: Number,
     },
     medicalConditions: {
+        default: [],
         type: [String],
     },
     medications: {
+        default: [],
         type: [String],
     },
     phoneNumber: {
@@ -61,12 +73,50 @@ const patientSchema = new mongoose.Schema({
         type: Boolean,
     },
     surgeries: {
+        default: [],
         type: [String],
     },
     weight: {
         type: Number,
     },
+}, {
+    timestamps: true,
 });
 
-const Patient = mongoose.model('patient', patientSchema);
-module.exports = Patient;
+enum ActivityLevel {
+    VERY_HIGH = 4,
+    HIGH = 3,
+    MEDIUM = 2,
+    LOW = 1,
+    VERY_LOW = 0
+}
+
+enum Gender {
+    MALE = 1,
+    FEMALE = 0
+}
+
+enum Insurance {
+    PRIVATE = 1,
+    PUBLIC = 0
+}
+
+export interface IPatient extends Document {
+    address: IAddress,
+    phoneNumber: string,
+    insurance: Insurance,
+    birthDate?: Date,
+    gender?: Gender,
+    height?: number,
+    weight?: number,
+    activityLevel?: ActivityLevel,
+    medicalConditions?: Array<string>,
+    allergies?: Array<string>,
+    medications?: Array<string>,
+    surgeries?: Array<string>,
+    smoker?: boolean,
+}
+
+const Patient: Model<IPatient> = model('Patient', PatientSchema);
+
+export default Patient;
