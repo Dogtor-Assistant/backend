@@ -33,6 +33,7 @@ interface IAddress extends Document {
 
 const MiniServiceSchema: Schema = new Schema({
     serviceId: {
+        ref: 'Service',
         required: true,
         type: Schema.Types.ObjectId,
     },
@@ -55,6 +56,7 @@ const MiniReviewSchema: Schema = new Schema({
         type: String,
     },
     reviewId: {
+        ref: 'Review',
         required: true,
         type: Schema.Types.ObjectId,
     },
