@@ -5,6 +5,7 @@ import { Document, Model, model, Schema } from 'mongoose';
 
 const MiniPatientSchema: Schema = new Schema({
     patientId: {
+        ref: 'Patient',
         required: true,
         type: Schema.Types.ObjectId,
     },

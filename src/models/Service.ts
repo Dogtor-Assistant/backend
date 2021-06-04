@@ -1,9 +1,16 @@
+import { IDoctor } from './Doctor';
+
 import { Document, Model, model, Schema } from 'mongoose';
 
 const ServiceSchema: Schema = new Schema({
     description: {
         required: true,
         type: String,
+    },
+    doctorRef: {
+        ref: 'Doctor',
+        required: true,
+        type: Schema.Types.ObjectId,
     },
     estimatedDuration: {
         required: true,
@@ -35,7 +42,8 @@ export interface IService extends Document {
     estimatedDuration: number,
     publicCovered: boolean,
     privateCovered: boolean,
-    timesSelected?: number
+    timesSelected?: number,
+    doctorRef: IDoctor['_id']
 }
 
 const Service: Model<IService> = model('Service', ServiceSchema);
