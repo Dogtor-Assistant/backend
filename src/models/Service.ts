@@ -4,7 +4,6 @@ import { Document, Model, model, Schema } from 'mongoose';
 
 const ServiceSchema: Schema = new Schema({
     description: {
-        required: true,
         type: String,
     },
     doctorRef: {
