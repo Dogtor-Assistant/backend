@@ -4,6 +4,8 @@ import { authenticationOptional, router as auth } from 'authentication';
 import { context } from 'context';
 import cors from 'cors';
 import express from 'express';
+import User from 'models/User';
+import mongoose from 'mongoose';
 import resolvers from 'resolvers';
 import { typeDefs } from 'typeDefs';
 
@@ -26,6 +28,18 @@ app.use(
 app.get('/', (_, res) => res.send('Hello World'));
 app.use('/auth', auth);
 
+app.get('/user/:id', async function(req, res) {
+    const id = req.params.id;
+    const user = await User.findOne({ 'firstName': `Dogtor${id}` });
+
+    if (!user) {
+        res.status(400).send("User doesn't exist");
+    }
+    else {
+        res.status(200).json(user);
+    }
+});
+
 const apollo = new ApolloServer(
     {
         context: ({ req }) => {
@@ -43,6 +57,18 @@ apollo.applyMiddleware({
     path: '/graphql',
 });
 
-app.listen(PORT, () => {
-    console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
+// database connection
+const dbURI = 'mongodb://link';
+mongoose.connect(dbURI, { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true }, err => {
+    if (err) {
+        console.log(err);
+        console.log('💾[database]: An error occured while trying to connect');
+    }
+    else {
+        console.log('💾[database]: Connected to database successfully');
+        
+        app.listen(PORT, () => {
+            console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
+        });
+    }
 });
