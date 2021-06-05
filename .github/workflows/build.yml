@@ -39,3 +39,4 @@ jobs:
            ssh-private-key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
            dokku-host: '78.47.176.210'
            app-name: 'dogtor-backend'
+           git-push-flags: --force
