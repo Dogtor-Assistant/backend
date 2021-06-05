@@ -1,0 +1,95 @@
+name: Deploy Staging
+
+on:
+  pull_request:
+    types: [opened]
+  issue_comment:
+    types: [created]
+    
+jobs:
+  comments:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: khan/pull-request-comment-trigger@master
+        id: stage
+        with:
+          trigger: '/stage'
+          reaction: rocket
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      - uses: khan/pull-request-comment-trigger@master
+        id: install
+        with:
+          trigger: '/install'
+          reaction: +1
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      - uses: khan/pull-request-comment-trigger@master
+        id: lint
+        with:
+          trigger: '/lint'
+          reaction: +1
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      - uses: khan/pull-request-comment-trigger@master
+        id: codegen
+        with:
+          trigger: '/codegen'
+          reaction: +1
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      - name: Get Pull Request Ref
+        id: get_pull_request_ref
+        if: steps.stage.outputs.triggered == 'true' || steps.install.outputs.triggered == 'true' || steps.lint.outputs.triggered == 'true' || steps.codegen.outputs.triggered == 'true'
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/:repository/pulls/:issue_id
+          repository: ${{ github.repository }}
+          issue_id: ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - uses: actions/checkout@v2
+        if: steps.install.outputs.triggered == 'true' || steps.lint.outputs.triggered == 'true' || steps.codegen.outputs.triggered == 'true'
+        with:
+          ref: ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
+      - name: Deploy to dokku
+        if: steps.stage.outputs.triggered == 'true'
+        uses: wei/git-sync@v3
+        with:
+          source_repo: "git@github.com:Dogtor-Assistant/backend.git"
+          source_branch: ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
+          destination_repo: "dokku@78.47.176.210:dogtor-backend-staging"
+          destination_branch: "master"
+          source_ssh_private_key: ${{ secrets.GIT_SSH_PRIVATE_KEY }}
+          destination_ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
+      - name: Comment PR
+        if: steps.stage.outputs.triggered == 'true'
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: ':rocket: Deployed to Staging: https://staging.backend.dogtor.xyz'
+      - uses: actions/cache@v2
+        if: steps.install.outputs.triggered == 'true' || steps.lint.outputs.triggered == 'true' || steps.codegen.outputs.triggered == 'true'
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - uses: actions/setup-node@v2
+        if: steps.install.outputs.triggered == 'true' || steps.lint.outputs.triggered == 'true' || steps.codegen.outputs.triggered == 'true'
+        with:
+          node-version: '14'
+      - name: Install Dependencies
+        if: steps.install.outputs.triggered == 'true' || steps.lint.outputs.triggered == 'true' || steps.codegen.outputs.triggered == 'true'
+        run: npm install
+      - name: Fix Lint Warnings
+        if: steps.lint.outputs.triggered == 'true'
+        run: npm run autofix
+      - name: Run Codegen
+        if: steps.codegen.outputs.triggered == 'true'
+        run: npm run codegen
+      - name: Commit & Push changes
+        if: steps.install.outputs.triggered == 'true' || steps.lint.outputs.triggered == 'true' || steps.codegen.outputs.triggered == 'true'
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
