@@ -139,4 +139,4 @@ jobs:
            destination_head_branch: 'schema/update'
            user_email: 'me@quintero.io'
            user_name: 'Mathias Quintero (via GitHub Actions)'
-           pull_request_reviewers: 'reviewers'
+           pull_request_reviewers: 'nerdsupremacist,konpap99,Pellumbengineer'
