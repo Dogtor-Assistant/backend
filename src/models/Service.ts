@@ -1,6 +1,7 @@
-import { IDoctor } from './Doctor';
+import type { IDoctor } from './Doctor';
+import type { Document, Model } from 'mongoose';
 
-import { Document, Model, model, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
 const ServiceSchema: Schema = new Schema({
     description: {
