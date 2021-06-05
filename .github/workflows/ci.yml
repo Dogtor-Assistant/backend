@@ -18,7 +18,7 @@ jobs:
              ${{ runner.os }}-npm-
        - uses: actions/setup-node@v2
          with:
-           node-version: '14'
+           node-version: '15'
        - name: Install Dependencies
          run: npm install
        - name: Run Codegen
@@ -49,7 +49,7 @@ jobs:
              ${{ runner.os }}-npm-
        - uses: actions/setup-node@v2
          with:
-           node-version: '14'
+           node-version: '15'
        - name: Install Dependencies
          run: npm install
        - name: Export Schema
@@ -72,7 +72,7 @@ jobs:
              ${{ runner.os }}-npm-
        - uses: actions/setup-node@v2
          with:
-           node-version: '14'
+           node-version: '15'
        - name: Install Dependencies
          run: npm install
        - name: Run Linter
@@ -92,7 +92,7 @@ jobs:
              ${{ runner.os }}-npm-
        - uses: actions/setup-node@v2
          with:
-           node-version: '14'
+           node-version: '15'
        - name: Install Dependencies
          run: npm install
        - name: Build for Production
