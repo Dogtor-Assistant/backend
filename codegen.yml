@@ -1,0 +1,17 @@
+schema:
+  - src/typeDefs.ts 
+generates:
+  src/utils/resolvers.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+      - add: 
+          content: /* eslint-disable */
+    config:
+      useTypeImports: true
+      immutableTypes: true
+      avoidOptionals: true
+      onlyResolveTypeForInterfaces: true
+      nonOptionalTypename: true
+      contextType: context#Context
+      useIndexSignature: true
