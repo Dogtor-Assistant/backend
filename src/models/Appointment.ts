@@ -1,8 +1,9 @@
-import { IDoctor } from './Doctor';
-import { IPatient } from './Patient';
-import { IService } from './Service';
+import type { IDoctor } from './Doctor';
+import type { IPatient } from './Patient';
+import type { IService } from './Service';
+import type { Document, Model } from 'mongoose';
 
-import { Document, Model, model, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
 const MiniPatientSchema: Schema = new Schema({
     patientId: {

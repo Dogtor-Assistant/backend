@@ -1,4 +1,6 @@
-import { Document, Model, model, Schema } from 'mongoose';
+import type { Document, Model } from 'mongoose';
+
+import { model, Schema } from 'mongoose';
 
 const AddressSchema: Schema = new Schema({
     city: {

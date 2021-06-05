@@ -1,7 +1,8 @@
-import { IReview } from './Review';
-import { IService } from './Service';
+import type { IReview } from './Review';
+import type { IService } from './Service';
+import type { Document, Model } from 'mongoose';
 
-import { Document, Model, model, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
 const AddressSchema: Schema = new Schema({
     city: {
