@@ -1,0 +1,15 @@
+{
+    "Resolver": {
+        "prefix": "res",
+        "body": [
+            "import type { ${TM_FILENAME_BASE/.*/${0:/capitalize}/}Resolvers } from '@resolvers';",
+            "",
+            "const ${TM_FILENAME_BASE/.*/${0:/capitalize}/}: ${TM_FILENAME_BASE/.*/${0:/capitalize}/}Resolvers = {",
+            "    $0",
+            "}",
+            "",
+            "export default ${TM_FILENAME_BASE/.*/${0:/capitalize}/};"
+        ],
+        "description": "Creates a Component"
+    },
+}

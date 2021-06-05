@@ -1,1 +1,2 @@
 .eslintrc.js linguist-vendored
+src/utils/resolvers.ts linguist-generated

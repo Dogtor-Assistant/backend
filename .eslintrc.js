@@ -9,8 +9,14 @@ module.exports = {
         ecmaVersion: 2018,
         sourceType: 'module',
     },
-    plugins: ['simple-import-sort', '@typescript-eslint', 'sort-keys-fix'],
+    plugins: [
+        'simple-import-sort',
+        '@typescript-eslint',
+        'sort-keys-fix',
+        'import-newlines',
+    ],
     rules: {
+        '@typescript-eslint/consistent-type-imports': 'error',
         // Allow for return type inference (I'm lazy)
         '@typescript-eslint/explicit-module-boundary-types': 'off',
         'array-bracket-spacing': ['error', 'never'],
@@ -26,6 +32,14 @@ module.exports = {
             'always',
             {
                 'null': 'never',
+            },
+        ],
+        'import-newlines/enforce': [
+            'error',
+            {
+                'items': 3,
+                'max-len': 120,
+                'semi': true,
             },
         ],
         'indent': [
@@ -57,12 +71,25 @@ module.exports = {
         ],
         'no-useless-return': 'error',
         'no-var': 'error',
+        'object-curly-newline': [
+            'error',
+            {
+                'consistent': true,
+                'multiline': true,
+            },
+        ],
         'object-curly-spacing': [
             'error',
             'always',
             {
                 arraysInObjects: false,
                 objectsInObjects: false,
+            },
+        ],
+        'object-property-newline': [
+            'error',
+            {
+                allowAllPropertiesOnSameLine: true,
             },
         ],
         'prefer-template': 'warn',
