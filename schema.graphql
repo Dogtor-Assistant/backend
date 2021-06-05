@@ -1,3 +1,13 @@
+interface Node {
+  id: ID!
+}
+
+type User implements Node {
+  id: ID!
+}
+
 type Query {
-    greeting: String!
+  greeting: String!
+  me: User
+  node(id: ID!): Node
 }
