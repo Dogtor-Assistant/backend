@@ -4,6 +4,7 @@ import { authenticationOptional, router as auth } from 'authentication';
 import { context } from 'context';
 import cors from 'cors';
 import express from 'express';
+import mongoose from 'mongoose';
 import resolvers from 'resolvers';
 import { typeDefs } from 'typeDefs';
 
@@ -43,6 +44,18 @@ apollo.applyMiddleware({
     path: '/graphql',
 });
 
+// database connection
+const dbURI = 'mongodb://dogtorAdmin:DogtorFun!@snf-883170.vm.okeanos.grnet.gr:27017/dogtorDB';
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true }, err => {
+    if (err) {
+        console.log(err);
+        console.log('💾[database]: An error occured while trying to connect');
+    }
+    else {
+        console.log('💾[database]: Connected to database successfully');
+    }
+});
+
 app.listen(PORT, () => {
-    console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
+    console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
 });
