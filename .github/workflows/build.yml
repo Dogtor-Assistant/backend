@@ -130,7 +130,7 @@ jobs:
        - name: Create pull request with Updated Schema
          uses: paygoc6/action-pull-request-another-repo@v1.0.1
          env:
-           API_TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
+           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
          with:
            source_folder: 'schema.graphql'
            destination_repo: 'Dogtor-Assistant/frontend'
