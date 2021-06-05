@@ -78,7 +78,7 @@ jobs:
       - uses: actions/setup-node@v2
         if: steps.install.outputs.triggered == 'true' || steps.lint.outputs.triggered == 'true' || steps.codegen.outputs.triggered == 'true'
         with:
-          node-version: '14'
+          node-version: '15'
       - name: Install Dependencies
         if: steps.install.outputs.triggered == 'true' || steps.lint.outputs.triggered == 'true' || steps.codegen.outputs.triggered == 'true'
         run: npm install
