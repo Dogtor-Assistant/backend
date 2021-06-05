@@ -18,6 +18,10 @@ export const typeDefs = gql`
         node(id: ID!): Node
     }
 
+    type Something {
+        name: String
+    }
+
     schema {
         query: Query
     }
