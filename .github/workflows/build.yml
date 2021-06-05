@@ -40,3 +40,38 @@ jobs:
            dokku-host: '78.47.176.210'
            app-name: 'dogtor-backend'
            git-push-flags: --force
+
+  syncSchema:
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    
+    steps:
+       - uses: actions/checkout@v2
+         with:
+           fetch-depth: 0
+       - uses: actions/cache@v2
+         with:
+           path: node_modules
+           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+           restore-keys: |
+             ${{ runner.os }}-npm-
+       - uses: actions/setup-node@v2
+         with:
+           node-version: '14'
+       - name: Install Dependencies
+         run: npm install
+       - name: Export Schema
+         run: npm run exportSchema
+       - name: Create pull request with Updated Schema
+         uses: paygoc6/action-pull-request-another-repo@v1.0.1
+         env:
+           API_TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
+         with:
+           source_folder: 'schema.graphql'
+           destination_repo: 'Dogtor-Assistant/frontend'
+           destination_folder: 'data'
+           destination_base_branch: 'main'
+           destination_head_branch: 'schema/update'
+           user_email: 'me@quintero.io'
+           user_name: 'Mathias Quintero (via GitHub Actions)'
+           pull_request_reviewers: 'reviewers'
