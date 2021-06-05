@@ -28,7 +28,7 @@ interface IAddress extends Document {
     city: string,
     streetName: string,
     streetNumber: number,
-    zipcode: number,
+    zipCode: number,
 }
 
 const MiniServiceSchema: Schema = new Schema({

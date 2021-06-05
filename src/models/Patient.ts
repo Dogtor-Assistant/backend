@@ -25,7 +25,7 @@ interface IAddress extends Document {
     city: string,
     streetName: string,
     streetNumber: number,
-    zipcode: number,
+    zipCode: number,
 }
 
 const PatientSchema: Schema = new Schema({
@@ -91,7 +91,7 @@ enum ActivityLevel {
     VERY_LOW = 0
 }
 
-enum Gender {
+export enum Gender {
     MALE = 1,
     FEMALE = 0
 }
