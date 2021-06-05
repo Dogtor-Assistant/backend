@@ -93,3 +93,4 @@ jobs:
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
