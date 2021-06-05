@@ -99,7 +99,7 @@ interface ISlot extends Document {
     slotStop: string,
 }
 
-enum Day {
+export enum Day {
     MONDAY = 0,
     TUESDAY = 1,
     WEDNESDAY = 2,

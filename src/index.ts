@@ -40,7 +40,7 @@ app.get('/secret', authenticationRequired, (req, res) => {
 });
 
 // database connection
-const dbURI = 'mongodb://dogtorAdmin:DogtorFun!@snf-883170.vm.okeanos.grnet.gr:27017/dogtorDB';
+const dbURI = 'mongodb://link';
 mongoose.connect(dbURI, { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true }, err => {
     if (err) {
         console.log(err);

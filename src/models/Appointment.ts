@@ -94,7 +94,7 @@ const AppointmentSchema: Schema = new Schema({
     },
     selectedServices: {
         required: true,
-        type: MiniServiceSchema,
+        type: [MiniServiceSchema],
     },
     sharedData: {
         required: true,
@@ -104,7 +104,7 @@ const AppointmentSchema: Schema = new Schema({
     timestamps: true,
 });
 
-enum Insurance {
+export enum Insurance {
     PRIVATE = 1,
     PUBLIC = 0
 }

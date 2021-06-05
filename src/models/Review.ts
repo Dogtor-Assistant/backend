@@ -44,7 +44,7 @@ const ReviewSchema: Schema = new Schema({
     timestamps: true,
 });
 
-enum Rating {
+export enum Rating {
     ZERO_STAR = 0,
     ONE_STAR = 1,
     TWO_STAR = 2,

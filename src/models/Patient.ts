@@ -83,7 +83,7 @@ const PatientSchema: Schema = new Schema({
     timestamps: true,
 });
 
-enum ActivityLevel {
+export enum ActivityLevel {
     VERY_HIGH = 4,
     HIGH = 3,
     MEDIUM = 2,
@@ -96,7 +96,7 @@ export enum Gender {
     FEMALE = 0
 }
 
-enum Insurance {
+export enum Insurance {
     PRIVATE = 1,
     PUBLIC = 0
 }
