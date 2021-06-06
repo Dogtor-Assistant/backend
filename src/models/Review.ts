@@ -24,6 +24,10 @@ interface IMiniPatient extends Document {
 }
 
 const ReviewSchema: Schema = new Schema({
+    __typename: {
+        default: 'Review',
+        type: String,
+    },
     content: {
         type: String,
     },
@@ -54,7 +58,8 @@ export enum Rating {
     FIVE_STAR = 5
 }
 
-export interface IReview extends Document {
+export interface IReview extends Document<string> {
+    __typename: 'Review',
     patientRef: IMiniPatient,
     doctorRef: IDoctor['_id'],
     rating: Rating,

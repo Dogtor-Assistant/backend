@@ -95,6 +95,10 @@ interface IMiniService extends Document {
 }
 
 const FollowupSchema: Schema = new Schema({
+    __typename: {
+        default: 'Followup',
+        type: String,
+    },
     doctorNotes: {
         type: String,
     },
@@ -122,7 +126,8 @@ const FollowupSchema: Schema = new Schema({
     timestamps: true,
 });
 
-export interface IFollowup extends Document {
+export interface IFollowup extends Document<string> {
+    __typename: 'Followup',
     patientRef: IMiniPatient,
     doctorRef: IMiniDoctor,
     services: Array<IMiniService>,

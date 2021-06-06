@@ -63,6 +63,10 @@ interface IMiniService extends Document {
 }
 
 const AppointmentSchema: Schema = new Schema({
+    __typename: {
+        default: 'Appointment',
+        type: String,
+    },
     actualDuration: {
         type: Number,
     },
@@ -110,7 +114,8 @@ export enum Insurance {
     PUBLIC = 0
 }
 
-export interface IAppointment extends Document {
+export interface IAppointment extends Document<string> {
+    __typename: 'Appointment',
     patientRef: IMiniPatient,
     doctorRef: IMiniDoctor,
     expectedTime: Date,

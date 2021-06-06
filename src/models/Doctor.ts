@@ -111,6 +111,10 @@ export enum Day {
 }
 
 const DoctorSchema: Schema = new Schema({
+    __typename: {
+        default: 'Doctor',
+        type: String,
+    },
     address: {
         required: true,
         type: AddressSchema,
@@ -147,7 +151,8 @@ const DoctorSchema: Schema = new Schema({
     timestamps: true,
 });
 
-export interface IDoctor extends Document {
+export interface IDoctor extends Document<string> {
+    __typename: 'Doctor',
     address: IAddress,
     phoneNumber: string,
     webpage?: string,
