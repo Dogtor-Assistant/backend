@@ -31,6 +31,11 @@ export type QueryNodeArgs = {
   id: Scalars['ID'];
 };
 
+export type Something = {
+  readonly __typename: 'Something';
+  readonly name: Maybe<Scalars['String']>;
+};
+
 export type User = Node & {
   readonly __typename: 'User';
   readonly id: Scalars['ID'];
@@ -119,6 +124,7 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  Something: ResolverTypeWrapper<Something>;
   User: ResolverTypeWrapper<User>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 }>;
@@ -129,6 +135,7 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars['ID'];
   Query: {};
   String: Scalars['String'];
+  Something: Something;
   User: User;
   Boolean: Scalars['Boolean'];
 }>;
@@ -143,6 +150,11 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   node: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
 }>;
 
+export type SomethingResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Something'] = ResolversParentTypes['Something']> = ResolversObject<{
+  name: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -151,6 +163,7 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
 export type Resolvers<ContextType = Context> = ResolversObject<{
   Node: NodeResolvers<ContextType>;
   Query: QueryResolvers<ContextType>;
+  Something: SomethingResolvers<ContextType>;
   User: UserResolvers<ContextType>;
 }>;
 
