@@ -5,6 +5,7 @@ import ActivityLevel from './activityLevel';
 import Address from './address';
 import Appointment from './appointment';
 import AppointmentTime from './appointmentTime';
+import Checkup from './checkup';
 import Gender from './gender';
 import Insurance from './insurance';
 import Node from './node';
@@ -17,6 +18,7 @@ const resolvers: Resolvers = {
     Address,
     Appointment,
     AppointmentTime,
+    Checkup,
     Gender,
     Insurance,
     Node,
