@@ -149,7 +149,7 @@ export const typeDefs = gql`
         rating: Int!
 
         doctor: Doctor!
-        patient: Doctor!
+        patient: Patient!
 
         content: String
     }

@@ -146,7 +146,7 @@ export type Review = Node & {
   readonly id: Scalars['ID'];
   readonly rating: Scalars['Int'];
   readonly doctor: Doctor;
-  readonly patient: Doctor;
+  readonly patient: Patient;
   readonly content: Maybe<Scalars['String']>;
 };
 
@@ -421,7 +421,7 @@ export type ReviewResolvers<ContextType = Context, ParentType extends ResolversP
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   rating: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   doctor: Resolver<ResolversTypes['Doctor'], ParentType, ContextType>;
-  patient: Resolver<ResolversTypes['Doctor'], ParentType, ContextType>;
+  patient: Resolver<ResolversTypes['Patient'], ParentType, ContextType>;
   content: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
