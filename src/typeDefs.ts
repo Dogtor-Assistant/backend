@@ -58,9 +58,9 @@ export const typeDefs = gql`
 
     type Address {
         streetName: String!
-        streetNumber: String!
+        streetNumber: Int!
         city: String!
-        zipCode: String!
+        zipCode: Int!
     }
 
     type AppointmentTime {
@@ -96,7 +96,7 @@ export const typeDefs = gql`
         firstname: String!
         lastname: String!
 
-        specialty: String!
+        specialities: [String!]!
 
         address: Address!
         offeredSlots: [OfferedSlot!]!

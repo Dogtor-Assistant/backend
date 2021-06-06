@@ -41,9 +41,9 @@ export enum ActivityLevel {
 
 export type Address = {
   readonly streetName: Scalars['String'];
-  readonly streetNumber: Scalars['String'];
+  readonly streetNumber: Scalars['Int'];
   readonly city: Scalars['String'];
-  readonly zipCode: Scalars['String'];
+  readonly zipCode: Scalars['Int'];
 };
 
 export type Appointment = Node & {
@@ -75,7 +75,7 @@ export type Doctor = Node & {
   readonly id: Scalars['ID'];
   readonly firstname: Scalars['String'];
   readonly lastname: Scalars['String'];
-  readonly specialty: Scalars['String'];
+  readonly specialities: ReadonlyArray<Scalars['String']>;
   readonly address: Address;
   readonly offeredSlots: ReadonlyArray<OfferedSlot>;
   readonly rating: Scalars['Float'];
@@ -257,6 +257,7 @@ export type ResolversTypes = ResolversObject<{
   ActivityLevel: ResolverTypeWrapper<ActivityLevel>;
   Address: ResolverTypeWrapper<Address>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   Appointment: ResolverTypeWrapper<IAppointment>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -274,7 +275,6 @@ export type ResolversTypes = ResolversObject<{
   Patient: ResolverTypeWrapper<IPatient>;
   Query: ResolverTypeWrapper<{}>;
   Review: ResolverTypeWrapper<IReview>;
-  Int: ResolverTypeWrapper<Scalars['Int']>;
   Service: ResolverTypeWrapper<IService>;
   Time: ResolverTypeWrapper<Scalars['Time']>;
   TimeInterval: ResolverTypeWrapper<Scalars['TimeInterval']>;
@@ -288,6 +288,7 @@ export type ResolversTypes = ResolversObject<{
 export type ResolversParentTypes = ResolversObject<{
   Address: Address;
   String: Scalars['String'];
+  Int: Scalars['Int'];
   Appointment: IAppointment;
   ID: Scalars['ID'];
   Boolean: Scalars['Boolean'];
@@ -303,7 +304,6 @@ export type ResolversParentTypes = ResolversObject<{
   Patient: IPatient;
   Query: {};
   Review: IReview;
-  Int: Scalars['Int'];
   Service: IService;
   Time: Scalars['Time'];
   TimeInterval: Scalars['TimeInterval'];
@@ -316,9 +316,9 @@ export type ActivityLevelResolvers = EnumResolverSignature<{ VeryHigh: any, High
 
 export type AddressResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Address'] = ResolversParentTypes['Address']> = ResolversObject<{
   streetName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  streetNumber: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  streetNumber: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   city: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  zipCode: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  zipCode: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -357,7 +357,7 @@ export type DoctorResolvers<ContextType = Context, ParentType extends ResolversP
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   firstname: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastname: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  specialty: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  specialities: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
   address: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
   offeredSlots: Resolver<ReadonlyArray<ResolversTypes['OfferedSlot']>, ParentType, ContextType>;
   rating: Resolver<ResolversTypes['Float'], ParentType, ContextType>;

@@ -6,6 +6,7 @@ import Address from './address';
 import Appointment from './appointment';
 import AppointmentTime from './appointmentTime';
 import Checkup from './checkup';
+import Doctor from './doctor';
 import Gender from './gender';
 import Insurance from './insurance';
 import Node from './node';
@@ -19,6 +20,7 @@ const resolvers: Resolvers = {
     Appointment,
     AppointmentTime,
     Checkup,
+    Doctor,
     Gender,
     Insurance,
     Node,
