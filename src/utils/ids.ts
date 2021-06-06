@@ -10,6 +10,13 @@ export type NodeType = NonNullable<Resolved<ReturnType<NodeResolvers['__resolveT
 type NodeTypesTuple = TuplifyUnion<NodeType>
 
 const nodeTypesTuple: NodeTypesTuple = [
+    'Appointment',
+    'Checkup',
+    'Doctor',
+    'Followup',
+    'Patient',
+    'Review',
+    'Service',
     'User',
 ];
 
