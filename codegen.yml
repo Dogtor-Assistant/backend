@@ -15,3 +15,12 @@ generates:
       nonOptionalTypename: true
       contextType: context#Context
       useIndexSignature: true
+      mappers:
+        User: models/User#IUser
+        Doctor: models/Doctor#IDoctor
+        Patient: models/Patient#IPatient
+        Appointment: models/Appointment#IAppointment
+        Checkup: models/Checkup#ICheckup
+        Followup: models/Followup#IFollowup
+        Review: models/Review#IReview
+        Service: models/Service#IService
