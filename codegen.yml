@@ -15,6 +15,7 @@ generates:
       skipTypename: true
       contextType: context#Context
       useIndexSignature: true
+      mapperTypeSuffix: Model
       mappers:
         User: models/User#IUser
         Doctor: models/Doctor#IDoctor
