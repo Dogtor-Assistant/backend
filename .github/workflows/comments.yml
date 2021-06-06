@@ -92,5 +92,6 @@ jobs:
         if: steps.install.outputs.triggered == 'true' || steps.lint.outputs.triggered == 'true' || steps.codegen.outputs.triggered == 'true'
         uses: actions-js/push@master
         with:
+          message: 'Changes from automated script: ${{ github.event.comment.body }}'
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ fromJson(steps.get_pull_request_ref.outputs.data).head.ref }}
