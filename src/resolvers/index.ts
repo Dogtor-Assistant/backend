@@ -15,6 +15,7 @@ import OfferedSlot from './offeredSlot';
 import Patient from './patient';
 import Query from './query';
 import Review from './review';
+import Service from './service';
 import User from './user';
 import Weekday from './weekday';
 
@@ -33,6 +34,7 @@ const resolvers: Resolvers = {
     Patient,
     Query,
     Review,
+    Service,
     User,
     Weekday,
 };
