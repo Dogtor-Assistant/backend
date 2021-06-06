@@ -16,7 +16,7 @@ const Followup: FollowupResolvers = {
             throw 'Uninitialized Value!';
         }
 
-        return buildId('Doctor', id);
+        return buildId('Followup', id);
     },
     isRead({ isRead }) {
         return isRead;
