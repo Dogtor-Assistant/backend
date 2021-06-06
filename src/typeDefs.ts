@@ -30,12 +30,12 @@ export const typeDefs = gql`
         Private
     }
 
-    type User implements Node {
-        id: ID!
-        firstname: String!
-        lastname: String!
-        doctorProfile: Doctor
-        patientProfile: Patient
+    enum Gender {
+        Male
+        Female
+        TransgenderMale
+        TransgenderFemale
+        NonBinary
     }
 
     enum Weekday {
@@ -48,31 +48,6 @@ export const typeDefs = gql`
         Friday
     }
 
-    type OfferedSlot {
-        day: Weekday!
-        start: Time!
-        end: Time!
-    }
-
-    type Doctor implements Node {
-        id: ID!
-        
-        firstname: String!
-        lastname: String!
-
-        specialty: String!
-
-        address: Address!
-        offeredSlots: [OfferedSlot!]!
-
-        rating: Float!
-
-        topServices: [Service!]!
-        topReviews: [Review!]!
-        
-        webpage: URL
-    }
-
     enum ActivityLevel {
         VeryHigh
         High
@@ -81,31 +56,11 @@ export const typeDefs = gql`
         VeryLow
     }
 
-    enum Gender {
-        Male
-        Female
-        TransgenderMale
-        TransgenderFemale
-        NonBinary
-    }
-
-    type Patient implements Node {
-        id: ID!
-        
-        firstname: String!
-        lastname: String!
-
-        activityLevel: ActivityLevel
-        gender: Gender
-        height: Length
-        weight: Weight
-
-        medications: [String!]!
-        medicalConditions: [String!]!
-        allergies: [String!]!
-        surgeries: [String!]!
-        
-        isSmoker: Boolean
+    type Address {
+        streetName: String!
+        streetNumber: String!
+        city: String!
+        zipCode: String!
     }
 
     type AppointmentTime {
@@ -128,18 +83,30 @@ export const typeDefs = gql`
         selectedServices: [Service!]!
     }
 
-    type Address {
-        streetName: String!
-        streetNumber: String!
-        city: String!
-        zipCode: String!
-    }
-
     type Checkup implements Node {
         id: ID!
         isRead: Boolean!
         services: [Service!]!
         suggestedDate: DateTime!
+    }
+
+    type Doctor implements Node {
+        id: ID!
+        
+        firstname: String!
+        lastname: String!
+
+        specialty: String!
+
+        address: Address!
+        offeredSlots: [OfferedSlot!]!
+
+        rating: Float!
+
+        topServices: [Service!]!
+        topReviews: [Review!]!
+        
+        webpage: URL
     }
 
     type Followup implements Node {
@@ -149,6 +116,31 @@ export const typeDefs = gql`
         doctor: Doctor!
         services: [Service!]!
         suggestedDate: DateTime!
+    }
+
+    type OfferedSlot {
+        day: Weekday!
+        start: Time!
+        end: Time!
+    }
+
+    type Patient implements Node {
+        id: ID!
+        
+        firstname: String!
+        lastname: String!
+
+        activityLevel: ActivityLevel
+        gender: Gender
+        height: Length
+        weight: Weight
+
+        medications: [String!]!
+        medicalConditions: [String!]!
+        allergies: [String!]!
+        surgeries: [String!]!
+        
+        isSmoker: Boolean
     }
 
     type Review implements Node {
@@ -164,6 +156,14 @@ export const typeDefs = gql`
 
     type Service implements Node {
         id: ID!
+    }
+
+    type User implements Node {
+        id: ID!
+        firstname: String!
+        lastname: String!
+        doctorProfile: Doctor
+        patientProfile: Patient
     }
 
     type Query {
