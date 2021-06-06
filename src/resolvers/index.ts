@@ -12,6 +12,7 @@ import Gender from './gender';
 import Insurance from './insurance';
 import Node from './node';
 import OfferedSlot from './offeredSlot';
+import Patient from './patient';
 import Query from './query';
 import User from './user';
 import Weekday from './weekday';
@@ -28,6 +29,7 @@ const resolvers: Resolvers = {
     Insurance,
     Node,
     OfferedSlot,
+    Patient,
     Query,
     User,
     Weekday,
