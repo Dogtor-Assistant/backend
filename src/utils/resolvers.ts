@@ -1,9 +1,9 @@
 /* eslint-disable */
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import type { IUser } from 'models/User';
-import type { IDoctor } from 'models/Doctor';
-import type { IPatient } from 'models/Patient';
-import type { IAppointment } from 'models/Appointment';
+import type { IDoctor, Day } from 'models/Doctor';
+import type { IPatient, Gender, ActivityLevel } from 'models/Patient';
+import type { Insurance, IAppointment } from 'models/Appointment';
 import type { ICheckup } from 'models/Checkup';
 import type { IFollowup } from 'models/Followup';
 import type { IReview } from 'models/Review';
@@ -13,6 +13,8 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+export type EnumResolverSignature<T, AllowedValues = any> = { [key in keyof T]?: AllowedValues };
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -38,7 +40,6 @@ export enum ActivityLevel {
 }
 
 export type Address = {
-  readonly __typename: 'Address';
   readonly streetName: Scalars['String'];
   readonly streetNumber: Scalars['String'];
   readonly city: Scalars['String'];
@@ -46,7 +47,6 @@ export type Address = {
 };
 
 export type Appointment = Node & {
-  readonly __typename: 'Appointment';
   readonly id: Scalars['ID'];
   readonly patient: Patient;
   readonly doctor: Doctor;
@@ -59,13 +59,11 @@ export type Appointment = Node & {
 };
 
 export type AppointmentTime = {
-  readonly __typename: 'AppointmentTime';
   readonly start: Maybe<Scalars['DateTime']>;
   readonly duration: Maybe<Scalars['TimeInterval']>;
 };
 
 export type Checkup = Node & {
-  readonly __typename: 'Checkup';
   readonly id: Scalars['ID'];
   readonly isRead: Scalars['Boolean'];
   readonly services: ReadonlyArray<Service>;
@@ -74,7 +72,6 @@ export type Checkup = Node & {
 
 
 export type Doctor = Node & {
-  readonly __typename: 'Doctor';
   readonly id: Scalars['ID'];
   readonly firstname: Scalars['String'];
   readonly lastname: Scalars['String'];
@@ -88,7 +85,6 @@ export type Doctor = Node & {
 };
 
 export type Followup = Node & {
-  readonly __typename: 'Followup';
   readonly id: Scalars['ID'];
   readonly isRead: Scalars['Boolean'];
   readonly doctor: Doctor;
@@ -115,14 +111,12 @@ export type Node = {
 };
 
 export type OfferedSlot = {
-  readonly __typename: 'OfferedSlot';
   readonly day: Weekday;
   readonly start: Scalars['Time'];
   readonly end: Scalars['Time'];
 };
 
 export type Patient = Node & {
-  readonly __typename: 'Patient';
   readonly id: Scalars['ID'];
   readonly firstname: Scalars['String'];
   readonly lastname: Scalars['String'];
@@ -138,7 +132,6 @@ export type Patient = Node & {
 };
 
 export type Query = {
-  readonly __typename: 'Query';
   readonly greeting: Scalars['String'];
   readonly me: Maybe<User>;
   readonly node: Maybe<Node>;
@@ -150,7 +143,6 @@ export type QueryNodeArgs = {
 };
 
 export type Review = Node & {
-  readonly __typename: 'Review';
   readonly id: Scalars['ID'];
   readonly rating: Scalars['Int'];
   readonly doctor: Doctor;
@@ -159,7 +151,6 @@ export type Review = Node & {
 };
 
 export type Service = Node & {
-  readonly __typename: 'Service';
   readonly id: Scalars['ID'];
 };
 
@@ -167,7 +158,6 @@ export type Service = Node & {
 
 
 export type User = Node & {
-  readonly __typename: 'User';
   readonly id: Scalars['ID'];
   readonly firstname: Scalars['String'];
   readonly lastname: Scalars['String'];
@@ -264,7 +254,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
-  ActivityLevel: ActivityLevel;
+  ActivityLevel: ResolverTypeWrapper<ActivityLevel>;
   Address: ResolverTypeWrapper<Address>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Appointment: ResolverTypeWrapper<IAppointment>;
@@ -276,11 +266,11 @@ export type ResolversTypes = ResolversObject<{
   Doctor: ResolverTypeWrapper<IDoctor>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   Followup: ResolverTypeWrapper<IFollowup>;
-  Gender: Gender;
-  Insurance: Insurance;
+  Gender: ResolverTypeWrapper<Gender>;
+  Insurance: ResolverTypeWrapper<Insurance>;
   Length: ResolverTypeWrapper<Scalars['Length']>;
   Node: ResolversTypes['Appointment'] | ResolversTypes['Checkup'] | ResolversTypes['Doctor'] | ResolversTypes['Followup'] | ResolversTypes['Patient'] | ResolversTypes['Review'] | ResolversTypes['Service'] | ResolversTypes['User'];
-  OfferedSlot: ResolverTypeWrapper<OfferedSlot>;
+  OfferedSlot: ResolverTypeWrapper<Omit<OfferedSlot, 'day'> & { day: ResolversTypes['Weekday'] }>;
   Patient: ResolverTypeWrapper<IPatient>;
   Query: ResolverTypeWrapper<{}>;
   Review: ResolverTypeWrapper<IReview>;
@@ -290,7 +280,7 @@ export type ResolversTypes = ResolversObject<{
   TimeInterval: ResolverTypeWrapper<Scalars['TimeInterval']>;
   URL: ResolverTypeWrapper<Scalars['URL']>;
   User: ResolverTypeWrapper<IUser>;
-  Weekday: Weekday;
+  Weekday: ResolverTypeWrapper<Day>;
   Weight: ResolverTypeWrapper<Scalars['Weight']>;
 }>;
 
@@ -309,7 +299,7 @@ export type ResolversParentTypes = ResolversObject<{
   Followup: IFollowup;
   Length: Scalars['Length'];
   Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
-  OfferedSlot: OfferedSlot;
+  OfferedSlot: Omit<OfferedSlot, 'day'> & { day: ResolversParentTypes['Weekday'] };
   Patient: IPatient;
   Query: {};
   Review: IReview;
@@ -321,6 +311,8 @@ export type ResolversParentTypes = ResolversObject<{
   User: IUser;
   Weight: Scalars['Weight'];
 }>;
+
+export type ActivityLevelResolvers = EnumResolverSignature<{ VeryHigh: any, High: any, Medium: any, Low: any, VeryLow: any }, ResolversTypes['ActivityLevel']>;
 
 export type AddressResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Address'] = ResolversParentTypes['Address']> = ResolversObject<{
   streetName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -383,6 +375,10 @@ export type FollowupResolvers<ContextType = Context, ParentType extends Resolver
   suggestedDate: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
+
+export type GenderResolvers = EnumResolverSignature<{ Male: any, Female: any, TransgenderMale: any, TransgenderFemale: any, NonBinary: any }, ResolversTypes['Gender']>;
+
+export type InsuranceResolvers = EnumResolverSignature<{ Public: any, Private: any }, ResolversTypes['Insurance']>;
 
 export interface LengthScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Length'], any> {
   name: 'Length';
@@ -456,11 +452,14 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type WeekdayResolvers = EnumResolverSignature<{ Monday: any, Tuesday: any, Wednesday: any, Thursday: any, Friday: any, Saturday: any }, ResolversTypes['Weekday']>;
+
 export interface WeightScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Weight'], any> {
   name: 'Weight';
 }
 
 export type Resolvers<ContextType = Context> = ResolversObject<{
+  ActivityLevel: ActivityLevelResolvers;
   Address: AddressResolvers<ContextType>;
   Appointment: AppointmentResolvers<ContextType>;
   AppointmentTime: AppointmentTimeResolvers<ContextType>;
@@ -468,6 +467,8 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   DateTime: GraphQLScalarType;
   Doctor: DoctorResolvers<ContextType>;
   Followup: FollowupResolvers<ContextType>;
+  Gender: GenderResolvers;
+  Insurance: InsuranceResolvers;
   Length: GraphQLScalarType;
   Node: NodeResolvers<ContextType>;
   OfferedSlot: OfferedSlotResolvers<ContextType>;
@@ -479,6 +480,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   TimeInterval: GraphQLScalarType;
   URL: GraphQLScalarType;
   User: UserResolvers<ContextType>;
+  Weekday: WeekdayResolvers;
   Weight: GraphQLScalarType;
 }>;
 

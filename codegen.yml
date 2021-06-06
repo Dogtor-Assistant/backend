@@ -12,13 +12,17 @@ generates:
       immutableTypes: true
       avoidOptionals: true
       onlyResolveTypeForInterfaces: true
-      nonOptionalTypename: true
+      skipTypename: true
       contextType: context#Context
       useIndexSignature: true
       mappers:
         User: models/User#IUser
         Doctor: models/Doctor#IDoctor
         Patient: models/Patient#IPatient
+        Gender: models/Patient#Gender
+        Weekday: models/Doctor#Day
+        ActivityLevel: models/Patient#ActivityLevel
+        Insurance: models/Appointment#Insurance
         Appointment: models/Appointment#IAppointment
         Checkup: models/Checkup#ICheckup
         Followup: models/Followup#IFollowup

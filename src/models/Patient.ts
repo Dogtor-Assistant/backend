@@ -51,7 +51,7 @@ const PatientSchema: Schema = new Schema({
         type: Date,
     },
     gender: {
-        enum: [0, 1],
+        enum: [0, 1, 2, 3, 4],
         type: Number,
     },
     height: {
@@ -98,6 +98,9 @@ export enum ActivityLevel {
 }
 
 export enum Gender {
+    NON_BINARY = 4,
+    TRANSGENDER_MALE = 3,
+    TRANSGENDER_FEMALE = 2,
     MALE = 1,
     FEMALE = 0
 }
