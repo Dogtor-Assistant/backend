@@ -1,6 +1,10 @@
+import type { IUser } from '../models/User';
 import type { NextFunction } from 'express';
 import type { Request, Response } from 'utils/types';
 
+import User from '../models/User';
+
+import bcrypt from 'bcrypt';
 import { urlencoded } from 'body-parser';
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
@@ -97,22 +101,44 @@ export const router = (() => {
                 const { username, password } = body;
 
                 // TODO: implement a database check
-                if (username === 'nerdsupremacist' && password === 'password') {
-                    response.send(
-                        createAuthenticatedToken('12345'),
-                    );
-
-                    return;
-                }
-
-                response.status(401).send(
-                    {
-                        'error' : 'invalid_grant',
-                        'error_description' : 'invalid username or password',
-                    },
-                );
-
-                return;
+                User.findOne({ 'email': username }, async function(err: Record<string, unknown>, user: IUser) {
+                    // If internal error occurs send respond 500
+                    if (err) {
+                        response.status(500).send(
+                            {
+                                'error' : 'invalid_request',
+                                'error_description' : 'Error while trying to find User document',
+                            },
+                        );
+                        return;
+                    }
+        
+                    // If user doesn't exist
+                    if (!user) {
+                        response.status(401).send(
+                            {
+                                'error' : 'invalid_grant',
+                                'error_description' : 'This email is not registered',
+                            },
+                        );
+                        return;
+                    }
+        
+                    const match = await bcrypt.compare(password, user.password);
+                    // If password is incorrect
+                    if (!match) {
+                        response.status(401).send(
+                            {
+                                'error' : 'invalid_grant',
+                                'error_description' : 'The password is incorrect',
+                            },
+                        );
+                        return;
+                    }
+                    const user_id = user._id !== undefined ? user._id.toString() : '';
+                    response.send(createAuthenticatedToken(user_id));
+                });
+                break;
             }
     
             case 'refresh_token': {
