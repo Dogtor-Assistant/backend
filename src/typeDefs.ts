@@ -9,7 +9,7 @@ export const typeDefs = gql`
     }
 
     # Duration of time encoded as a floating point number of seconds
-    scalar TimeInterval
+    scalar Duration
     
     # Date and time of an event encoded as an ISO 8601 string
     scalar DateTime
@@ -45,7 +45,7 @@ export const typeDefs = gql`
         Thursday
         Friday
         Saturday
-        Friday
+        Sunday
     }
 
     enum ActivityLevel {
@@ -65,7 +65,7 @@ export const typeDefs = gql`
 
     type AppointmentTime {
         start: DateTime
-        duration: TimeInterval
+        duration: Duration
     }
 
     type Appointment implements Node {

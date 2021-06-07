@@ -16,6 +16,13 @@ generates:
       contextType: context#Context
       useIndexSignature: true
       mapperTypeSuffix: Model
+      scalars:
+        Duration: number
+        DateTime: Date
+        Time: string
+        URL: string
+        Length: number
+        Weight: number
       mappers:
         User: models/User#IUser
         Doctor: models/Doctor#IDoctor

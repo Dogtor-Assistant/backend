@@ -23,12 +23,12 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  DateTime: any;
-  Length: any;
-  Time: any;
-  TimeInterval: any;
-  URL: any;
-  Weight: any;
+  DateTime: Date;
+  Duration: number;
+  Length: number;
+  Time: string;
+  URL: string;
+  Weight: number;
 };
 
 export enum ActivityLevel {
@@ -60,7 +60,7 @@ export type Appointment = Node & {
 
 export type AppointmentTime = {
   readonly start: Maybe<Scalars['DateTime']>;
-  readonly duration: Maybe<Scalars['TimeInterval']>;
+  readonly duration: Maybe<Scalars['Duration']>;
 };
 
 export type Checkup = Node & {
@@ -83,6 +83,7 @@ export type Doctor = Node & {
   readonly topReviews: ReadonlyArray<Review>;
   readonly webpage: Maybe<Scalars['URL']>;
 };
+
 
 export type Followup = Node & {
   readonly id: Scalars['ID'];
@@ -156,7 +157,6 @@ export type Service = Node & {
 
 
 
-
 export type User = Node & {
   readonly id: Scalars['ID'];
   readonly firstname: Scalars['String'];
@@ -171,7 +171,8 @@ export enum Weekday {
   Wednesday = 'Wednesday',
   Thursday = 'Thursday',
   Friday = 'Friday',
-  Saturday = 'Saturday'
+  Saturday = 'Saturday',
+  Sunday = 'Sunday'
 }
 
 
@@ -266,6 +267,7 @@ export type ResolversTypes = ResolversObject<{
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   Doctor: ResolverTypeWrapper<IDoctorModel>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
+  Duration: ResolverTypeWrapper<Scalars['Duration']>;
   Followup: ResolverTypeWrapper<IFollowupModel>;
   Gender: ResolverTypeWrapper<GenderModel>;
   Insurance: ResolverTypeWrapper<InsuranceModel>;
@@ -277,7 +279,6 @@ export type ResolversTypes = ResolversObject<{
   Review: ResolverTypeWrapper<IReviewModel>;
   Service: ResolverTypeWrapper<IServiceModel>;
   Time: ResolverTypeWrapper<Scalars['Time']>;
-  TimeInterval: ResolverTypeWrapper<Scalars['TimeInterval']>;
   URL: ResolverTypeWrapper<Scalars['URL']>;
   User: ResolverTypeWrapper<IUserModel>;
   Weekday: ResolverTypeWrapper<DayModel>;
@@ -297,6 +298,7 @@ export type ResolversParentTypes = ResolversObject<{
   DateTime: Scalars['DateTime'];
   Doctor: IDoctorModel;
   Float: Scalars['Float'];
+  Duration: Scalars['Duration'];
   Followup: IFollowupModel;
   Length: Scalars['Length'];
   Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
@@ -306,7 +308,6 @@ export type ResolversParentTypes = ResolversObject<{
   Review: IReviewModel;
   Service: IServiceModel;
   Time: Scalars['Time'];
-  TimeInterval: Scalars['TimeInterval'];
   URL: Scalars['URL'];
   User: IUserModel;
   Weight: Scalars['Weight'];
@@ -337,7 +338,7 @@ export type AppointmentResolvers<ContextType = Context, ParentType extends Resol
 
 export type AppointmentTimeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['AppointmentTime'] = ResolversParentTypes['AppointmentTime']> = ResolversObject<{
   start: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  duration: Resolver<Maybe<ResolversTypes['TimeInterval']>, ParentType, ContextType>;
+  duration: Resolver<Maybe<ResolversTypes['Duration']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -366,6 +367,10 @@ export type DoctorResolvers<ContextType = Context, ParentType extends ResolversP
   webpage: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
+
+export interface DurationScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Duration'], any> {
+  name: 'Duration';
+}
 
 export type FollowupResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Followup'] = ResolversParentTypes['Followup']> = ResolversObject<{
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -435,10 +440,6 @@ export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Time';
 }
 
-export interface TimeIntervalScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['TimeInterval'], any> {
-  name: 'TimeInterval';
-}
-
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
   name: 'URL';
 }
@@ -452,7 +453,7 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type WeekdayResolvers = EnumResolverSignature<{ Monday: any, Tuesday: any, Wednesday: any, Thursday: any, Friday: any, Saturday: any }, ResolversTypes['Weekday']>;
+export type WeekdayResolvers = EnumResolverSignature<{ Monday: any, Tuesday: any, Wednesday: any, Thursday: any, Friday: any, Saturday: any, Sunday: any }, ResolversTypes['Weekday']>;
 
 export interface WeightScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Weight'], any> {
   name: 'Weight';
@@ -466,6 +467,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Checkup: CheckupResolvers<ContextType>;
   DateTime: GraphQLScalarType;
   Doctor: DoctorResolvers<ContextType>;
+  Duration: GraphQLScalarType;
   Followup: FollowupResolvers<ContextType>;
   Gender: GenderResolvers;
   Insurance: InsuranceResolvers;
@@ -477,7 +479,6 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Review: ReviewResolvers<ContextType>;
   Service: ServiceResolvers<ContextType>;
   Time: GraphQLScalarType;
-  TimeInterval: GraphQLScalarType;
   URL: GraphQLScalarType;
   User: UserResolvers<ContextType>;
   Weekday: WeekdayResolvers;

@@ -21,7 +21,7 @@ const Patient: PatientResolvers = {
         return gender ?? null;
     },
     height({ height }) {
-        return height;
+        return height ?? null;
     },
     id({ _id: id }) {
         if (id == null) {
@@ -50,7 +50,7 @@ const Patient: PatientResolvers = {
         return surgeries ?? [];
     },
     weight({ weight }) {
-        return weight;
+        return weight ?? null;
     },
 };
 

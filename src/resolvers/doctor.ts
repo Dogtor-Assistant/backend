@@ -51,9 +51,9 @@ const Doctor: DoctorResolvers = {
     topServices() {
         throw 'Not Implemented';
     },
-    
+
     webpage({ webpage }) {
-        return webpage;
+        return webpage ?? null;
     },
 };
 

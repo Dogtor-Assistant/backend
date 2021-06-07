@@ -10,6 +10,7 @@ import Doctor from './doctor';
 import Followup from './followup';
 import Gender from './gender';
 import Insurance from './insurance';
+import Length from './length';
 import Node from './node';
 import OfferedSlot from './offeredSlot';
 import Patient from './patient';
@@ -18,6 +19,14 @@ import Review from './review';
 import Service from './service';
 import User from './user';
 import Weekday from './weekday';
+import Weight from './weight';
+
+import {
+    GraphQLDateTime as DateTime,
+    GraphQLDuration as Duration,
+    GraphQLTime as Time,
+    GraphQLURL as URL,
+} from 'graphql-scalars';
 
 const resolvers: Resolvers = {
     ActivityLevel,
@@ -25,18 +34,24 @@ const resolvers: Resolvers = {
     Appointment,
     AppointmentTime,
     Checkup,
+    DateTime,
     Doctor,
+    Duration,
     Followup,
     Gender,
     Insurance,
+    Length,
     Node,
     OfferedSlot,
     Patient,
     Query,
     Review,
     Service,
+    Time,
+    URL,
     User,
     Weekday,
+    Weight,
 };
 
 export default resolvers;

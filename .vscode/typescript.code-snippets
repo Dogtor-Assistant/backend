@@ -12,4 +12,22 @@
         ],
         "description": "Creates a Component"
     },
+    "Scalar": {
+        "prefix": "scal",
+        "body": [
+            "import type { ${TM_FILENAME_BASE/.*/${0:/capitalize}/}ScalarConfig } from '@resolvers';",
+            "",
+            "import { GraphQLScalarType } from 'graphql';",
+            "",
+            "const config: ${TM_FILENAME_BASE/.*/${0:/capitalize}/}ScalarConfig = {",
+            "    name: '${TM_FILENAME_BASE/.*/${0:/capitalize}/}',",
+            "    $0",
+            "}",
+            "",
+            "const ${TM_FILENAME_BASE/.*/${0:/capitalize}/} = new GraphQLScalarType(config)",
+            "",
+            "export default ${TM_FILENAME_BASE/.*/${0:/capitalize}/};"
+        ],
+        "description": "Creates a Component"
+    },
 }
