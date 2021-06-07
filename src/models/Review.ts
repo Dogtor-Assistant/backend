@@ -18,16 +18,12 @@ const MiniPatientSchema: Schema = new Schema({
     _id: false,
 });
 
-interface IMiniPatient extends Document {
+export interface IMiniPatient extends Document {
     patientId: IPatient['_id'],
     patientName: string,
 }
 
 const ReviewSchema: Schema = new Schema({
-    __typename: {
-        default: 'Review',
-        type: String,
-    },
     content: {
         type: String,
     },
@@ -59,7 +55,6 @@ export enum Rating {
 }
 
 export interface IReview extends Document<string> {
-    __typename: 'Review',
     patientRef: IMiniPatient,
     doctorRef: IDoctor['_id'],
     rating: Rating,

@@ -47,7 +47,7 @@ const MiniPatientSchema: Schema = new Schema({
     _id: false,
 });
 
-interface IMiniPatient extends Document {
+export interface IMiniPatient extends Document {
     patientId: IPatient['_id'],
     patientName: string,
     patientInsurance: IPatient['insurance'],

@@ -1,34 +1,29 @@
 import type { ReviewResolvers } from '@resolvers';
 
-import Doctor from 'models/Doctor';
-import Patient from 'models/Patient';
-import { buildId } from 'utils/ids';
+import { Doctor } from 'shims/doctor';
+import { Patient } from 'shims/patient';
 
 const Review: ReviewResolvers = {
-    content({ content }) {
+    async content(review) {
+        const { content } = await review.full();
         return content ?? null;
     },
-    async doctor({ doctorRef }) {
-        const doctor = await Doctor.findById(doctorRef);
-        if (doctor == null) {
-            throw 'Doctor not found';
+    async doctor(review) {
+        const { doctorRef } = await review.full();
+        if (doctorRef == null) {
+            throw 'Uninitialized Doctor';
         }
-        return doctor;
+        return new Doctor(doctorRef);
     },
-    id({ _id: id }) {
-        if (id == null) {
-            throw 'Uninitialized Value!';
-        }
-        return buildId('Review', id);
+    id(review) {
+        return review.id();
     },
-    async patient({ patientRef }) {
-        const patient = await Patient.findById(patientRef);
-        if (patient == null) {
-            throw 'Patient not found!';
-        }
-        return patient;
+    async patient(review) {
+        const { patientRef } = await review.full();
+        return new Patient(patientRef);
     },
-    rating({ rating }) {
+    async rating(review) {
+        const { rating } = await review.full();
         return rating;
     },
 };

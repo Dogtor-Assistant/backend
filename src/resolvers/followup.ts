@@ -1,15 +1,12 @@
 import type { FollowupResolvers } from '@resolvers';
 
-import Doctor from 'models/Doctor';
+import { Doctor } from 'shims/doctor';
+import { Service } from 'shims/service';
 import { buildId } from 'utils/ids';
 
 const Followup: FollowupResolvers = {
-    async doctor({ doctorRef }) {
-        const doctor = await Doctor.findById(doctorRef);
-        if (doctor == null) {
-            throw 'Failed to find doctor';
-        }
-        return doctor;
+    doctor({ doctorRef }) {
+        return new Doctor(doctorRef);
     },
     id({ _id: id }) {
         if (id == null) {
@@ -21,8 +18,8 @@ const Followup: FollowupResolvers = {
     isRead({ isRead }) {
         return isRead;
     },
-    services() {
-        throw 'Not Implemented';
+    services({ services }) {
+        return services.map(service => new Service(service)) ?? [];
     },
     suggestedDate({ suggestedDate }) {
         return suggestedDate;

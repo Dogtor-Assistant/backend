@@ -1,55 +1,51 @@
 import type { PatientResolvers } from '@resolvers';
 
-import User from 'models/User';
-import { buildId } from 'utils/ids';
-
 const Patient: PatientResolvers = {
-    activityLevel({ activityLevel }) {
+    async activityLevel(patient) {
+        const { activityLevel } = await patient.full();
         return activityLevel ?? null;
     },
-    allergies({ allergies }) {
+    async allergies(patient) {
+        const { allergies } = await patient.full();
         return allergies ?? [];
     },
-    async firstname({ _id: id }) {
-        const user = await User.findOne({ patientRef: id });
-        if (user == null) {
-            throw 'Failed to find user for doctor';
-        }
-        return user.firstName;
+    async firstname(patient) {
+        const { firstName } = await patient.user();
+        return firstName ?? null;
     },
-    gender({ gender }) {
+    async gender(patient) {
+        const { gender } = await patient.full();
         return gender ?? null;
     },
-    height({ height }) {
+    async height(patient) {
+        const { height } = await patient.full();
         return height ?? null;
     },
-    id({ _id: id }) {
-        if (id == null) {
-            throw 'Uninitialized Value!';
-        }
-
-        return buildId('Patient', id);
+    id(patient) {
+        return patient.id();
     },
-    isSmoker({ smoker }) {
+    async isSmoker(patient) {
+        const { smoker } = await patient.full();
         return smoker ?? null;
     },
-    async lastname({ _id: id }) {
-        const user = await User.findOne({ patientRef: id });
-        if (user == null) {
-            throw 'Failed to find user for doctor';
-        }
-        return user.lastName;
+    async lastname(patient) {
+        const { firstName } = await patient.user();
+        return firstName ?? null;
     },
-    medicalConditions({ medicalConditions }) {
+    async medicalConditions(patient) {
+        const { medicalConditions } = await patient.full();
         return medicalConditions ?? [];
     },
-    medications({ medications }) {
+    async medications(patient) {
+        const { medications } = await patient.full();
         return medications ?? [];
     },
-    surgeries({ surgeries }) {
+    async surgeries(patient) {
+        const { surgeries } = await patient.full();
         return surgeries ?? [];
     },
-    weight({ weight }) {
+    async weight(patient) {
+        const { weight } = await patient.full();
         return weight ?? null;
     },
 };

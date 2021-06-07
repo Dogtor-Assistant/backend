@@ -19,7 +19,7 @@ const MiniPatientSchema: Schema = new Schema({
     _id: false,
 });
 
-interface IMiniPatient extends Document {
+export interface IMiniPatient extends Document {
     patientId: IPatient['_id'],
     patientName: string,
 }
@@ -38,7 +38,7 @@ const MiniDoctorSchema: Schema = new Schema({
     _id: false,
 });
 
-interface IMiniDoctor extends Document {
+export interface IMiniDoctor extends Document {
     doctorId: IDoctor['_id'],
     doctorName: string,
 }
@@ -57,7 +57,7 @@ const MiniServiceSchema: Schema = new Schema({
     _id: false,
 });
 
-interface IMiniService extends Document {
+export interface IMiniService extends Document {
     serviceId: IService['_id'],
     serviceName: IService['name'],
 }

@@ -1,7 +1,8 @@
 import type { AppointmentResolvers } from '@resolvers';
 
-import Doctor from 'models/Doctor';
-import Patient from 'models/Patient';
+import { Doctor } from 'shims/doctor';
+import { Patient } from 'shims/patient';
+import { Service } from 'shims/service';
 import { buildId } from 'utils/ids';
 
 const Appointment: AppointmentResolvers = {
@@ -14,12 +15,8 @@ const Appointment: AppointmentResolvers = {
             start: actualTime,
         };
     },
-    async doctor({ doctorRef }) {
-        const doctor = await Doctor.findById(doctorRef);
-        if (doctor == null) {
-            throw 'Doctor not found';
-        }
-        return doctor;
+    doctor({ doctorRef }) {
+        return new Doctor(doctorRef);
     },
     expectedTime({ expectedDuration, expectedTime }) {
         return {
@@ -39,15 +36,11 @@ const Appointment: AppointmentResolvers = {
     notes({ patientNotes }) {
         return patientNotes ?? null;
     },
-    async patient({ patientRef }) {
-        const patient = await Patient.findById(patientRef);
-        if (patient == null) {
-            throw 'Patient not found!';
-        }
-        return patient;
+    patient({ patientRef }) {
+        return new Patient(patientRef);
     },
-    async selectedServices() {
-        throw 'Not implemented';
+    selectedServices({ selectedServices }) {
+        return selectedServices?.map(service => new Service(service)) ?? [];
     },
     sharedData({ sharedData }) {
         return sharedData;

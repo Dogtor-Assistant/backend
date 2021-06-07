@@ -1,33 +1,27 @@
 import type { UserResolvers } from '@resolvers';
 
-import Doctor from 'models/Doctor';
-import Patient from 'models/Patient';
-import { buildId } from 'utils/ids';
+import { Doctor } from 'shims/doctor';
+import { Patient } from 'shims/patient';
 
 const User: UserResolvers = {
-    async doctorProfile({ doctorRef }) {
-        if (doctorRef == null) {
-            return null;
-        }
-        return await Doctor.findById(doctorRef);
+    async doctorProfile(user) {
+        const { doctorRef } = await user.full();
+        return doctorRef != null ? new Doctor(doctorRef) : null;
     },
-    firstname({ firstName }) {
+    async firstname(user) {
+        const { firstName } = await user.full();
         return firstName;
     },
-    id({ _id: id }) {
-        if (id == null) {
-            throw 'Uninitialized Value!';
-        }
-        return buildId('User', id);
+    id(user) {
+        return user.id();
     },
-    lastname({ lastName }) {
+    async lastname(user) {
+        const { lastName } = await user.full();
         return lastName;
     },
-    async patientProfile({ patientRef }) {
-        if (patientRef == null) {
-            return null;
-        }
-        return await Patient.findById(patientRef);
+    async patientProfile(user) {
+        const { patientRef } = await user.full();
+        return patientRef != null ? new Patient(patientRef) : null;
     },
 };
 

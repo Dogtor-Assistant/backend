@@ -1,5 +1,6 @@
 import type { CheckupResolvers } from '@resolvers';
 
+import { Service } from 'shims/service';
 import { buildId } from 'utils/ids';
 
 const Checkup: CheckupResolvers = {
@@ -13,8 +14,8 @@ const Checkup: CheckupResolvers = {
     isRead({ isRead }) {
         return isRead;
     },
-    services() {
-        throw 'Not Implemented';
+    services({ services }) {
+        return services?.map(service => new Service(service)) ?? [];
     },
     suggestedDate({ suggestedDate }) {
         return suggestedDate;

@@ -46,7 +46,7 @@ const MiniServiceSchema: Schema = new Schema({
     _id: false,
 });
 
-interface IMiniService extends Document {
+export interface IMiniService extends Document {
     serviceId: IService['_id'],
     serviceName: IService['name'],
 }
@@ -70,7 +70,7 @@ const MiniReviewSchema: Schema = new Schema({
     _id: false,
 });
 
-interface IMiniReview extends Document {
+export interface IMiniReview extends Document {
     reviewContent: IReview['content'],
     reviewId: IReview['_id'],
     reviewRating: IReview['rating'],
@@ -111,10 +111,6 @@ export enum Day {
 }
 
 const DoctorSchema: Schema = new Schema({
-    __typename: {
-        default: 'Doctor',
-        type: String,
-    },
     address: {
         required: true,
         type: AddressSchema,
@@ -152,7 +148,6 @@ const DoctorSchema: Schema = new Schema({
 });
 
 export interface IDoctor extends Document<string> {
-    __typename: 'Doctor',
     address: IAddress,
     phoneNumber: string,
     webpage?: string,

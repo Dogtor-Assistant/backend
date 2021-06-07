@@ -5,10 +5,6 @@ import type { Document, Model } from 'mongoose';
 import { model, Schema } from 'mongoose';
 
 const UserSchema: Schema = new Schema({
-    __typename: {
-        default: 'User',
-        type: String,
-    },
     doctorRef: {
         ref: 'Doctor',
         type: Schema.Types.ObjectId,
@@ -39,7 +35,6 @@ const UserSchema: Schema = new Schema({
 });
 
 export interface IUser extends Document<string> {
-    __typename: 'User',
     email: string,
     password: string,
     firstName: string,

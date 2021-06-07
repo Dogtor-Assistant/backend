@@ -3,28 +3,24 @@ import type { QueryResolvers } from '@resolvers';
 
 import Appointment from 'models/Appointment';
 import Checkup from 'models/Checkup';
-import Doctor from 'models/Doctor';
 import Followup from 'models/Followup';
-import Patient from 'models/Patient';
-import Review from 'models/Review';
-import Service from 'models/Service';
-import User from 'models/User';
+import { doctor } from 'shims/doctor';
+import { patient } from 'shims/patient';
+import { review } from 'shims/review';
+import { service } from 'shims/service';
+import { user } from 'shims/user';
 import { deconstructId } from 'utils/ids';
 
 const Query: QueryResolvers = {
     greeting(_0, _1, { authenticated }) {
         if (authenticated != null) {
-            return `Hello, User ${authenticated.id}`;
+            return `Hello, User ${authenticated.id()}`;
         }
 
         return 'Hello World';
     },
-    async me(_0, _1, { authenticated }) {
-        if (authenticated == null) {
-            return null;
-        }
-
-        return await User.findOne({ _id : authenticated.id });
+    async me(_, __, { authenticated }) {
+        return authenticated;
     },
     async node(_, { id: nodeId }) {
         const deconstructed = deconstructId(nodeId);
@@ -40,17 +36,17 @@ const Query: QueryResolvers = {
         case 'Checkup':
             return await Checkup.findById(id);
         case 'Doctor':
-            return await Doctor.findById(id);
+            return await doctor(id);
         case 'Followup':
             return await Followup.findById(id);
         case 'Patient':
-            return await Patient.findById(id);
+            return await patient(id);
         case 'Review':
-            return await Review.findById(id);
+            return await review(id);
         case 'Service':
-            return await Service.findById(id);
+            return await service(id);
         case 'User':
-            return await User.findById(id);
+            return await user(id);
         }
     },
 };

@@ -31,10 +31,6 @@ interface IAddress extends Document {
 }
 
 const PatientSchema: Schema = new Schema({
-    __typename: {
-        default: 'Patient',
-        type: String,
-    },
     activityLevel: {
         enum: [0, 1, 2, 3, 4],
         type: Number,
@@ -111,7 +107,6 @@ export enum Insurance {
 }
 
 export interface IPatient extends Document<string> {
-    __typename: 'Patient',
     address: IAddress,
     phoneNumber: string,
     insurance: Insurance,

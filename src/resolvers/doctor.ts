@@ -1,58 +1,61 @@
 import type { DoctorResolvers } from '@resolvers';
 
-import User from 'models/User';
-import { buildId } from 'utils/ids';
+import { Review } from 'shims/review';
+import { Service } from 'shims/service';
 
 const Doctor: DoctorResolvers = {
-    address({ address }) {
+    async address(doctor) {
+        const { address } = await doctor.full();
         return address;
     },
 
-    async firstname({ _id: id }) {
-        const user = await User.findOne({ doctorRef: id });
-        if (user == null) {
-            throw 'Failed to find user for doctor';
-        }
-        return user.firstName;
+    async firstname(doctor) {
+        const { firstName } = await doctor.user();
+        return firstName;
     },
 
-    id({ _id: id }) {
-        if (id == null) {
-            throw 'Uninitialized Value!';
-        }
-
-        return buildId('Doctor', id);
+    id(doctor) {
+        return doctor.id();
     },
 
-    async lastname({ _id: id }) {
-        const user = await User.findOne({ doctorRef: id });
-        if (user == null) {
-            throw 'Failed to find user for doctor';
-        }
-        return user.lastName;
+    async lastname(doctor) {
+        const { lastName } = await doctor.user();
+        return lastName;
     },
 
-    offeredSlots() {
-        throw 'Not Implemented';
+    async offeredSlots(doctor) {
+        const { offeredSlots } = await doctor.full();
+        return offeredSlots?.map(slot => {
+            return {
+                day: slot.day,
+                end: slot.slotStop,
+                start: slot.slotStart,
+            };
+        }) ?? [];
     },
 
-    rating({ starRating }) {
+    async rating(doctor) {
+        const { starRating } = await doctor.full();
         return starRating ?? 0;
     },
 
-    specialities({ specialities }) {
+    async specialities(doctor) {
+        const { specialities } = await doctor.full();
         return specialities;
     },
 
-    topReviews() {
-        throw 'Not Implemented';
+    async topReviews(doctor) {
+        const { topReviews } = await doctor.full();
+        return topReviews?.map(review => new Review(review)) ?? [];
     },
 
-    topServices() {
-        throw 'Not Implemented';
+    async topServices(doctor) {
+        const { topServices } = await doctor.full();
+        return topServices?.map(service => new Service(service)) ?? [];
     },
 
-    webpage({ webpage }) {
+    async webpage(doctor) {
+        const { webpage } = await doctor.full();
         return webpage ?? null;
     },
 };

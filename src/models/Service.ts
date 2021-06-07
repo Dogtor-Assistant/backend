@@ -4,10 +4,6 @@ import type { Document, Model } from 'mongoose';
 import { model, Schema } from 'mongoose';
 
 const ServiceSchema: Schema = new Schema({
-    __typename: {
-        default: 'Service',
-        type: String,
-    },
     description: {
         type: String,
     },
@@ -41,7 +37,6 @@ const ServiceSchema: Schema = new Schema({
 });
 
 export interface IService extends Document<string> {
-    __typename: 'Service',
     name: string,
     description: string,
     estimatedDuration: number,
