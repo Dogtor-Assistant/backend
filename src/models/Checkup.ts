@@ -47,7 +47,7 @@ const MiniPatientSchema: Schema = new Schema({
     _id: false,
 });
 
-interface IMiniPatient extends Document {
+export interface IMiniPatient extends Document {
     patientId: IPatient['_id'],
     patientName: string,
     patientInsurance: IPatient['insurance'],
@@ -55,6 +55,10 @@ interface IMiniPatient extends Document {
 }
 
 const CheckupSchema: Schema = new Schema({
+    __typename: {
+        default: 'Checkup',
+        type: String,
+    },
     isRead: {
         default: false,
         type: Boolean,
@@ -75,7 +79,8 @@ const CheckupSchema: Schema = new Schema({
     timestamps: true,
 });
 
-export interface ICheckup extends Document {
+export interface ICheckup extends Document<string> {
+    __typename: 'Checkup',
     patientRef: IMiniPatient,
     services: Array<string>,
     suggestedDate: Date,

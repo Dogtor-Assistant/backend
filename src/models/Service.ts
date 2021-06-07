@@ -36,7 +36,7 @@ const ServiceSchema: Schema = new Schema({
     timestamps: true,
 });
 
-export interface IService extends Document {
+export interface IService extends Document<string> {
     name: string,
     description: string,
     estimatedDuration: number,

@@ -34,7 +34,7 @@ const UserSchema: Schema = new Schema({
     timestamps: true,
 });
 
-export interface IUser extends Document {
+export interface IUser extends Document<string> {
     email: string,
     password: string,
     firstName: string,
