@@ -2,8 +2,140 @@ interface Node {
   id: ID!
 }
 
+scalar Duration
+
+scalar DateTime
+
+scalar Time
+
+scalar URL
+
+scalar Length
+
+scalar Weight
+
+enum Insurance {
+  Public
+  Private
+}
+
+enum Gender {
+  Male
+  Female
+  TransgenderMale
+  TransgenderFemale
+  NonBinary
+}
+
+enum Weekday {
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+  Sunday
+}
+
+enum ActivityLevel {
+  VeryHigh
+  High
+  Medium
+  Low
+  VeryLow
+}
+
+type Address {
+  streetName: String!
+  streetNumber: Int!
+  city: String!
+  zipCode: Int!
+}
+
+type AppointmentTime {
+  start: DateTime
+  duration: Duration
+}
+
+type Appointment implements Node {
+  id: ID!
+  patient: Patient!
+  doctor: Doctor!
+  expectedTime: AppointmentTime!
+  actualTime: AppointmentTime
+  insurance: Insurance!
+  notes: String
+  sharedData: Boolean!
+  selectedServices: [Service!]!
+}
+
+type Checkup implements Node {
+  id: ID!
+  isRead: Boolean!
+  services: [Service!]!
+  suggestedDate: DateTime!
+}
+
+type Doctor implements Node {
+  id: ID!
+  firstname: String!
+  lastname: String!
+  specialities: [String!]!
+  address: Address!
+  offeredSlots: [OfferedSlot!]!
+  rating: Float!
+  topServices: [Service!]!
+  topReviews: [Review!]!
+  webpage: URL
+}
+
+type Followup implements Node {
+  id: ID!
+  isRead: Boolean!
+  doctor: Doctor!
+  services: [Service!]!
+  suggestedDate: DateTime!
+}
+
+type OfferedSlot {
+  day: Weekday!
+  start: Time!
+  end: Time!
+}
+
+type Patient implements Node {
+  id: ID!
+  firstname: String!
+  lastname: String!
+  activityLevel: ActivityLevel
+  gender: Gender
+  height: Length
+  weight: Weight
+  medications: [String!]!
+  medicalConditions: [String!]!
+  allergies: [String!]!
+  surgeries: [String!]!
+  isSmoker: Boolean
+}
+
+type Review implements Node {
+  id: ID!
+  rating: Int!
+  doctor: Doctor!
+  patient: Patient!
+  content: String
+}
+
+type Service implements Node {
+  id: ID!
+}
+
 type User implements Node {
   id: ID!
+  firstname: String!
+  lastname: String!
+  doctorProfile: Doctor
+  patientProfile: Patient
 }
 
 type Query {
