@@ -1,15 +1,6 @@
-import type { NodeResolvers, ResolverTypeWrapper } from '@resolvers';
-import type { TuplifyUnion } from 'utils/types';
 
-type Resolved<T extends ResolverTypeWrapper<unknown>> = T extends ResolverTypeWrapper<infer U>
-  ? U
-  : never;
-
-export type NodeType = NonNullable<Resolved<ReturnType<NodeResolvers['__resolveType']>>>
-
-type NodeTypesTuple = TuplifyUnion<NodeType>
-
-const nodeTypesTuple: NodeTypesTuple = [
+// Whenever you add a new node type, you'll need to add the type here
+const nodeTypesTuple = <const> [
     'Appointment',
     'Checkup',
     'Doctor',
@@ -20,7 +11,9 @@ const nodeTypesTuple: NodeTypesTuple = [
     'User',
 ];
 
-const nodeTypes: string[] = nodeTypesTuple;
+export type NodeType = typeof nodeTypesTuple[number]
+
+const nodeTypes: string[] = nodeTypesTuple.map(value => value);
 
 function isNodeType(type: string): type is NodeType {
     return nodeTypes.includes(type);
