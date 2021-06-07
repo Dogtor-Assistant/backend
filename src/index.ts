@@ -3,11 +3,14 @@ import { ApolloServer } from 'apollo-server-express';
 import { authenticationOptional, router as auth } from 'authentication';
 import { context } from 'context';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import express from 'express';
 import User from 'models/User';
 import mongoose from 'mongoose';
 import resolvers from 'resolvers';
 import { typeDefs } from 'typeDefs';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT != null ? parseInt(process.env.PORT, 10) : 8000;
@@ -58,7 +61,7 @@ apollo.applyMiddleware({
 });
 
 // database connection
-const dbURI = 'mongodb://link';
+const dbURI = process.env.MONGO_URI != null ? process.env.MONGO_URI : '';
 mongoose.connect(dbURI, { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true }, err => {
     if (err) {
         console.log(err);
