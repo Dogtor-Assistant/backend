@@ -1,3 +1,4 @@
+import { populateDB } from './dbPopulate';
 
 import { ApolloServer } from 'apollo-server-express';
 import { authenticationOptional, router as auth } from 'authentication';
@@ -30,7 +31,16 @@ app.use(
 
 app.get('/', (_, res) => res.send('Hello World'));
 app.use('/auth', auth);
-
+app.get('/populateDB', async function(_, res) {
+    try {
+        await populateDB();
+        res.status(200).send('DB populated successfully!');
+    }
+    catch (err) {
+        console.log(`Error: ${err}`);
+        res.status(400).send('An error occured!');
+    }
+});
 app.get('/user/:id', async function(req, res) {
     const id = req.params.id;
     const user = await User.findOne({ 'firstName': `Dogtor${id}` });

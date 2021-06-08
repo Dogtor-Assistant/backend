@@ -21,6 +21,6 @@
         "isolatedModules": true,
     },
     "include": [
-        "src",
+        "src", "src/dbPopulate.ts",
     ]
 }
