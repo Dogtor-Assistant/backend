@@ -29,8 +29,8 @@ const Patient: PatientResolvers = {
         return smoker ?? null;
     },
     async lastname(patient) {
-        const { firstName } = await patient.user();
-        return firstName ?? null;
+        const { lastName } = await patient.user();
+        return lastName ?? null;
     },
     async medicalConditions(patient) {
         const { medicalConditions } = await patient.full();
