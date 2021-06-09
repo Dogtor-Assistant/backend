@@ -6,6 +6,21 @@ import Address from './address';
 import Appointment from './appointment';
 import AppointmentTime from './appointmentTime';
 import Checkup from './checkup';
+import {
+    AppointmentEdge,
+    AppointmentsConnection,
+    DoctorEdge,
+    DoctorsConnection,
+    PageInfo,
+    PatientEdge,
+    PatientsConnection,
+    ReviewEdge,
+    ReviewsConnection,
+    ServiceEdge,
+    ServicesConnection,
+    UserEdge,
+    UsersConnection,
+} from './connections';
 import Doctor from './doctor';
 import Followup from './followup';
 import Gender from './gender';
@@ -32,10 +47,14 @@ const resolvers: Resolvers = {
     ActivityLevel,
     Address,
     Appointment,
+    AppointmentEdge,
     AppointmentTime,
+    AppointmentsConnection,
     Checkup,
     DateTime,
     Doctor,
+    DoctorEdge,
+    DoctorsConnection,
     Duration,
     Followup,
     Gender,
@@ -43,13 +62,22 @@ const resolvers: Resolvers = {
     Length,
     Node,
     OfferedSlot,
+    PageInfo,
     Patient,
+    PatientEdge,
+    PatientsConnection,
     Query,
     Review,
+    ReviewEdge,
+    ReviewsConnection,
     Service,
+    ServiceEdge,
+    ServicesConnection,
     Time,
     URL,
     User,
+    UserEdge,
+    UsersConnection,
     Weekday,
     Weight,
 };

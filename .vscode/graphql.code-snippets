@@ -1,0 +1,17 @@
+{
+    "Connection": {
+        "prefix": "conn",
+        "body": [
+            "type $1Edge {",
+            "    cursor: String!",
+            "    node: $1",
+            "}",
+            "",
+            "type ${2:$1s}Connection {",
+            "    pageInfo: PageInfo!",
+            "    edges: [$1Edge]",
+            "}",
+        ],
+        "description": "Creates a Component"
+    },
+}

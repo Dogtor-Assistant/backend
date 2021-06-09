@@ -166,10 +166,83 @@ export const typeDefs = gql`
         patientProfile: Patient
     }
 
+    type PageInfo {
+        hasNextPage: Boolean!
+        hasPreviousPage: Boolean!
+        startCursor: String
+        endCursor: String
+    }
+
+    type UserEdge {
+        cursor: String!
+        node: User
+    }
+    
+    type UsersConnection {
+        pageInfo: PageInfo!
+        edges: [UserEdge]
+    }
+
+    type ReviewEdge {
+        cursor: String!
+        node: Review
+    }
+    
+    type ReviewsConnection {
+        pageInfo: PageInfo!
+        edges: [ReviewEdge]
+    }
+
+    type DoctorEdge {
+        cursor: String!
+        node: Doctor
+    }
+    
+    type DoctorsConnection {
+        pageInfo: PageInfo!
+        edges: [DoctorEdge]
+    }
+
+    type PatientEdge {
+        cursor: String!
+        node: Patient
+    }
+    
+    type PatientsConnection {
+        pageInfo: PageInfo!
+        edges: [PatientEdge]
+    }
+
+    type ServiceEdge {
+        cursor: String!
+        node: Service
+    }
+    
+    type ServicesConnection {
+        pageInfo: PageInfo!
+        edges: [ServiceEdge]
+    }
+
+    type AppointmentEdge {
+        cursor: String!
+        node: Appointment
+    }
+    
+    type AppointmentsConnection {
+        pageInfo: PageInfo!
+        edges: [AppointmentEdge]
+    }
+
     type Query {
         greeting: String!
         me: User
         node(id: ID!): Node
+
+        users(after: String, first: Int, before: String, last: Int): UsersConnection
+        patients(after: String, first: Int, before: String, last: Int): PatientsConnection
+        doctors(after: String, first: Int, before: String, last: Int): DoctorsConnection
+        reviews(after: String, first: Int, before: String, last: Int): ReviewsConnection
+        services(after: String, first: Int, before: String, last: Int): ServicesConnection
     }
 
     schema {
