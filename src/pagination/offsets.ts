@@ -16,6 +16,7 @@ export function getOffsetWithDefault(
 export function getOffsetsFromArgs(
     { after, before, first, last }: ConnectionArguments,
     count: number,
+    defaultPageSize?: number,
 ) {
     const beforeOffset = getOffsetWithDefault(before, count);
     const afterOffset = getOffsetWithDefault(after, -1);
@@ -28,6 +29,14 @@ export function getOffsetsFromArgs(
     }
     if (last != null) {
         startOffset = Math.max(startOffset, endOffset - last);
+    }
+
+    if (first == null && last == null && defaultPageSize != null) {
+        if (before != null) {
+            startOffset = Math.max(startOffset, endOffset - defaultPageSize);
+        } else {
+            endOffset = Math.min(endOffset, startOffset + defaultPageSize);
+        }
     }
 
     const skip = Math.max(startOffset, 0);

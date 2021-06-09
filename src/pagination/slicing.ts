@@ -10,13 +10,14 @@ export function getConnectionFromSlice<T extends Document, O>(
     mapper: (node: T) => O,
     args: ConnectionArguments,
     count: number,
+    defaultPageSize?: number,
 ) : Connection<O> {
     const first = args.first;
     const last = args.last;
     const before = args.before;
     const after = args.after;
 
-    const offsetsFromArgs = getOffsetsFromArgs(args, count);
+    const offsetsFromArgs = getOffsetsFromArgs(args, count, defaultPageSize);
     const startOffset = offsetsFromArgs.startOffset;
     const endOffset = offsetsFromArgs.endOffset;
     const beforeOffset = offsetsFromArgs.beforeOffset;

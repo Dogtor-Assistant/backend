@@ -9,12 +9,13 @@ export async function connectionFromMongooseQuery<T extends Document, O>(
     query: Query<T[], T>,
     args: ConnectionArguments,
     mapper: (node: T) => O,
+    defaultPageSize?: number,
 ): Promise<Connection<O>> {
     const count = await query.count();
-    const pagination = getOffsetsFromArgs(args, count);
+    const pagination = getOffsetsFromArgs(args, count, defaultPageSize);
 
     if (pagination.limit === 0) {
-        return getConnectionFromSlice([], mapper, args, count);
+        return getConnectionFromSlice([], mapper, args, count, defaultPageSize);
     }
 
     query.skip(pagination.skip);
@@ -24,5 +25,5 @@ export async function connectionFromMongooseQuery<T extends Document, O>(
     query.lean();
 
     const slice = await query.find();
-    return getConnectionFromSlice(slice, mapper, args, count);
+    return getConnectionFromSlice(slice, mapper, args, count, defaultPageSize);
 }
