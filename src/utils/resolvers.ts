@@ -176,11 +176,12 @@ export type Query = {
   readonly greeting: Scalars['String'];
   readonly me: Maybe<User>;
   readonly node: Maybe<Node>;
-  readonly users: Maybe<UsersConnection>;
-  readonly patients: Maybe<PatientsConnection>;
-  readonly doctors: Maybe<DoctorsConnection>;
-  readonly reviews: Maybe<ReviewsConnection>;
-  readonly services: Maybe<ServicesConnection>;
+  readonly users: UsersConnection;
+  readonly patients: PatientsConnection;
+  readonly doctors: DoctorsConnection;
+  readonly reviews: ReviewsConnection;
+  readonly services: ServicesConnection;
+  readonly latestReviews: ReadonlyArray<Review>;
 };
 
 
@@ -605,11 +606,12 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   greeting: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   me: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
-  users: Resolver<Maybe<ResolversTypes['UsersConnection']>, ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
-  patients: Resolver<Maybe<ResolversTypes['PatientsConnection']>, ParentType, ContextType, RequireFields<QueryPatientsArgs, never>>;
-  doctors: Resolver<Maybe<ResolversTypes['DoctorsConnection']>, ParentType, ContextType, RequireFields<QueryDoctorsArgs, never>>;
-  reviews: Resolver<Maybe<ResolversTypes['ReviewsConnection']>, ParentType, ContextType, RequireFields<QueryReviewsArgs, never>>;
-  services: Resolver<Maybe<ResolversTypes['ServicesConnection']>, ParentType, ContextType, RequireFields<QueryServicesArgs, never>>;
+  users: Resolver<ResolversTypes['UsersConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
+  patients: Resolver<ResolversTypes['PatientsConnection'], ParentType, ContextType, RequireFields<QueryPatientsArgs, never>>;
+  doctors: Resolver<ResolversTypes['DoctorsConnection'], ParentType, ContextType, RequireFields<QueryDoctorsArgs, never>>;
+  reviews: Resolver<ResolversTypes['ReviewsConnection'], ParentType, ContextType, RequireFields<QueryReviewsArgs, never>>;
+  services: Resolver<ResolversTypes['ServicesConnection'], ParentType, ContextType, RequireFields<QueryServicesArgs, never>>;
+  latestReviews: Resolver<ReadonlyArray<ResolversTypes['Review']>, ParentType, ContextType>;
 }>;
 
 export type ReviewResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = ResolversObject<{

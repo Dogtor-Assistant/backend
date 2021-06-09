@@ -1,12 +1,16 @@
 
 import type { QueryResolvers } from '@resolvers';
+import type { ObjectId } from 'bson';
+import type { IMiniReview } from 'models/Doctor';
+// import Review from 'models/Review';
+import type { IReview } from 'models/Review';
 
 import Appointment from 'models/Appointment';
 import Checkup from 'models/Checkup';
 import Doctor from 'models/Doctor';
 import Followup from 'models/Followup';
 import Patient from 'models/Patient';
-import Review from 'models/Review';
+import ReviewModel from 'models/Review';
 import Service from 'models/Service';
 import User from 'models/User';
 import {
@@ -19,6 +23,7 @@ import {
 import { doctor } from 'shims/doctor';
 import { patient } from 'shims/patient';
 import { review } from 'shims/review';
+import { Review } from 'shims/review';
 import { service } from 'shims/service';
 import { user } from 'shims/user';
 import { deconstructId } from 'utils/ids';
@@ -33,6 +38,10 @@ const Query: QueryResolvers = {
         }
 
         return 'Hello World';
+    },
+    async latestReviews() {
+        const reviews = await ReviewModel.aggregate().limit(5).exec();
+        return reviews.map((review: string | IReview | IMiniReview | ObjectId) => new Review(review));
     },
     async me(_, __, { authenticated }) {
         return authenticated;
@@ -68,7 +77,7 @@ const Query: QueryResolvers = {
         return await patientsConnection(Patient.find(), args);
     },
     async reviews(_, args) {
-        return await reviewsConnection(Review.find(), args);
+        return await reviewsConnection(ReviewModel.find(), args);
     },
     async services(_, args) {
         return await servicesConnection(Service.find(), args);
