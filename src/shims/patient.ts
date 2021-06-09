@@ -11,7 +11,8 @@ import User from 'models/User';
 import { ObjectID } from 'mongodb';
 import { buildId } from 'utils/ids';
 
-type PatientInput = IPatient | AppointmentPatient | CheckupPatient | FollowupPatient | ReviewPatient | string | ObjectID
+export type PatientInput =
+    IPatient | AppointmentPatient | CheckupPatient | FollowupPatient | ReviewPatient | string | ObjectID
 
 function getId(input: PatientInput): string {
     if (typeof input === 'string') {

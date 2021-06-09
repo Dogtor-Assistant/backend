@@ -36,3 +36,16 @@ generates:
         Followup: models/Followup#IFollowup
         Review: shims/review#Review
         Service: shims/service#Service
+        PageInfo: pagination#PageInfo
+        ReviewsConnection: pagination#ReviewsConnection
+        UsersConnection: pagination#UsersConnection
+        DoctorsConnection: pagination#DoctorsConnection
+        PatientsConnection: pagination#PatientsConnection
+        ServicesConnection: pagination#ServicesConnection
+        AppointmentsConnection: pagination#AppointmentsConnection
+        ReviewEdge: pagination#ReviewEdge
+        UserEdge: pagination#UserEdge
+        DoctorEdge: pagination#DoctorEdge
+        PatientEdge: pagination#PatientEdge
+        ServiceEdge: pagination#ServiceEdge
+        AppointmentEdge: pagination#AppointmentEdge
