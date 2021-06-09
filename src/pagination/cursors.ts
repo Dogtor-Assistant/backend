@@ -7,5 +7,5 @@ export function offsetToCursor(offset: number): string {
 
 export function cursorToOffset(cursor: string) {
     const decoded = Buffer.from(cursor, 'base64').toString('ascii');
-    return parseInt(decoded.substring(PREFIX.length, 10));
+    return parseInt(decoded.substring(PREFIX.length));
 }
