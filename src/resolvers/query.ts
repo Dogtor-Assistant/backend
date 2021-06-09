@@ -1,8 +1,5 @@
 
 import type { QueryResolvers } from '@resolvers';
-import type { ObjectId } from 'bson';
-import type { IMiniReview } from 'models/Doctor';
-// import Review from 'models/Review';
 import type { IReview } from 'models/Review';
 
 import Appointment from 'models/Appointment';
@@ -28,7 +25,7 @@ const Query: QueryResolvers = {
     async latestReviews() {
         
         const reviews = await ReviewModel.aggregate().limit(5).exec();
-        return reviews.map((review: string | IReview | IMiniReview | ObjectId) => new Review(review));
+        return reviews.map((review: IReview) => new Review(review));
     },
     async me(_, __, { authenticated }) {
         return authenticated;
