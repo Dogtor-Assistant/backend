@@ -237,6 +237,12 @@ export const typeDefs = gql`
         greeting: String!
         me: User
         node(id: ID!): Node
+
+        users(after: String, first: Int, before: String, last: Int): UsersConnection
+        patients(after: String, first: Int, before: String, last: Int): PatientsConnection
+        doctors(after: String, first: Int, before: String, last: Int): DoctorsConnection
+        reviews(after: String, first: Int, before: String, last: Int): ReviewsConnection
+        services(after: String, first: Int, before: String, last: Int): ServicesConnection
     }
 
     schema {

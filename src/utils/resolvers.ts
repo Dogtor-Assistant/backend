@@ -176,11 +176,56 @@ export type Query = {
   readonly greeting: Scalars['String'];
   readonly me: Maybe<User>;
   readonly node: Maybe<Node>;
+  readonly users: Maybe<UsersConnection>;
+  readonly patients: Maybe<PatientsConnection>;
+  readonly doctors: Maybe<DoctorsConnection>;
+  readonly reviews: Maybe<ReviewsConnection>;
+  readonly services: Maybe<ServicesConnection>;
 };
 
 
 export type QueryNodeArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryUsersArgs = {
+  after: Maybe<Scalars['String']>;
+  first: Maybe<Scalars['Int']>;
+  before: Maybe<Scalars['String']>;
+  last: Maybe<Scalars['Int']>;
+};
+
+
+export type QueryPatientsArgs = {
+  after: Maybe<Scalars['String']>;
+  first: Maybe<Scalars['Int']>;
+  before: Maybe<Scalars['String']>;
+  last: Maybe<Scalars['Int']>;
+};
+
+
+export type QueryDoctorsArgs = {
+  after: Maybe<Scalars['String']>;
+  first: Maybe<Scalars['Int']>;
+  before: Maybe<Scalars['String']>;
+  last: Maybe<Scalars['Int']>;
+};
+
+
+export type QueryReviewsArgs = {
+  after: Maybe<Scalars['String']>;
+  first: Maybe<Scalars['Int']>;
+  before: Maybe<Scalars['String']>;
+  last: Maybe<Scalars['Int']>;
+};
+
+
+export type QueryServicesArgs = {
+  after: Maybe<Scalars['String']>;
+  first: Maybe<Scalars['Int']>;
+  before: Maybe<Scalars['String']>;
+  last: Maybe<Scalars['Int']>;
 };
 
 export type Review = Node & {
@@ -560,6 +605,11 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   greeting: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   me: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
+  users: Resolver<Maybe<ResolversTypes['UsersConnection']>, ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
+  patients: Resolver<Maybe<ResolversTypes['PatientsConnection']>, ParentType, ContextType, RequireFields<QueryPatientsArgs, never>>;
+  doctors: Resolver<Maybe<ResolversTypes['DoctorsConnection']>, ParentType, ContextType, RequireFields<QueryDoctorsArgs, never>>;
+  reviews: Resolver<Maybe<ResolversTypes['ReviewsConnection']>, ParentType, ContextType, RequireFields<QueryReviewsArgs, never>>;
+  services: Resolver<Maybe<ResolversTypes['ServicesConnection']>, ParentType, ContextType, RequireFields<QueryServicesArgs, never>>;
 }>;
 
 export type ReviewResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = ResolversObject<{
