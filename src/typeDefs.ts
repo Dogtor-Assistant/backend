@@ -170,6 +170,7 @@ export const typeDefs = gql`
         greeting: String!
         me: User
         node(id: ID!): Node
+        latestReviews: [Review!]!
     }
 
     schema {
