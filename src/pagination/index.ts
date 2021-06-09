@@ -1,6 +1,11 @@
 
 import type { ConnectionQuery } from './connection';
-import type { Connection, ConnectionArguments } from 'graphql-relay';
+import type {
+    Connection,
+    ConnectionArguments,
+    Edge,
+    PageInfo as RelayPageInfo,
+} from 'graphql-relay';
 import type { IAppointment } from 'models/Appointment';
 import type { IDoctor } from 'models/Doctor';
 import type { IPatient } from 'models/Patient';
@@ -21,12 +26,20 @@ import { Review } from 'shims/review';
 import { Service } from 'shims/service';
 import { User } from 'shims/user';
 
+export type PageInfo = RelayPageInfo;
 export type ReviewsConnection = Connection<Review>
 export type UsersConnection = Connection<User>
 export type DoctorsConnection = Connection<Doctor>
 export type PatientsConnection = Connection<Patient>
 export type ServicesConnection = Connection<Service>
 export type AppointmentsConnection = Connection<IAppointment>
+
+export type ReviewEdge = Edge<Review>
+export type UserEdge = Edge<User>
+export type DoctorEdge = Edge<Doctor>
+export type PatientEdge = Edge<Patient>
+export type ServiceEdge = Edge<Service>
+export type AppointmentEdge = Edge<IAppointment>
 
 export async function reviewsConnection(
     query: ConnectionQuery<IReview, ReviewInput>,

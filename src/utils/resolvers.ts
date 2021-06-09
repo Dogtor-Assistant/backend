@@ -10,6 +10,7 @@ import type { ICheckup as ICheckupModel } from 'models/Checkup';
 import type { IFollowup as IFollowupModel } from 'models/Followup';
 import type { Review as ReviewModel } from 'shims/review';
 import type { Service as ServiceModel } from 'shims/service';
+import type { PageInfo as PageInfoModel, ReviewsConnection as ReviewsConnectionModel, UsersConnection as UsersConnectionModel, DoctorsConnection as DoctorsConnectionModel, PatientsConnection as PatientsConnectionModel, ServicesConnection as ServicesConnectionModel, AppointmentsConnection as AppointmentsConnectionModel, ReviewEdge as ReviewEdgeModel, UserEdge as UserEdgeModel, DoctorEdge as DoctorEdgeModel, PatientEdge as PatientEdgeModel, ServiceEdge as ServiceEdgeModel, AppointmentEdge as AppointmentEdgeModel } from 'pagination';
 import type { Context } from 'context';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -60,9 +61,19 @@ export type Appointment = Node & {
   readonly selectedServices: ReadonlyArray<Service>;
 };
 
+export type AppointmentEdge = {
+  readonly cursor: Scalars['String'];
+  readonly node: Maybe<Appointment>;
+};
+
 export type AppointmentTime = {
   readonly start: Maybe<Scalars['DateTime']>;
   readonly duration: Maybe<Scalars['Duration']>;
+};
+
+export type AppointmentsConnection = {
+  readonly pageInfo: PageInfo;
+  readonly edges: Maybe<ReadonlyArray<Maybe<AppointmentEdge>>>;
 };
 
 export type Checkup = Node & {
@@ -84,6 +95,16 @@ export type Doctor = Node & {
   readonly topServices: ReadonlyArray<Service>;
   readonly topReviews: ReadonlyArray<Review>;
   readonly webpage: Maybe<Scalars['URL']>;
+};
+
+export type DoctorEdge = {
+  readonly cursor: Scalars['String'];
+  readonly node: Maybe<Doctor>;
+};
+
+export type DoctorsConnection = {
+  readonly pageInfo: PageInfo;
+  readonly edges: Maybe<ReadonlyArray<Maybe<DoctorEdge>>>;
 };
 
 
@@ -119,6 +140,13 @@ export type OfferedSlot = {
   readonly end: Scalars['Time'];
 };
 
+export type PageInfo = {
+  readonly hasNextPage: Scalars['Boolean'];
+  readonly hasPreviousPage: Scalars['Boolean'];
+  readonly startCursor: Maybe<Scalars['String']>;
+  readonly endCursor: Maybe<Scalars['String']>;
+};
+
 export type Patient = Node & {
   readonly id: Scalars['ID'];
   readonly firstname: Scalars['String'];
@@ -132,6 +160,16 @@ export type Patient = Node & {
   readonly allergies: ReadonlyArray<Scalars['String']>;
   readonly surgeries: ReadonlyArray<Scalars['String']>;
   readonly isSmoker: Maybe<Scalars['Boolean']>;
+};
+
+export type PatientEdge = {
+  readonly cursor: Scalars['String'];
+  readonly node: Maybe<Patient>;
+};
+
+export type PatientsConnection = {
+  readonly pageInfo: PageInfo;
+  readonly edges: Maybe<ReadonlyArray<Maybe<PatientEdge>>>;
 };
 
 export type Query = {
@@ -153,8 +191,28 @@ export type Review = Node & {
   readonly content: Maybe<Scalars['String']>;
 };
 
+export type ReviewEdge = {
+  readonly cursor: Scalars['String'];
+  readonly node: Maybe<Review>;
+};
+
+export type ReviewsConnection = {
+  readonly pageInfo: PageInfo;
+  readonly edges: Maybe<ReadonlyArray<Maybe<ReviewEdge>>>;
+};
+
 export type Service = Node & {
   readonly id: Scalars['ID'];
+};
+
+export type ServiceEdge = {
+  readonly cursor: Scalars['String'];
+  readonly node: Maybe<Service>;
+};
+
+export type ServicesConnection = {
+  readonly pageInfo: PageInfo;
+  readonly edges: Maybe<ReadonlyArray<Maybe<ServiceEdge>>>;
 };
 
 
@@ -165,6 +223,16 @@ export type User = Node & {
   readonly lastname: Scalars['String'];
   readonly doctorProfile: Maybe<Doctor>;
   readonly patientProfile: Maybe<Patient>;
+};
+
+export type UserEdge = {
+  readonly cursor: Scalars['String'];
+  readonly node: Maybe<User>;
+};
+
+export type UsersConnection = {
+  readonly pageInfo: PageInfo;
+  readonly edges: Maybe<ReadonlyArray<Maybe<UserEdge>>>;
 };
 
 export enum Weekday {
@@ -264,11 +332,15 @@ export type ResolversTypes = ResolversObject<{
   Appointment: ResolverTypeWrapper<IAppointmentModel>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  AppointmentEdge: ResolverTypeWrapper<AppointmentEdgeModel>;
   AppointmentTime: ResolverTypeWrapper<AppointmentTime>;
+  AppointmentsConnection: ResolverTypeWrapper<AppointmentsConnectionModel>;
   Checkup: ResolverTypeWrapper<ICheckupModel>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   Doctor: ResolverTypeWrapper<DoctorModel>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
+  DoctorEdge: ResolverTypeWrapper<DoctorEdgeModel>;
+  DoctorsConnection: ResolverTypeWrapper<DoctorsConnectionModel>;
   Duration: ResolverTypeWrapper<Scalars['Duration']>;
   Followup: ResolverTypeWrapper<IFollowupModel>;
   Gender: ResolverTypeWrapper<GenderModel>;
@@ -276,13 +348,22 @@ export type ResolversTypes = ResolversObject<{
   Length: ResolverTypeWrapper<Scalars['Length']>;
   Node: ResolversTypes['Appointment'] | ResolversTypes['Checkup'] | ResolversTypes['Doctor'] | ResolversTypes['Followup'] | ResolversTypes['Patient'] | ResolversTypes['Review'] | ResolversTypes['Service'] | ResolversTypes['User'];
   OfferedSlot: ResolverTypeWrapper<Omit<OfferedSlot, 'day'> & { day: ResolversTypes['Weekday'] }>;
+  PageInfo: ResolverTypeWrapper<PageInfoModel>;
   Patient: ResolverTypeWrapper<PatientModel>;
+  PatientEdge: ResolverTypeWrapper<PatientEdgeModel>;
+  PatientsConnection: ResolverTypeWrapper<PatientsConnectionModel>;
   Query: ResolverTypeWrapper<{}>;
   Review: ResolverTypeWrapper<ReviewModel>;
+  ReviewEdge: ResolverTypeWrapper<ReviewEdgeModel>;
+  ReviewsConnection: ResolverTypeWrapper<ReviewsConnectionModel>;
   Service: ResolverTypeWrapper<ServiceModel>;
+  ServiceEdge: ResolverTypeWrapper<ServiceEdgeModel>;
+  ServicesConnection: ResolverTypeWrapper<ServicesConnectionModel>;
   Time: ResolverTypeWrapper<Scalars['Time']>;
   URL: ResolverTypeWrapper<Scalars['URL']>;
   User: ResolverTypeWrapper<UserModel>;
+  UserEdge: ResolverTypeWrapper<UserEdgeModel>;
+  UsersConnection: ResolverTypeWrapper<UsersConnectionModel>;
   Weekday: ResolverTypeWrapper<DayModel>;
   Weight: ResolverTypeWrapper<Scalars['Weight']>;
 }>;
@@ -295,23 +376,36 @@ export type ResolversParentTypes = ResolversObject<{
   Appointment: IAppointmentModel;
   ID: Scalars['ID'];
   Boolean: Scalars['Boolean'];
+  AppointmentEdge: AppointmentEdgeModel;
   AppointmentTime: AppointmentTime;
+  AppointmentsConnection: AppointmentsConnectionModel;
   Checkup: ICheckupModel;
   DateTime: Scalars['DateTime'];
   Doctor: DoctorModel;
   Float: Scalars['Float'];
+  DoctorEdge: DoctorEdgeModel;
+  DoctorsConnection: DoctorsConnectionModel;
   Duration: Scalars['Duration'];
   Followup: IFollowupModel;
   Length: Scalars['Length'];
   Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
   OfferedSlot: Omit<OfferedSlot, 'day'> & { day: ResolversParentTypes['Weekday'] };
+  PageInfo: PageInfoModel;
   Patient: PatientModel;
+  PatientEdge: PatientEdgeModel;
+  PatientsConnection: PatientsConnectionModel;
   Query: {};
   Review: ReviewModel;
+  ReviewEdge: ReviewEdgeModel;
+  ReviewsConnection: ReviewsConnectionModel;
   Service: ServiceModel;
+  ServiceEdge: ServiceEdgeModel;
+  ServicesConnection: ServicesConnectionModel;
   Time: Scalars['Time'];
   URL: Scalars['URL'];
   User: UserModel;
+  UserEdge: UserEdgeModel;
+  UsersConnection: UsersConnectionModel;
   Weight: Scalars['Weight'];
 }>;
 
@@ -338,9 +432,21 @@ export type AppointmentResolvers<ContextType = Context, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type AppointmentEdgeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['AppointmentEdge'] = ResolversParentTypes['AppointmentEdge']> = ResolversObject<{
+  cursor: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node: Resolver<Maybe<ResolversTypes['Appointment']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type AppointmentTimeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['AppointmentTime'] = ResolversParentTypes['AppointmentTime']> = ResolversObject<{
   start: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   duration: Resolver<Maybe<ResolversTypes['Duration']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type AppointmentsConnectionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['AppointmentsConnection'] = ResolversParentTypes['AppointmentsConnection']> = ResolversObject<{
+  pageInfo: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  edges: Resolver<Maybe<ReadonlyArray<Maybe<ResolversTypes['AppointmentEdge']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -367,6 +473,18 @@ export type DoctorResolvers<ContextType = Context, ParentType extends ResolversP
   topServices: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
   topReviews: Resolver<ReadonlyArray<ResolversTypes['Review']>, ParentType, ContextType>;
   webpage: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DoctorEdgeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['DoctorEdge'] = ResolversParentTypes['DoctorEdge']> = ResolversObject<{
+  cursor: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node: Resolver<Maybe<ResolversTypes['Doctor']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DoctorsConnectionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['DoctorsConnection'] = ResolversParentTypes['DoctorsConnection']> = ResolversObject<{
+  pageInfo: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  edges: Resolver<Maybe<ReadonlyArray<Maybe<ResolversTypes['DoctorEdge']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -402,6 +520,14 @@ export type OfferedSlotResolvers<ContextType = Context, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PageInfoResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo']> = ResolversObject<{
+  hasNextPage: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasPreviousPage: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  startCursor: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  endCursor: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PatientResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Patient'] = ResolversParentTypes['Patient']> = ResolversObject<{
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   firstname: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -415,6 +541,18 @@ export type PatientResolvers<ContextType = Context, ParentType extends Resolvers
   allergies: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
   surgeries: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
   isSmoker: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PatientEdgeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PatientEdge'] = ResolversParentTypes['PatientEdge']> = ResolversObject<{
+  cursor: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node: Resolver<Maybe<ResolversTypes['Patient']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PatientsConnectionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PatientsConnection'] = ResolversParentTypes['PatientsConnection']> = ResolversObject<{
+  pageInfo: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  edges: Resolver<Maybe<ReadonlyArray<Maybe<ResolversTypes['PatientEdge']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -433,8 +571,32 @@ export type ReviewResolvers<ContextType = Context, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type ReviewEdgeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ReviewEdge'] = ResolversParentTypes['ReviewEdge']> = ResolversObject<{
+  cursor: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node: Resolver<Maybe<ResolversTypes['Review']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ReviewsConnectionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ReviewsConnection'] = ResolversParentTypes['ReviewsConnection']> = ResolversObject<{
+  pageInfo: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  edges: Resolver<Maybe<ReadonlyArray<Maybe<ResolversTypes['ReviewEdge']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type ServiceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Service'] = ResolversParentTypes['Service']> = ResolversObject<{
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ServiceEdgeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ServiceEdge'] = ResolversParentTypes['ServiceEdge']> = ResolversObject<{
+  cursor: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node: Resolver<Maybe<ResolversTypes['Service']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type ServicesConnectionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['ServicesConnection'] = ResolversParentTypes['ServicesConnection']> = ResolversObject<{
+  pageInfo: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  edges: Resolver<Maybe<ReadonlyArray<Maybe<ResolversTypes['ServiceEdge']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -455,6 +617,18 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type UserEdgeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UserEdge'] = ResolversParentTypes['UserEdge']> = ResolversObject<{
+  cursor: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UsersConnectionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UsersConnection'] = ResolversParentTypes['UsersConnection']> = ResolversObject<{
+  pageInfo: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  edges: Resolver<Maybe<ReadonlyArray<Maybe<ResolversTypes['UserEdge']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type WeekdayResolvers = EnumResolverSignature<{ Monday: any, Tuesday: any, Wednesday: any, Thursday: any, Friday: any, Saturday: any, Sunday: any }, ResolversTypes['Weekday']>;
 
 export interface WeightScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Weight'], any> {
@@ -465,10 +639,14 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   ActivityLevel: ActivityLevelResolvers;
   Address: AddressResolvers<ContextType>;
   Appointment: AppointmentResolvers<ContextType>;
+  AppointmentEdge: AppointmentEdgeResolvers<ContextType>;
   AppointmentTime: AppointmentTimeResolvers<ContextType>;
+  AppointmentsConnection: AppointmentsConnectionResolvers<ContextType>;
   Checkup: CheckupResolvers<ContextType>;
   DateTime: GraphQLScalarType;
   Doctor: DoctorResolvers<ContextType>;
+  DoctorEdge: DoctorEdgeResolvers<ContextType>;
+  DoctorsConnection: DoctorsConnectionResolvers<ContextType>;
   Duration: GraphQLScalarType;
   Followup: FollowupResolvers<ContextType>;
   Gender: GenderResolvers;
@@ -476,13 +654,22 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Length: GraphQLScalarType;
   Node: NodeResolvers<ContextType>;
   OfferedSlot: OfferedSlotResolvers<ContextType>;
+  PageInfo: PageInfoResolvers<ContextType>;
   Patient: PatientResolvers<ContextType>;
+  PatientEdge: PatientEdgeResolvers<ContextType>;
+  PatientsConnection: PatientsConnectionResolvers<ContextType>;
   Query: QueryResolvers<ContextType>;
   Review: ReviewResolvers<ContextType>;
+  ReviewEdge: ReviewEdgeResolvers<ContextType>;
+  ReviewsConnection: ReviewsConnectionResolvers<ContextType>;
   Service: ServiceResolvers<ContextType>;
+  ServiceEdge: ServiceEdgeResolvers<ContextType>;
+  ServicesConnection: ServicesConnectionResolvers<ContextType>;
   Time: GraphQLScalarType;
   URL: GraphQLScalarType;
   User: UserResolvers<ContextType>;
+  UserEdge: UserEdgeResolvers<ContextType>;
+  UsersConnection: UsersConnectionResolvers<ContextType>;
   Weekday: WeekdayResolvers;
   Weight: GraphQLScalarType;
 }>;
