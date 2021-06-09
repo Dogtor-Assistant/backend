@@ -8,7 +8,7 @@ import User from 'models/User';
 import { ObjectID } from 'mongodb';
 import { buildId } from 'utils/ids';
 
-type DoctorInput = IDoctor | FollowupDoctor | AppointmentDoctor | string | ObjectID
+export type DoctorInput = IDoctor | FollowupDoctor | AppointmentDoctor | string | ObjectID
 
 function getId(input: DoctorInput): string {
     if (typeof input === 'string') {

@@ -6,7 +6,7 @@ import ServiceModel from 'models/Service';
 import { ObjectID } from 'mongodb';
 import { buildId } from 'utils/ids';
 
-type ServiceInput = IService | DoctorService | AppointmentService | string | ObjectID
+export type ServiceInput = IService | DoctorService | AppointmentService | string | ObjectID
 
 function getId(input: ServiceInput): string {
     if (typeof input === 'string') {
