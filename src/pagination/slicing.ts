@@ -2,9 +2,8 @@
 import type { Connection, ConnectionArguments } from 'graphql-relay';
 import type { Document } from 'mongoose';
 
+import { offsetToCursor } from './cursors';
 import { getOffsetsFromArgs } from './offsets';
-
-import { offsetToCursor } from 'graphql-relay';
 
 export function getConnectionFromSlice<T extends Document, O>(
     slice: T[],
