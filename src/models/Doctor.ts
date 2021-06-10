@@ -147,6 +147,25 @@ const DoctorSchema: Schema = new Schema({
     timestamps: true,
 });
 
+DoctorSchema.index(
+    {
+        'address.city': 'text',
+        'address.streetName': 'text',
+        'specialities': 'text',
+        'topServices.serviceName': 'text',
+        'webpage': 'text',
+    },
+    {
+        weights: {
+            'address.city': 2,
+            'address.streetName': 3,
+            'specialities': 4,
+            'topServices.serviceName': 5,
+            'webpage': 1,
+        },
+    },
+);
+
 export interface IDoctor extends Document<string> {
     address: IAddress,
     phoneNumber: string,
