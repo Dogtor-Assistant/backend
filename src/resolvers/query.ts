@@ -37,7 +37,15 @@ const Query: QueryResolvers = {
         return 'Hello World';
     },
     async latestReviews() {
-        const reviews = await ReviewModel.aggregate().limit(5).exec();
+        const reviews = await ReviewModel.aggregate([
+            {
+                $match: {
+                    //TODO: change the 'days' to last weeks reviews before last prototype!!!
+                    createdAt: { $gte: new Date(new Date().getTime()-200*24*60*60*1000) },
+                },
+            },
+            { $sort : { rating: -1 }},
+        ]).limit(9).exec();
         return reviews.map((review: IReview) => new Review(review));
     },
     async me(_, __, { authenticated }) {
