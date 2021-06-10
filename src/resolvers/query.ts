@@ -76,6 +76,33 @@ const Query: QueryResolvers = {
     async reviews(_, args) {
         return await reviewsConnection(ReviewModel.find(), args);
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async search(_, { query, filters, ...connectionArgs }) {
+        const doctors = Doctor.
+            find(
+                {
+                    $text: {
+                        $caseSensitive: false,
+                        $diacriticSensitive: false,
+                        $search: query,
+                    },
+                },
+                {
+                    score: {
+                        $meta: 'textScore',
+                    },
+                },
+            ).
+            sort(
+                {
+                    score: {
+                        $meta: 'textScore',
+                    },
+                },
+            );
+
+        return await doctorsConnection(doctors, connectionArgs);
+    },
     async services(_, args) {
         return await servicesConnection(Service.find(), args);
     },

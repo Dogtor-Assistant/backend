@@ -130,6 +130,12 @@ export enum Insurance {
 }
 
 
+export type NearFilter = {
+  readonly latitude: Scalars['Float'];
+  readonly longitude: Scalars['Float'];
+  readonly distance: Scalars['Length'];
+};
+
 export type Node = {
   readonly id: Scalars['ID'];
 };
@@ -176,6 +182,7 @@ export type Query = {
   readonly greeting: Scalars['String'];
   readonly me: Maybe<User>;
   readonly node: Maybe<Node>;
+  readonly search: DoctorsConnection;
   readonly users: UsersConnection;
   readonly patients: PatientsConnection;
   readonly doctors: DoctorsConnection;
@@ -187,6 +194,16 @@ export type Query = {
 
 export type QueryNodeArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QuerySearchArgs = {
+  query: Scalars['String'];
+  filters?: SearchFilters;
+  after: Maybe<Scalars['String']>;
+  first: Maybe<Scalars['Int']>;
+  before: Maybe<Scalars['String']>;
+  last: Maybe<Scalars['Int']>;
 };
 
 
@@ -245,6 +262,10 @@ export type ReviewEdge = {
 export type ReviewsConnection = {
   readonly pageInfo: PageInfo;
   readonly edges: Maybe<ReadonlyArray<Maybe<ReviewEdge>>>;
+};
+
+export type SearchFilters = {
+  readonly near: Maybe<NearFilter>;
 };
 
 export type Service = Node & {
@@ -392,6 +413,7 @@ export type ResolversTypes = ResolversObject<{
   Gender: ResolverTypeWrapper<GenderModel>;
   Insurance: ResolverTypeWrapper<InsuranceModel>;
   Length: ResolverTypeWrapper<Scalars['Length']>;
+  NearFilter: NearFilter;
   Node: ResolversTypes['Appointment'] | ResolversTypes['Checkup'] | ResolversTypes['Doctor'] | ResolversTypes['Followup'] | ResolversTypes['Patient'] | ResolversTypes['Review'] | ResolversTypes['Service'] | ResolversTypes['User'];
   OfferedSlot: ResolverTypeWrapper<Omit<OfferedSlot, 'day'> & { day: ResolversTypes['Weekday'] }>;
   PageInfo: ResolverTypeWrapper<PageInfoModel>;
@@ -402,6 +424,7 @@ export type ResolversTypes = ResolversObject<{
   Review: ResolverTypeWrapper<ReviewModel>;
   ReviewEdge: ResolverTypeWrapper<ReviewEdgeModel>;
   ReviewsConnection: ResolverTypeWrapper<ReviewsConnectionModel>;
+  SearchFilters: SearchFilters;
   Service: ResolverTypeWrapper<ServiceModel>;
   ServiceEdge: ResolverTypeWrapper<ServiceEdgeModel>;
   ServicesConnection: ResolverTypeWrapper<ServicesConnectionModel>;
@@ -434,6 +457,7 @@ export type ResolversParentTypes = ResolversObject<{
   Duration: Scalars['Duration'];
   Followup: IFollowupModel;
   Length: Scalars['Length'];
+  NearFilter: NearFilter;
   Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
   OfferedSlot: Omit<OfferedSlot, 'day'> & { day: ResolversParentTypes['Weekday'] };
   PageInfo: PageInfoModel;
@@ -444,6 +468,7 @@ export type ResolversParentTypes = ResolversObject<{
   Review: ReviewModel;
   ReviewEdge: ReviewEdgeModel;
   ReviewsConnection: ReviewsConnectionModel;
+  SearchFilters: SearchFilters;
   Service: ServiceModel;
   ServiceEdge: ServiceEdgeModel;
   ServicesConnection: ServicesConnectionModel;
@@ -606,6 +631,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   greeting: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   me: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
+  search: Resolver<ResolversTypes['DoctorsConnection'], ParentType, ContextType, RequireFields<QuerySearchArgs, 'query' | 'filters'>>;
   users: Resolver<ResolversTypes['UsersConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   patients: Resolver<ResolversTypes['PatientsConnection'], ParentType, ContextType, RequireFields<QueryPatientsArgs, never>>;
   doctors: Resolver<ResolversTypes['DoctorsConnection'], ParentType, ContextType, RequireFields<QueryDoctorsArgs, never>>;
