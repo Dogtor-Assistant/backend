@@ -60,7 +60,8 @@ export function search(
 
     // Skip words derived for a filter
     const skippedWords = [...wordsForFilters.flatMap(words => words), ...unimportant].map(word => word.toLowerCase());
-    const allWords = Object.keys(document.out('tags')[0]);
+    const tags = document.out('tags')[0];
+    const allWords = tags != null ? Object.keys(tags) : [];
     const additionalWords = allWords.filter(item => !skippedWords.includes(item.toLowerCase()));
 
     const queries: FilterQuery<IDoctor>[] = [
