@@ -232,15 +232,22 @@ export const typeDefs = gql`
         pageInfo: PageInfo!
         edges: [AppointmentEdge]
     }
-    
-    input NearFilter {
-        latitude: Float!
-        longitude: Float!
-        distance: Length!
+
+    input SearchInput {
+        query: String
+        specialities: [String!]
+        cities: [String!]
     }
 
-    input SearchFilters {
-        near: NearFilter
+    type SearchScope {
+        query: String
+        specialities: [String!]
+        cities: [String!]
+    }
+
+    type Search {
+        scope: SearchScope!
+        results: DoctorsConnection!
     }
 
     type Query {
@@ -249,13 +256,12 @@ export const typeDefs = gql`
         node(id: ID!): Node
 
         search(
-            query: String!, 
-            filters: SearchFilters! = {},
+            input: SearchInput!,
             after: String, 
             first: Int, 
             before: String, 
             last: Int,
-        ): DoctorsConnection!
+        ): Search!
 
         users(after: String, first: Int, before: String, last: Int): UsersConnection!
         patients(after: String, first: Int, before: String, last: Int): PatientsConnection!

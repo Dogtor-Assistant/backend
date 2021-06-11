@@ -3,8 +3,8 @@ import type { IDoctor } from 'models/Doctor';
 import type { FilterQuery } from 'mongoose';
 
 export type AppliedFilters = {
-    specialities?: string[]
-    cities?: string[]
+    readonly specialities?: string[]
+    readonly cities?: string[]
 }
 
 export type SmartFilter = {

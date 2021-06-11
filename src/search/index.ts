@@ -7,14 +7,14 @@ import nlp from 'nlp';
 import defaultFilters from 'search/filters';
 import { zip } from 'utils/zip';
 
-export type Input = AppliedFilters & {
-    query?: string,
+export type Scope = AppliedFilters & {
+    readonly query?: string,
 }
 
 export function search(
-    { query, ...appliedFilters }: Input,
+    { query, ...appliedFilters }: Scope,
     smartFilters: SmartFilter[] = defaultFilters,
-): Query<IDoctor[], IDoctor> {
+): [Query<IDoctor[], IDoctor>, Scope] {
     const document = nlp(query ?? '');
     document?.contractions().expand();
     document?.dehyphenate();
@@ -25,28 +25,39 @@ export function search(
         if (filterFromInput != null) {
             return [];
         }
-        return document.match(`#${languageTag}+`).out('array');
+        return document.match(`#${languageTag}+`).toTitleCase().out('array');
     });
 
-    const filters = zip(smartFilters, wordsForFilters, filtersFromInput).
-        map(([{ filterFromWords }, words, filterFromInput]) => {
-            if (filterFromInput != null) {
-                return filterFromInput;
-            }
+    const filtersAndScopes: [FilterQuery<IDoctor>, AppliedFilters][] =
+        zip(smartFilters, wordsForFilters, filtersFromInput).
+            map(([{ filterFromWords }, words, filterFromInput]) => {
+                if (filterFromInput != null) {
+                    return [filterFromInput, {} as AppliedFilters];
+                }
 
-            return words.length > 0 ? filterFromWords(words)[0] : {};
-        });
+                return words.length > 0 ? filterFromWords(words) : [{}, {} as AppliedFilters];
+            });
+
+    const filters = filtersAndScopes.map(tuple => tuple[0]);
+    const scopes = filtersAndScopes.map(tuple => tuple[1]);
+    const newAppliedFilters = scopes.reduce((acc, scope) => {
+        return {
+            ...acc,
+            ...scope,
+        };
+    }, appliedFilters);
 
     // skip words like `in` and `for`
     const unimportant = [
         document.adverbs().out('array'),
         document.prepositions().out('array'),
+        document.conjunctions().out('array'),
     ].flatMap(items => items);
 
     // Skip words derived for a filter
-    const skippedWords = [...wordsForFilters.flatMap(words => words), ...unimportant];
+    const skippedWords = [...wordsForFilters.flatMap(words => words), ...unimportant].map(word => word.toLowerCase());
     const allWords = Object.keys(document.out('tags')[0]);
-    const additionalWords = allWords.filter(item => !skippedWords.includes(item));
+    const additionalWords = allWords.filter(item => !skippedWords.includes(item.toLowerCase()));
 
     const queries: FilterQuery<IDoctor>[] = [
         ...filters,
@@ -70,7 +81,7 @@ export function search(
         return acc;
     }) ?? {};
         
-    return Doctor.
+    const dbQuery = Doctor.
         find(
             composed,
         ).
@@ -79,4 +90,12 @@ export function search(
                 rating: -1,
             },
         );
+
+    return [
+        dbQuery,
+        {
+            query: additionalWords.length > 0 ? additionalWords.join(' ') : undefined,
+            ...newAppliedFilters,
+        },
+    ];
 }

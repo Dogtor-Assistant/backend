@@ -77,10 +77,21 @@ const Query: QueryResolvers = {
     async reviews(_, args) {
         return await reviewsConnection(ReviewModel.find(), args);
     },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async search(_, { query, filters, ...connectionArgs }) {
-        const doctors = search({ query });
-        return await doctorsConnection(doctors, connectionArgs);
+    async search(_, { input, ...connectionArgs }) {
+        const [doctors, scope] = search({
+            cities: input.cities != null ? [...input.cities] : undefined,
+            query: input.query ?? undefined,
+            specialities: input.specialities != null ? [...input.specialities] : undefined,
+        });
+        const results = await doctorsConnection(doctors, connectionArgs);
+        return {
+            results,
+            scope: {
+                cities: scope?.cities ?? null,
+                query: scope?.query ?? null,
+                specialities: scope.specialities ?? null,
+            },
+        };
     },
     async services(_, args) {
         return await servicesConnection(Service.find(), args);

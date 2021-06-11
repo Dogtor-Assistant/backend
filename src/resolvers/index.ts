@@ -31,6 +31,8 @@ import OfferedSlot from './offeredSlot';
 import Patient from './patient';
 import Query from './query';
 import Review from './review';
+import Search from './search';
+import SearchScope from './searchScope';
 import Service from './service';
 import User from './user';
 import Weekday from './weekday';
@@ -70,6 +72,8 @@ const resolvers: Resolvers = {
     Review,
     ReviewEdge,
     ReviewsConnection,
+    Search,
+    SearchScope,
     Service,
     ServiceEdge,
     ServicesConnection,
