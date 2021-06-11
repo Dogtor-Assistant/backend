@@ -1,5 +1,6 @@
 import type {
     AppliedFilters,
+    Scope,
     SmartFilter,
     SmartSuggestions,
     Suggestions,
@@ -12,10 +13,6 @@ import nlp from 'nlp';
 import defaultFilters from 'search/filters';
 import defaultSuggestions from 'search/suggestions';
 import { zip } from 'utils/zip';
-
-export type Scope = AppliedFilters & {
-    readonly query?: string,
-}
 
 export function search(
     { query, ...appliedFilters }: Scope,
@@ -98,8 +95,13 @@ export function search(
             },
         );
 
+    const scope = {
+        query: additionalWords.length > 0 ? additionalWords.join(' ') : undefined,
+        ...newAppliedFilters,
+    };
+
     const suggestions = smartSuggestions.
-        map(suggestion => suggestion.create(query ?? '')).
+        map(suggestion => suggestion.create(scope)).
         reduce((acc, object) => {
             if (object == null) {
                 return acc;
@@ -112,10 +114,7 @@ export function search(
 
     return [
         dbQuery,
-        {
-            query: additionalWords.length > 0 ? additionalWords.join(' ') : undefined,
-            ...newAppliedFilters,
-        },
+        scope,
         suggestions,
     ];
 }

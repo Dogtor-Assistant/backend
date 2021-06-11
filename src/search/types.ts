@@ -7,6 +7,10 @@ export type AppliedFilters = {
     readonly cities?: string[]
 }
 
+export type Scope = AppliedFilters & {
+    readonly query?: string,
+}
+
 export type Suggestions = {
     readonly specialities?: string[]
 }
@@ -18,5 +22,5 @@ export type SmartFilter = {
 }
 
 export type SmartSuggestions = {
-    create: (query: string) => Suggestions | null;
+    create: (scope: Scope) => Suggestions | null;
 }

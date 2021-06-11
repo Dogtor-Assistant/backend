@@ -34,7 +34,11 @@ classifier.addDocument('I need surgery', 'Surgeon');
 classifier.train();
 
 const suggestions: SmartSuggestions = {
-    create(query) {
+    create({ query }) {
+        if (query == null) {
+            return null;
+        }
+        
         const classifications = classifier.getClassifications(query);
         if (classifications.length === 0) {
             return null;
