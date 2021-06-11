@@ -7,6 +7,9 @@ const Search: SearchResolvers = {
     scope({ scope }) {
         return scope;
     },
+    suggestions({ suggestions }) {
+        return suggestions;
+    },
 };
 
 export default Search;

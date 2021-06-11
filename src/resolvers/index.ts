@@ -33,6 +33,7 @@ import Query from './query';
 import Review from './review';
 import Search from './search';
 import SearchScope from './searchScope';
+import SearchSuggestions from './searchSuggestions';
 import Service from './service';
 import User from './user';
 import Weekday from './weekday';
@@ -74,6 +75,7 @@ const resolvers: Resolvers = {
     ReviewsConnection,
     Search,
     SearchScope,
+    SearchSuggestions,
     Service,
     ServiceEdge,
     ServicesConnection,

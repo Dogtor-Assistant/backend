@@ -7,8 +7,16 @@ export type AppliedFilters = {
     readonly cities?: string[]
 }
 
+export type Suggestions = {
+    readonly specialities?: string[]
+}
+
 export type SmartFilter = {
     languageTag: string,
     filterFromInput: (filters: AppliedFilters) => (FilterQuery<IDoctor> | null)
     filterFromWords: (words: string[]) => [FilterQuery<IDoctor>, AppliedFilters]
+}
+
+export type SmartSuggestions = {
+    create: (query: string) => Suggestions | null;
 }

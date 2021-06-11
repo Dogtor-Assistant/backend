@@ -37,7 +37,8 @@
     "graphql-scalars": "^1.9.3",
     "jsonwebtoken": "^8.5.1",
     "keyv": "^3.1.0",
-    "mongoose": "^5.12.7"
+    "mongoose": "^5.12.7",
+    "natural": "^5.0.3"
   },
   "devDependencies": {
     "@graphql-codegen/add": "^2.0.2",
@@ -50,6 +51,7 @@
     "@types/jsonwebtoken": "^8.5.1",
     "@types/keyv": "^3.1.1",
     "@types/mongoose": "^5.11.97",
+    "@types/natural": "^2.1.1",
     "@types/node": "^15.6.1",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@typescript-eslint/parser": "^4.25.0",

@@ -245,8 +245,13 @@ export const typeDefs = gql`
         cities: [String!]
     }
 
+    type SearchSuggestions {
+        specialities: [String!]
+    }
+
     type Search {
         scope: SearchScope!
+        suggestions: SearchSuggestions!
         results: DoctorsConnection!
     }
 

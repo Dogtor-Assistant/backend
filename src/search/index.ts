@@ -1,10 +1,16 @@
-import type { AppliedFilters, SmartFilter } from './types';
+import type {
+    AppliedFilters,
+    SmartFilter,
+    SmartSuggestions,
+    Suggestions,
+} from './types';
 import type { IDoctor } from 'models/Doctor';
 import type { FilterQuery, Query } from 'mongoose';
 
 import Doctor from 'models/Doctor';
 import nlp from 'nlp';
 import defaultFilters from 'search/filters';
+import defaultSuggestions from 'search/suggestions';
 import { zip } from 'utils/zip';
 
 export type Scope = AppliedFilters & {
@@ -14,7 +20,8 @@ export type Scope = AppliedFilters & {
 export function search(
     { query, ...appliedFilters }: Scope,
     smartFilters: SmartFilter[] = defaultFilters,
-): [Query<IDoctor[], IDoctor>, Scope] {
+    smartSuggestions: SmartSuggestions[] = defaultSuggestions,
+): [Query<IDoctor[], IDoctor>, Scope, Suggestions] {
     const document = nlp(query ?? '');
     document?.contractions().expand();
     document?.dehyphenate();
@@ -91,11 +98,24 @@ export function search(
             },
         );
 
+    const suggestions = smartSuggestions.
+        map(suggestion => suggestion.create(query ?? '')).
+        reduce((acc, object) => {
+            if (object == null) {
+                return acc;
+            }
+            return {
+                ...acc,
+                ...object,
+            };
+        }) ?? {};
+
     return [
         dbQuery,
         {
             query: additionalWords.length > 0 ? additionalWords.join(' ') : undefined,
             ...newAppliedFilters,
         },
+        suggestions,
     ];
 }

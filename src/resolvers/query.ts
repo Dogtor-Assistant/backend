@@ -78,7 +78,7 @@ const Query: QueryResolvers = {
         return await reviewsConnection(ReviewModel.find(), args);
     },
     async search(_, { input, ...connectionArgs }) {
-        const [doctors, scope] = search({
+        const [doctors, scope, suggestions] = search({
             cities: input.cities != null ? [...input.cities] : undefined,
             query: input.query ?? undefined,
             specialities: input.specialities != null ? [...input.specialities] : undefined,
@@ -90,6 +90,9 @@ const Query: QueryResolvers = {
                 cities: scope?.cities ?? null,
                 query: scope?.query ?? null,
                 specialities: scope.specialities ?? null,
+            },
+            suggestions: {
+                specialities: suggestions.specialities ?? null,
             },
         };
     },
