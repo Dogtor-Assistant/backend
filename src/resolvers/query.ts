@@ -17,6 +17,7 @@ import {
     servicesConnection,
     usersConnection,
 } from 'pagination';
+import { search } from 'search';
 import { doctor } from 'shims/doctor';
 import { patient } from 'shims/patient';
 import { review } from 'shims/review';
@@ -78,29 +79,7 @@ const Query: QueryResolvers = {
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async search(_, { query, filters, ...connectionArgs }) {
-        const doctors = Doctor.
-            find(
-                {
-                    $text: {
-                        $caseSensitive: false,
-                        $diacriticSensitive: false,
-                        $search: query,
-                    },
-                },
-                {
-                    score: {
-                        $meta: 'textScore',
-                    },
-                },
-            ).
-            sort(
-                {
-                    score: {
-                        $meta: 'textScore',
-                    },
-                },
-            );
-
+        const doctors = search({ query });
         return await doctorsConnection(doctors, connectionArgs);
     },
     async services(_, args) {
