@@ -77,12 +77,13 @@ const Query: QueryResolvers = {
     async reviews(_, args) {
         return await reviewsConnection(ReviewModel.find(), args);
     },
-    async search(_, { input, ...connectionArgs }) {
-        const [doctors, scope, suggestions] = search({
+    async search(_, { input, ...connectionArgs }, context) {
+        const [doctors, scope, suggestions] = await search({
             cities: input.cities != null ? [...input.cities] : undefined,
             query: input.query ?? undefined,
             specialities: input.specialities != null ? [...input.specialities] : undefined,
-        });
+        }, context);
+
         const results = await doctorsConnection(doctors, connectionArgs);
         return {
             results,
@@ -92,6 +93,7 @@ const Query: QueryResolvers = {
                 specialities: scope.specialities ?? null,
             },
             suggestions: {
+                cities: suggestions.cities ?? null,
                 specialities: suggestions.specialities ?? null,
             },
         };

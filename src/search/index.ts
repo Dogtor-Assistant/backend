@@ -5,6 +5,7 @@ import type {
     SmartSuggestions,
     Suggestions,
 } from './types';
+import type { Context } from 'context';
 import type { IDoctor } from 'models/Doctor';
 import type { FilterQuery, Query } from 'mongoose';
 
@@ -14,11 +15,12 @@ import defaultFilters from 'search/filters';
 import defaultSuggestions from 'search/suggestions';
 import { zip } from 'utils/zip';
 
-export function search(
+export async function search(
     { query, ...appliedFilters }: Scope,
+    context: Context,
     smartFilters: SmartFilter[] = defaultFilters,
     smartSuggestions: SmartSuggestions[] = defaultSuggestions,
-): [Query<IDoctor[], IDoctor>, Scope, Suggestions] {
+): Promise<[Query<IDoctor[], IDoctor>, Scope, Suggestions]> {
     const document = nlp(query ?? '');
     document?.contractions().expand();
     document?.dehyphenate();
@@ -101,17 +103,19 @@ export function search(
         ...newAppliedFilters,
     };
 
-    const suggestions = smartSuggestions.
-        map(suggestion => suggestion.create(scope)).
-        reduce((acc, object) => {
-            if (object == null) {
-                return acc;
-            }
-            return {
-                ...acc,
-                ...object,
-            };
-        }) ?? {};
+    const partialSuggestions = await Promise.all(
+        smartSuggestions.map(suggestion => suggestion.create(scope, context)),
+    );
+
+    const suggestions = partialSuggestions.reduce((acc, object) => {
+        if (object == null) {
+            return acc;
+        }
+        return {
+            ...acc,
+            ...object,
+        };
+    }) ?? {};
 
     return [
         dbQuery,

@@ -247,6 +247,7 @@ export const typeDefs = gql`
 
     type SearchSuggestions {
         specialities: [String!]
+        cities: [String!]
     }
 
     type Search {

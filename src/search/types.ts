@@ -1,4 +1,5 @@
 
+import type { Context } from 'context';
 import type { IDoctor } from 'models/Doctor';
 import type { FilterQuery } from 'mongoose';
 
@@ -13,6 +14,7 @@ export type Scope = AppliedFilters & {
 
 export type Suggestions = {
     readonly specialities?: string[]
+    readonly cities?: string[]
 }
 
 export type SmartFilter = {
@@ -22,5 +24,5 @@ export type SmartFilter = {
 }
 
 export type SmartSuggestions = {
-    create: (scope: Scope) => Suggestions | null;
+    create: (scope: Scope, context: Context) => Promise<Suggestions | null>;
 }

@@ -277,6 +277,7 @@ export type SearchScope = {
 
 export type SearchSuggestions = {
   readonly specialities: Maybe<ReadonlyArray<Scalars['String']>>;
+  readonly cities: Maybe<ReadonlyArray<Scalars['String']>>;
 };
 
 export type Service = Node & {
@@ -692,6 +693,7 @@ export type SearchScopeResolvers<ContextType = Context, ParentType extends Resol
 
 export type SearchSuggestionsResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SearchSuggestions'] = ResolversParentTypes['SearchSuggestions']> = ResolversObject<{
   specialities: Resolver<Maybe<ReadonlyArray<ResolversTypes['String']>>, ParentType, ContextType>;
+  cities: Resolver<Maybe<ReadonlyArray<ResolversTypes['String']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
