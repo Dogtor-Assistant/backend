@@ -1,4 +1,5 @@
 
+import 'utils/extensions';
 import { ApolloServer } from 'apollo-server-express';
 import { authenticationOptional, router as auth } from 'authentication';
 import { context } from 'context';
@@ -14,6 +15,8 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT != null ? parseInt(process.env.PORT, 10) : 8000;
+
+app.set('trust proxy', true);
 
 const allowedOrigins = [
     'http://localhost:3000',

@@ -17,6 +17,7 @@ import {
     servicesConnection,
     usersConnection,
 } from 'pagination';
+import { search } from 'search';
 import { doctor } from 'shims/doctor';
 import { patient } from 'shims/patient';
 import { review } from 'shims/review';
@@ -83,6 +84,27 @@ const Query: QueryResolvers = {
     },
     async reviews(_, args) {
         return await reviewsConnection(ReviewModel.find(), args);
+    },
+    async search(_, { input, ...connectionArgs }, context) {
+        const [doctors, scope, suggestions] = await search({
+            cities: input.cities != null ? [...input.cities] : undefined,
+            query: input.query ?? undefined,
+            specialities: input.specialities != null ? [...input.specialities] : undefined,
+        }, context);
+
+        const results = await doctorsConnection(doctors, connectionArgs);
+        return {
+            results,
+            scope: {
+                cities: scope?.cities ?? null,
+                query: scope?.query ?? null,
+                specialities: scope.specialities ?? null,
+            },
+            suggestions: {
+                cities: suggestions.cities ?? null,
+                specialities: suggestions.specialities ?? null,
+            },
+        };
     },
     async services(_, args) {
         return await servicesConnection(Service.find(), args);
