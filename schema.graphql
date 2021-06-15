@@ -205,10 +205,34 @@ type AppointmentsConnection {
   edges: [AppointmentEdge]
 }
 
+input SearchInput {
+  query: String
+  specialities: [String!]
+  cities: [String!]
+}
+
+type SearchScope {
+  query: String
+  specialities: [String!]
+  cities: [String!]
+}
+
+type SearchSuggestions {
+  specialities: [String!]
+  cities: [String!]
+}
+
+type Search {
+  scope: SearchScope!
+  suggestions: SearchSuggestions!
+  results: DoctorsConnection!
+}
+
 type Query {
   greeting: String!
   me: User
   node(id: ID!): Node
+  search(input: SearchInput!, after: String, first: Int, before: String, last: Int): Search!
   users(after: String, first: Int, before: String, last: Int): UsersConnection!
   patients(after: String, first: Int, before: String, last: Int): PatientsConnection!
   doctors(after: String, first: Int, before: String, last: Int): DoctorsConnection!
