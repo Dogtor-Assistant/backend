@@ -1,4 +1,3 @@
-
 import { gql } from 'apollo-server-express';
 
 export const typeDefs = gql`
@@ -268,7 +267,8 @@ export const typeDefs = gql`
             before: String, 
             last: Int,
         ): Search!
-
+        
+        appointments: [Appointment!]!
         users(after: String, first: Int, before: String, last: Int): UsersConnection!
         patients(after: String, first: Int, before: String, last: Int): PatientsConnection!
         doctors(after: String, first: Int, before: String, last: Int): DoctorsConnection!

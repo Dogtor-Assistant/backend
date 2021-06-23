@@ -177,6 +177,7 @@ export type Query = {
   readonly me: Maybe<User>;
   readonly node: Maybe<Node>;
   readonly search: Search;
+  readonly appointments: ReadonlyArray<Appointment>;
   readonly users: UsersConnection;
   readonly patients: PatientsConnection;
   readonly doctors: DoctorsConnection;
@@ -648,6 +649,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   me: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   search: Resolver<ResolversTypes['Search'], ParentType, ContextType, RequireFields<QuerySearchArgs, 'input'>>;
+  appointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType>;
   users: Resolver<ResolversTypes['UsersConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   patients: Resolver<ResolversTypes['PatientsConnection'], ParentType, ContextType, RequireFields<QueryPatientsArgs, never>>;
   doctors: Resolver<ResolversTypes['DoctorsConnection'], ParentType, ContextType, RequireFields<QueryDoctorsArgs, never>>;
