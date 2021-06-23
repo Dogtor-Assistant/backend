@@ -201,6 +201,11 @@ export type QuerySearchArgs = {
 };
 
 
+export type QueryAppointmentsArgs = {
+  doctorId: Maybe<Scalars['ID']>;
+};
+
+
 export type QueryUsersArgs = {
   after: Maybe<Scalars['String']>;
   first: Maybe<Scalars['Int']>;
@@ -649,7 +654,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   me: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   search: Resolver<ResolversTypes['Search'], ParentType, ContextType, RequireFields<QuerySearchArgs, 'input'>>;
-  appointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType>;
+  appointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType, RequireFields<QueryAppointmentsArgs, never>>;
   users: Resolver<ResolversTypes['UsersConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   patients: Resolver<ResolversTypes['PatientsConnection'], ParentType, ContextType, RequireFields<QueryPatientsArgs, never>>;
   doctors: Resolver<ResolversTypes['DoctorsConnection'], ParentType, ContextType, RequireFields<QueryDoctorsArgs, never>>;

@@ -27,8 +27,16 @@ import { user } from 'shims/user';
 import { deconstructId } from 'utils/ids';
 
 const Query: QueryResolvers = {
-    async appointments() {
-        return await Appointment.find();
+    async appointments(doctorId) {
+        return await Appointment.aggregate([
+            {
+                $match: {
+                    doctorRef: {
+                        doctorId: doctorId,
+                    },
+                },
+            },
+        ]);
     },
 
     async doctors(_, args) {
