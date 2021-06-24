@@ -268,7 +268,7 @@ export const typeDefs = gql`
             last: Int,
         ): Search!
         
-        appointments(doctorId: ID): [Appointment!]!
+        appointments(doctorId: ID!): [Appointment!]!
         users(after: String, first: Int, before: String, last: Int): UsersConnection!
         patients(after: String, first: Int, before: String, last: Int): PatientsConnection!
         doctors(after: String, first: Int, before: String, last: Int): DoctorsConnection!
