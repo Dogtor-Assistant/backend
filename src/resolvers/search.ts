@@ -1,14 +1,39 @@
 import type { SearchResolvers } from '@resolvers';
 
+import { doctorsConnection } from 'pagination';
+import { buildId } from 'utils/ids';
+
 const Search: SearchResolvers = {
-    results({ results }) {
-        return results;
+    id({ input }) {
+        const inputAsRecord = input as Record<string, unknown>;
+        const orderedInput = Object.keys(inputAsRecord).sort().reduce(
+            (obj, key) => {
+                return {
+                    ...obj,
+                    [key]: inputAsRecord[key],
+                };
+            },
+            {},
+        );
+
+        const stringified = JSON.stringify(orderedInput);
+        return buildId('Search', stringified);
+    },
+    results({ query }, connectionArgs) {
+        return doctorsConnection(query, connectionArgs);
     },
     scope({ scope }) {
-        return scope;
+        return {
+            cities: scope?.cities ?? null,
+            query: scope?.query ?? null,
+            specialities: scope.specialities ?? null,
+        };
     },
     suggestions({ suggestions }) {
-        return suggestions;
+        return {
+            cities: suggestions.cities ?? null,
+            specialities: suggestions.specialities ?? null,
+        };
     },
 };
 
