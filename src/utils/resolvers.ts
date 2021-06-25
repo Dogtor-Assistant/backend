@@ -49,6 +49,13 @@ export type Address = {
   readonly zipCode: Scalars['Int'];
 };
 
+export type AddressInput = {
+  readonly streetName: Scalars['String'];
+  readonly streetNumber: Scalars['Int'];
+  readonly city: Scalars['String'];
+  readonly zipCode: Scalars['Int'];
+};
+
 export type Appointment = Node & {
   readonly id: Scalars['ID'];
   readonly patient: Patient;
@@ -130,14 +137,29 @@ export enum Insurance {
 }
 
 
+export type Mutation = {
+  readonly createUserDoctor: Maybe<User>;
+};
+
+
+export type MutationCreateUserDoctorArgs = {
+  input: UserDoctorInput;
+};
+
 export type Node = {
   readonly id: Scalars['ID'];
 };
 
 export type OfferedSlot = {
   readonly day: Weekday;
-  readonly start: Scalars['Time'];
-  readonly end: Scalars['Time'];
+  readonly start: Scalars['String'];
+  readonly end: Scalars['String'];
+};
+
+export type OfferedSlotInput = {
+  readonly day: Weekday;
+  readonly slotStart: Scalars['String'];
+  readonly slotStop: Scalars['String'];
 };
 
 export type PageInfo = {
@@ -304,6 +326,18 @@ export type User = Node & {
   readonly patientProfile: Maybe<Patient>;
 };
 
+export type UserDoctorInput = {
+  readonly email: Scalars['String'];
+  readonly firstName: Scalars['String'];
+  readonly lastName: Scalars['String'];
+  readonly password: Scalars['String'];
+  readonly address: AddressInput;
+  readonly phoneNumber: Scalars['String'];
+  readonly webpage: Maybe<Scalars['URL']>;
+  readonly specialities: ReadonlyArray<Scalars['String']>;
+  readonly offeredSlots: ReadonlyArray<OfferedSlotInput>;
+};
+
 export type UserEdge = {
   readonly cursor: Scalars['String'];
   readonly node: Maybe<User>;
@@ -408,6 +442,7 @@ export type ResolversTypes = ResolversObject<{
   Address: ResolverTypeWrapper<Address>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  AddressInput: AddressInput;
   Appointment: ResolverTypeWrapper<IAppointmentModel>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -425,8 +460,10 @@ export type ResolversTypes = ResolversObject<{
   Gender: ResolverTypeWrapper<GenderModel>;
   Insurance: ResolverTypeWrapper<InsuranceModel>;
   Length: ResolverTypeWrapper<Scalars['Length']>;
+  Mutation: ResolverTypeWrapper<{}>;
   Node: ResolversTypes['Appointment'] | ResolversTypes['Checkup'] | ResolversTypes['Doctor'] | ResolversTypes['Followup'] | ResolversTypes['Patient'] | ResolversTypes['Review'] | ResolversTypes['Service'] | ResolversTypes['User'];
   OfferedSlot: ResolverTypeWrapper<Omit<OfferedSlot, 'day'> & { day: ResolversTypes['Weekday'] }>;
+  OfferedSlotInput: OfferedSlotInput;
   PageInfo: ResolverTypeWrapper<PageInfoModel>;
   Patient: ResolverTypeWrapper<PatientModel>;
   PatientEdge: ResolverTypeWrapper<PatientEdgeModel>;
@@ -445,6 +482,7 @@ export type ResolversTypes = ResolversObject<{
   Time: ResolverTypeWrapper<Scalars['Time']>;
   URL: ResolverTypeWrapper<Scalars['URL']>;
   User: ResolverTypeWrapper<UserModel>;
+  UserDoctorInput: UserDoctorInput;
   UserEdge: ResolverTypeWrapper<UserEdgeModel>;
   UsersConnection: ResolverTypeWrapper<UsersConnectionModel>;
   Weekday: ResolverTypeWrapper<DayModel>;
@@ -456,6 +494,7 @@ export type ResolversParentTypes = ResolversObject<{
   Address: Address;
   String: Scalars['String'];
   Int: Scalars['Int'];
+  AddressInput: AddressInput;
   Appointment: IAppointmentModel;
   ID: Scalars['ID'];
   Boolean: Scalars['Boolean'];
@@ -471,8 +510,10 @@ export type ResolversParentTypes = ResolversObject<{
   Duration: Scalars['Duration'];
   Followup: IFollowupModel;
   Length: Scalars['Length'];
+  Mutation: {};
   Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
   OfferedSlot: Omit<OfferedSlot, 'day'> & { day: ResolversParentTypes['Weekday'] };
+  OfferedSlotInput: OfferedSlotInput;
   PageInfo: PageInfoModel;
   Patient: PatientModel;
   PatientEdge: PatientEdgeModel;
@@ -491,6 +532,7 @@ export type ResolversParentTypes = ResolversObject<{
   Time: Scalars['Time'];
   URL: Scalars['URL'];
   User: UserModel;
+  UserDoctorInput: UserDoctorInput;
   UserEdge: UserEdgeModel;
   UsersConnection: UsersConnectionModel;
   Weight: Scalars['Weight'];
@@ -596,14 +638,18 @@ export interface LengthScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
   name: 'Length';
 }
 
+export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  createUserDoctor: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserDoctorArgs, 'input'>>;
+}>;
+
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
   __resolveType: TypeResolveFn<'Appointment' | 'Checkup' | 'Doctor' | 'Followup' | 'Patient' | 'Review' | 'Service' | 'User', ParentType, ContextType>;
 }>;
 
 export type OfferedSlotResolvers<ContextType = Context, ParentType extends ResolversParentTypes['OfferedSlot'] = ResolversParentTypes['OfferedSlot']> = ResolversObject<{
   day: Resolver<ResolversTypes['Weekday'], ParentType, ContextType>;
-  start: Resolver<ResolversTypes['Time'], ParentType, ContextType>;
-  end: Resolver<ResolversTypes['Time'], ParentType, ContextType>;
+  start: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  end: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -766,6 +812,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Gender: GenderResolvers;
   Insurance: InsuranceResolvers;
   Length: GraphQLScalarType;
+  Mutation: MutationResolvers<ContextType>;
   Node: NodeResolvers<ContextType>;
   OfferedSlot: OfferedSlotResolvers<ContextType>;
   PageInfo: PageInfoResolvers<ContextType>;

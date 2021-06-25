@@ -14,9 +14,6 @@ export const typeDefs = gql`
     # Date and time of an event encoded as an ISO 8601 string
     scalar DateTime
 
-    # Time of the date encoded as HH:mm
-    scalar Time
-
     scalar URL
 
     # Length in centimeters
@@ -120,8 +117,8 @@ export const typeDefs = gql`
 
     type OfferedSlot {
         day: Weekday!
-        start: Time!
-        end: Time!
+        start: String!
+        end: String!
     }
 
     type Patient implements Node {
@@ -256,6 +253,33 @@ export const typeDefs = gql`
         results: DoctorsConnection!
     }
 
+    input AddressInput {
+        streetName: String!
+        streetNumber: Int!
+        city: String!
+        zipCode: Int!
+    }
+
+    input OfferedSlotInput {
+        day: Weekday!
+        slotStart: String!
+        slotStop: String!
+    }
+
+    input UserDoctorInput {
+        email: String!
+        firstName: String!
+        lastName: String!
+        password: String!
+
+        address: AddressInput!
+        phoneNumber: String!
+        webpage: URL
+
+        specialities: [String!]!
+        offeredSlots: [OfferedSlotInput!]!
+    }
+
     type Query {
         greeting: String!
         me: User
@@ -277,7 +301,12 @@ export const typeDefs = gql`
         latestReviews: [Review!]!
     }
 
+    type Mutation {
+        createUserDoctor(input: UserDoctorInput!): User
+    }
+    
     schema {
         query: Query
+        mutation: Mutation
     }
 `;
