@@ -26,6 +26,7 @@ import Followup from './followup';
 import Gender from './gender';
 import Insurance from './insurance';
 import Length from './length';
+import Mutation from './mutation';
 import Node from './node';
 import OfferedSlot from './offeredSlot';
 import Patient from './patient';
@@ -63,6 +64,7 @@ const resolvers: Resolvers = {
     Gender,
     Insurance,
     Length,
+    Mutation,
     Node,
     OfferedSlot,
     PageInfo,
