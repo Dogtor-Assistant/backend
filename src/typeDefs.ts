@@ -303,6 +303,7 @@ export const typeDefs = gql`
 
     type Mutation {
         createUserDoctor(input: UserDoctorInput!): User
+        deleteAppointmentById(id:ID!): Boolean!
     }
     
     schema {

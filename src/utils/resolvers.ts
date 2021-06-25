@@ -139,11 +139,17 @@ export enum Insurance {
 
 export type Mutation = {
   readonly createUserDoctor: Maybe<User>;
+  readonly deleteAppointmentById: Scalars['Boolean'];
 };
 
 
 export type MutationCreateUserDoctorArgs = {
   input: UserDoctorInput;
+};
+
+
+export type MutationDeleteAppointmentByIdArgs = {
+  id: Scalars['ID'];
 };
 
 export type Node = {
@@ -642,6 +648,7 @@ export interface LengthScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createUserDoctor: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserDoctorArgs, 'input'>>;
+  deleteAppointmentById: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteAppointmentByIdArgs, 'id'>>;
 }>;
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{

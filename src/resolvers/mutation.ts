@@ -1,6 +1,7 @@
 import type { MutationResolvers } from '@resolvers';
 
 import bcrypt from 'bcrypt';
+import Appointment from 'models/Appointment';
 import Doctor from 'models/Doctor';
 import User from 'models/User';
 import mongoose from 'mongoose';
@@ -40,6 +41,18 @@ const Mutation: MutationResolvers = {
         // if statement should never succeed
         if (userIn._id === undefined) throw 'Error';
         return userShim(userIn._id);
+    },
+    async deleteAppointmentById(_, { id }) {
+        const appointment = await Appointment.findById(id);
+
+        if(!appointment) {
+            return false;
+        }
+
+        await Appointment.deleteOne({ _id:appointment._id });
+
+        return true;
+         
     },
 };
 
