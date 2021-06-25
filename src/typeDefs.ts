@@ -14,9 +14,6 @@ export const typeDefs = gql`
     # Date and time of an event encoded as an ISO 8601 string
     scalar DateTime
 
-    # Time of the date encoded as HH:mm:ssZ
-    scalar Time
-
     scalar URL
 
     # Length in centimeters
