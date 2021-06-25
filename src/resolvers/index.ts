@@ -40,12 +40,7 @@ import User from './user';
 import Weekday from './weekday';
 import Weight from './weight';
 
-import {
-    GraphQLDateTime as DateTime,
-    GraphQLDuration as Duration,
-    GraphQLTime as Time,
-    GraphQLURL as URL,
-} from 'graphql-scalars';
+import { GraphQLDateTime as DateTime, GraphQLDuration as Duration, GraphQLURL as URL } from 'graphql-scalars';
 
 const resolvers: Resolvers = {
     ActivityLevel,
