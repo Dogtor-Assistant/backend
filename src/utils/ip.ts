@@ -4,10 +4,10 @@ import bent from 'bent';
 const ipApi = bent<CityResponse>('http://ip-api.com/json/', 'json', 200);
 
 type CityResponse = {
-    status: 'fail'
+    status: 'fail',
 } | {
-    status: 'success'
-    city: string
+    status: 'success',
+    city: string,
 }
 
 export async function cityForIp(ip: string): Promise<string> {
