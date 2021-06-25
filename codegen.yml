@@ -49,3 +49,4 @@ generates:
         PatientEdge: pagination#PatientEdge
         ServiceEdge: pagination#ServiceEdge
         AppointmentEdge: pagination#AppointmentEdge
+        Search: search/types#SearchObject

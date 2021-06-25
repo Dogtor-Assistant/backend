@@ -1,13 +1,14 @@
 import type {
     AppliedFilters,
     Scope,
+    SearchObject,
     SmartFilter,
     SmartSuggestions,
-    Suggestions,
 } from './types';
+import type { QuerySearchArgs, RequireFields } from '@resolvers';
 import type { Context } from 'context';
 import type { IDoctor } from 'models/Doctor';
-import type { FilterQuery, Query } from 'mongoose';
+import type { FilterQuery } from 'mongoose';
 
 import Doctor from 'models/Doctor';
 import nlp from 'nlp';
@@ -15,12 +16,12 @@ import defaultFilters from 'search/filters';
 import defaultSuggestions from 'search/suggestions';
 import { zip } from 'utils/zip';
 
-export async function search(
+async function searchImpl(
     { query, ...appliedFilters }: Scope,
     context: Context,
-    smartFilters: SmartFilter[] = defaultFilters,
-    smartSuggestions: SmartSuggestions[] = defaultSuggestions,
-): Promise<[Query<IDoctor[], IDoctor>, Scope, Suggestions]> {
+    smartFilters: SmartFilter[],
+    smartSuggestions: SmartSuggestions[],
+): Promise<Omit<Omit<SearchObject, 'input'>, '__typename'>> {
     const document = nlp(query ?? '');
     document?.contractions().expand();
     document?.dehyphenate();
@@ -117,9 +118,33 @@ export async function search(
         };
     }) ?? {};
 
-    return [
-        dbQuery,
+    return {
+        query: dbQuery,
         scope,
         suggestions,
-    ];
+    };
+}
+
+export async function search(
+    input: RequireFields<QuerySearchArgs, never>,
+    context: Context,
+    smartFilters: SmartFilter[] = defaultFilters,
+    smartSuggestions: SmartSuggestions[] = defaultSuggestions,
+): Promise<SearchObject> {
+    const results = await searchImpl(
+        {
+            cities: input.cities != null ? [...input.cities] : undefined,
+            query: input.query ?? undefined,
+            specialities: input.specialities != null ? [...input.specialities] : undefined,
+        },
+        context,
+        smartFilters,
+        smartSuggestions,
+    );
+
+    return {
+        __typename: 'Search',
+        input,
+        ...results,
+    };
 }
