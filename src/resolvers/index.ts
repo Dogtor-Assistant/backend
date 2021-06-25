@@ -81,7 +81,6 @@ const resolvers: Resolvers = {
     Service,
     ServiceEdge,
     ServicesConnection,
-    Time,
     URL,
     User,
     UserEdge,
