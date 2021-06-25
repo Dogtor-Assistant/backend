@@ -17,7 +17,8 @@ const Search: SearchResolvers = {
         );
 
         const stringified = JSON.stringify(orderedInput);
-        return buildId('Search', stringified);
+        const encoded = Buffer.from(stringified, 'ascii').toString('base64');
+        return buildId('Search', encoded);
     },
     results({ query }, connectionArgs) {
         return doctorsConnection(query, connectionArgs);

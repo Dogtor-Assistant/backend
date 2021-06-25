@@ -74,7 +74,8 @@ const Query: QueryResolvers = {
         case 'Review':
             return await review(id);
         case 'Search': {
-            const input = JSON.parse(id) as QuerySearchArgs;
+            const json = Buffer.from(id, 'base64').toString('ascii');
+            const input = JSON.parse(json) as QuerySearchArgs;
             return await search(input, context);
         }
         case 'Service':
