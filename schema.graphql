@@ -6,8 +6,6 @@ scalar Duration
 
 scalar DateTime
 
-scalar Time
-
 scalar URL
 
 scalar Length
@@ -99,8 +97,8 @@ type Followup implements Node {
 
 type OfferedSlot {
   day: Weekday!
-  start: Time!
-  end: Time!
+  start: String!
+  end: String!
 }
 
 type Patient implements Node {
@@ -228,6 +226,31 @@ type Search {
   results: DoctorsConnection!
 }
 
+input AddressInput {
+  streetName: String!
+  streetNumber: Int!
+  city: String!
+  zipCode: Int!
+}
+
+input OfferedSlotInput {
+  day: Weekday!
+  slotStart: String!
+  slotStop: String!
+}
+
+input UserDoctorInput {
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+  address: AddressInput!
+  phoneNumber: String!
+  webpage: URL
+  specialities: [String!]!
+  offeredSlots: [OfferedSlotInput!]!
+}
+
 type Query {
   greeting: String!
   me: User
@@ -239,4 +262,8 @@ type Query {
   reviews(after: String, first: Int, before: String, last: Int): ReviewsConnection!
   services(after: String, first: Int, before: String, last: Int): ServicesConnection!
   latestReviews: [Review!]!
+}
+
+type Mutation {
+  createUserDoctor(input: UserDoctorInput!): User
 }
