@@ -230,12 +230,6 @@ export const typeDefs = gql`
         edges: [AppointmentEdge]
     }
 
-    input SearchInput {
-        query: String
-        specialities: [String!]
-        cities: [String!]
-    }
-
     type SearchScope {
         query: String
         specialities: [String!]
@@ -247,10 +241,18 @@ export const typeDefs = gql`
         cities: [String!]
     }
 
-    type Search {
+    type Search implements Node {
+        id: ID!
+        
         scope: SearchScope!
         suggestions: SearchSuggestions!
-        results: DoctorsConnection!
+
+        results(
+            after: String, 
+            first: Int, 
+            before: String, 
+            last: Int,
+        ): DoctorsConnection!
     }
 
     input AddressInput {
@@ -286,11 +288,9 @@ export const typeDefs = gql`
         node(id: ID!): Node
 
         search(
-            input: SearchInput!,
-            after: String, 
-            first: Int, 
-            before: String, 
-            last: Int,
+            query: String
+            specialities: [String!]
+            cities: [String!]
         ): Search!
 
         users(after: String, first: Int, before: String, last: Int): UsersConnection!
