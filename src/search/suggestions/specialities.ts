@@ -35,7 +35,6 @@ classifier.train();
 
 const suggestions: SmartSuggestions = {
     async create({ query }) {
-        console.log('specialities');
         if (query == null) {
             return null;
         }

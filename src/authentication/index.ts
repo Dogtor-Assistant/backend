@@ -17,7 +17,7 @@ type Grant = {
     password: string,
 } | {
     'grant_type' : 'refresh_token',
-    'refresh_token' : string
+    'refresh_token' : string,
 }
 
 type TokenSuccess = {

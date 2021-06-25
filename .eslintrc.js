@@ -19,6 +19,20 @@ module.exports = {
         '@typescript-eslint/consistent-type-imports': 'error',
         // Allow for return type inference (I'm lazy)
         '@typescript-eslint/explicit-module-boundary-types': 'off',
+        '@typescript-eslint/member-delimiter-style': [
+            'error',
+            {
+                'multiline': {
+                    'delimiter': 'comma',
+                    'requireLast': true,
+                },
+                'multilineDetection': 'brackets',
+                'singleline': {
+                    'delimiter': 'comma',
+                    'requireLast': false,
+                },
+            },
+        ],
         'array-bracket-spacing': ['error', 'never'],
         'arrow-parens': ['error', 'as-needed'],
         'arrow-spacing': 'error',

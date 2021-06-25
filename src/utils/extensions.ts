@@ -1,12 +1,12 @@
 declare global {
     interface Array<T> {
-        compactMap<O>(transform: (element: T) => O | null | undefined): Array<O>;
-        unique(): Array<T>
+        compactMap<O>(transform: (element: T) => O | null | undefined): Array<O>,
+        unique(): Array<T>,
     }
 
     interface ReadonlyArray<T> {
-        compactMap<O>(transform: (element: T) => O | null | undefined): Array<O>;
-        unique(): Array<T>
+        compactMap<O>(transform: (element: T) => O | null | undefined): Array<O>,
+        unique(): Array<T>,
     }
 }
 

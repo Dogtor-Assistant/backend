@@ -13,9 +13,6 @@ export const typeDefs = gql`
     # Date and time of an event encoded as an ISO 8601 string
     scalar DateTime
 
-    # Time of the date encoded as HH:mm
-    scalar Time
-
     scalar URL
 
     # Length in centimeters
@@ -119,8 +116,8 @@ export const typeDefs = gql`
 
     type OfferedSlot {
         day: Weekday!
-        start: Time!
-        end: Time!
+        start: String!
+        end: String!
     }
 
     type Patient implements Node {
@@ -232,12 +229,6 @@ export const typeDefs = gql`
         edges: [AppointmentEdge]
     }
 
-    input SearchInput {
-        query: String
-        specialities: [String!]
-        cities: [String!]
-    }
-
     type SearchScope {
         query: String
         specialities: [String!]
@@ -249,10 +240,45 @@ export const typeDefs = gql`
         cities: [String!]
     }
 
-    type Search {
+    type Search implements Node {
+        id: ID!
+        
         scope: SearchScope!
         suggestions: SearchSuggestions!
-        results: DoctorsConnection!
+
+        results(
+            after: String, 
+            first: Int, 
+            before: String, 
+            last: Int,
+        ): DoctorsConnection!
+    }
+
+    input AddressInput {
+        streetName: String!
+        streetNumber: Int!
+        city: String!
+        zipCode: Int!
+    }
+
+    input OfferedSlotInput {
+        day: Weekday!
+        slotStart: String!
+        slotStop: String!
+    }
+
+    input UserDoctorInput {
+        email: String!
+        firstName: String!
+        lastName: String!
+        password: String!
+
+        address: AddressInput!
+        phoneNumber: String!
+        webpage: URL
+
+        specialities: [String!]!
+        offeredSlots: [OfferedSlotInput!]!
     }
 
     type Query {
@@ -261,11 +287,9 @@ export const typeDefs = gql`
         node(id: ID!): Node
 
         search(
-            input: SearchInput!,
-            after: String, 
-            first: Int, 
-            before: String, 
-            last: Int,
+            query: String
+            specialities: [String!]
+            cities: [String!]
         ): Search!
         
         appointments(doctorId: ID!): [Appointment!]!
@@ -277,7 +301,12 @@ export const typeDefs = gql`
         latestReviews: [Review!]!
     }
 
+    type Mutation {
+        createUserDoctor(input: UserDoctorInput!): User
+    }
+    
     schema {
         query: Query
+        mutation: Mutation
     }
 `;

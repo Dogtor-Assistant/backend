@@ -26,6 +26,7 @@ import Followup from './followup';
 import Gender from './gender';
 import Insurance from './insurance';
 import Length from './length';
+import Mutation from './mutation';
 import Node from './node';
 import OfferedSlot from './offeredSlot';
 import Patient from './patient';
@@ -39,12 +40,7 @@ import User from './user';
 import Weekday from './weekday';
 import Weight from './weight';
 
-import {
-    GraphQLDateTime as DateTime,
-    GraphQLDuration as Duration,
-    GraphQLTime as Time,
-    GraphQLURL as URL,
-} from 'graphql-scalars';
+import { GraphQLDateTime as DateTime, GraphQLDuration as Duration, GraphQLURL as URL } from 'graphql-scalars';
 
 const resolvers: Resolvers = {
     ActivityLevel,
@@ -63,6 +59,7 @@ const resolvers: Resolvers = {
     Gender,
     Insurance,
     Length,
+    Mutation,
     Node,
     OfferedSlot,
     PageInfo,
@@ -79,7 +76,6 @@ const resolvers: Resolvers = {
     Service,
     ServiceEdge,
     ServicesConnection,
-    Time,
     URL,
     User,
     UserEdge,

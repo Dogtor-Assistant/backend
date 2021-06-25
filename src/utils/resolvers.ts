@@ -11,6 +11,7 @@ import type { IFollowup as IFollowupModel } from 'models/Followup';
 import type { Review as ReviewModel } from 'shims/review';
 import type { Service as ServiceModel } from 'shims/service';
 import type { PageInfo as PageInfoModel, ReviewsConnection as ReviewsConnectionModel, UsersConnection as UsersConnectionModel, DoctorsConnection as DoctorsConnectionModel, PatientsConnection as PatientsConnectionModel, ServicesConnection as ServicesConnectionModel, AppointmentsConnection as AppointmentsConnectionModel, ReviewEdge as ReviewEdgeModel, UserEdge as UserEdgeModel, DoctorEdge as DoctorEdgeModel, PatientEdge as PatientEdgeModel, ServiceEdge as ServiceEdgeModel, AppointmentEdge as AppointmentEdgeModel } from 'pagination';
+import type { SearchObject as SearchObjectModel } from 'search/types';
 import type { Context } from 'context';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -29,7 +30,6 @@ export type Scalars = {
   DateTime: Date;
   Duration: number;
   Length: number;
-  Time: string;
   URL: string;
   Weight: number;
 };
@@ -43,6 +43,13 @@ export enum ActivityLevel {
 }
 
 export type Address = {
+  readonly streetName: Scalars['String'];
+  readonly streetNumber: Scalars['Int'];
+  readonly city: Scalars['String'];
+  readonly zipCode: Scalars['Int'];
+};
+
+export type AddressInput = {
   readonly streetName: Scalars['String'];
   readonly streetNumber: Scalars['Int'];
   readonly city: Scalars['String'];
@@ -130,14 +137,29 @@ export enum Insurance {
 }
 
 
+export type Mutation = {
+  readonly createUserDoctor: Maybe<User>;
+};
+
+
+export type MutationCreateUserDoctorArgs = {
+  input: UserDoctorInput;
+};
+
 export type Node = {
   readonly id: Scalars['ID'];
 };
 
 export type OfferedSlot = {
   readonly day: Weekday;
-  readonly start: Scalars['Time'];
-  readonly end: Scalars['Time'];
+  readonly start: Scalars['String'];
+  readonly end: Scalars['String'];
+};
+
+export type OfferedSlotInput = {
+  readonly day: Weekday;
+  readonly slotStart: Scalars['String'];
+  readonly slotStop: Scalars['String'];
 };
 
 export type PageInfo = {
@@ -193,11 +215,9 @@ export type QueryNodeArgs = {
 
 
 export type QuerySearchArgs = {
-  input: SearchInput;
-  after: Maybe<Scalars['String']>;
-  first: Maybe<Scalars['Int']>;
-  before: Maybe<Scalars['String']>;
-  last: Maybe<Scalars['Int']>;
+  query: Maybe<Scalars['String']>;
+  specialities: Maybe<ReadonlyArray<Scalars['String']>>;
+  cities: Maybe<ReadonlyArray<Scalars['String']>>;
 };
 
 
@@ -263,16 +283,19 @@ export type ReviewsConnection = {
   readonly edges: Maybe<ReadonlyArray<Maybe<ReviewEdge>>>;
 };
 
-export type Search = {
+export type Search = Node & {
+  readonly id: Scalars['ID'];
   readonly scope: SearchScope;
   readonly suggestions: SearchSuggestions;
   readonly results: DoctorsConnection;
 };
 
-export type SearchInput = {
-  readonly query: Maybe<Scalars['String']>;
-  readonly specialities: Maybe<ReadonlyArray<Scalars['String']>>;
-  readonly cities: Maybe<ReadonlyArray<Scalars['String']>>;
+
+export type SearchResultsArgs = {
+  after: Maybe<Scalars['String']>;
+  first: Maybe<Scalars['Int']>;
+  before: Maybe<Scalars['String']>;
+  last: Maybe<Scalars['Int']>;
 };
 
 export type SearchScope = {
@@ -301,13 +324,24 @@ export type ServicesConnection = {
 };
 
 
-
 export type User = Node & {
   readonly id: Scalars['ID'];
   readonly firstname: Scalars['String'];
   readonly lastname: Scalars['String'];
   readonly doctorProfile: Maybe<Doctor>;
   readonly patientProfile: Maybe<Patient>;
+};
+
+export type UserDoctorInput = {
+  readonly email: Scalars['String'];
+  readonly firstName: Scalars['String'];
+  readonly lastName: Scalars['String'];
+  readonly password: Scalars['String'];
+  readonly address: AddressInput;
+  readonly phoneNumber: Scalars['String'];
+  readonly webpage: Maybe<Scalars['URL']>;
+  readonly specialities: ReadonlyArray<Scalars['String']>;
+  readonly offeredSlots: ReadonlyArray<OfferedSlotInput>;
 };
 
 export type UserEdge = {
@@ -414,6 +448,7 @@ export type ResolversTypes = ResolversObject<{
   Address: ResolverTypeWrapper<Address>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  AddressInput: AddressInput;
   Appointment: ResolverTypeWrapper<IAppointmentModel>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -431,8 +466,10 @@ export type ResolversTypes = ResolversObject<{
   Gender: ResolverTypeWrapper<GenderModel>;
   Insurance: ResolverTypeWrapper<InsuranceModel>;
   Length: ResolverTypeWrapper<Scalars['Length']>;
-  Node: ResolversTypes['Appointment'] | ResolversTypes['Checkup'] | ResolversTypes['Doctor'] | ResolversTypes['Followup'] | ResolversTypes['Patient'] | ResolversTypes['Review'] | ResolversTypes['Service'] | ResolversTypes['User'];
+  Mutation: ResolverTypeWrapper<{}>;
+  Node: ResolversTypes['Appointment'] | ResolversTypes['Checkup'] | ResolversTypes['Doctor'] | ResolversTypes['Followup'] | ResolversTypes['Patient'] | ResolversTypes['Review'] | ResolversTypes['Search'] | ResolversTypes['Service'] | ResolversTypes['User'];
   OfferedSlot: ResolverTypeWrapper<Omit<OfferedSlot, 'day'> & { day: ResolversTypes['Weekday'] }>;
+  OfferedSlotInput: OfferedSlotInput;
   PageInfo: ResolverTypeWrapper<PageInfoModel>;
   Patient: ResolverTypeWrapper<PatientModel>;
   PatientEdge: ResolverTypeWrapper<PatientEdgeModel>;
@@ -441,16 +478,15 @@ export type ResolversTypes = ResolversObject<{
   Review: ResolverTypeWrapper<ReviewModel>;
   ReviewEdge: ResolverTypeWrapper<ReviewEdgeModel>;
   ReviewsConnection: ResolverTypeWrapper<ReviewsConnectionModel>;
-  Search: ResolverTypeWrapper<Omit<Search, 'results'> & { results: ResolversTypes['DoctorsConnection'] }>;
-  SearchInput: SearchInput;
+  Search: ResolverTypeWrapper<SearchObjectModel>;
   SearchScope: ResolverTypeWrapper<SearchScope>;
   SearchSuggestions: ResolverTypeWrapper<SearchSuggestions>;
   Service: ResolverTypeWrapper<ServiceModel>;
   ServiceEdge: ResolverTypeWrapper<ServiceEdgeModel>;
   ServicesConnection: ResolverTypeWrapper<ServicesConnectionModel>;
-  Time: ResolverTypeWrapper<Scalars['Time']>;
   URL: ResolverTypeWrapper<Scalars['URL']>;
   User: ResolverTypeWrapper<UserModel>;
+  UserDoctorInput: UserDoctorInput;
   UserEdge: ResolverTypeWrapper<UserEdgeModel>;
   UsersConnection: ResolverTypeWrapper<UsersConnectionModel>;
   Weekday: ResolverTypeWrapper<DayModel>;
@@ -462,6 +498,7 @@ export type ResolversParentTypes = ResolversObject<{
   Address: Address;
   String: Scalars['String'];
   Int: Scalars['Int'];
+  AddressInput: AddressInput;
   Appointment: IAppointmentModel;
   ID: Scalars['ID'];
   Boolean: Scalars['Boolean'];
@@ -477,8 +514,10 @@ export type ResolversParentTypes = ResolversObject<{
   Duration: Scalars['Duration'];
   Followup: IFollowupModel;
   Length: Scalars['Length'];
-  Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
+  Mutation: {};
+  Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Search'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
   OfferedSlot: Omit<OfferedSlot, 'day'> & { day: ResolversParentTypes['Weekday'] };
+  OfferedSlotInput: OfferedSlotInput;
   PageInfo: PageInfoModel;
   Patient: PatientModel;
   PatientEdge: PatientEdgeModel;
@@ -487,16 +526,15 @@ export type ResolversParentTypes = ResolversObject<{
   Review: ReviewModel;
   ReviewEdge: ReviewEdgeModel;
   ReviewsConnection: ReviewsConnectionModel;
-  Search: Omit<Search, 'results'> & { results: ResolversParentTypes['DoctorsConnection'] };
-  SearchInput: SearchInput;
+  Search: SearchObjectModel;
   SearchScope: SearchScope;
   SearchSuggestions: SearchSuggestions;
   Service: ServiceModel;
   ServiceEdge: ServiceEdgeModel;
   ServicesConnection: ServicesConnectionModel;
-  Time: Scalars['Time'];
   URL: Scalars['URL'];
   User: UserModel;
+  UserDoctorInput: UserDoctorInput;
   UserEdge: UserEdgeModel;
   UsersConnection: UsersConnectionModel;
   Weight: Scalars['Weight'];
@@ -602,14 +640,18 @@ export interface LengthScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
   name: 'Length';
 }
 
+export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  createUserDoctor: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserDoctorArgs, 'input'>>;
+}>;
+
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Appointment' | 'Checkup' | 'Doctor' | 'Followup' | 'Patient' | 'Review' | 'Service' | 'User', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Appointment' | 'Checkup' | 'Doctor' | 'Followup' | 'Patient' | 'Review' | 'Search' | 'Service' | 'User', ParentType, ContextType>;
 }>;
 
 export type OfferedSlotResolvers<ContextType = Context, ParentType extends ResolversParentTypes['OfferedSlot'] = ResolversParentTypes['OfferedSlot']> = ResolversObject<{
   day: Resolver<ResolversTypes['Weekday'], ParentType, ContextType>;
-  start: Resolver<ResolversTypes['Time'], ParentType, ContextType>;
-  end: Resolver<ResolversTypes['Time'], ParentType, ContextType>;
+  start: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  end: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -653,7 +695,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   greeting: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   me: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
-  search: Resolver<ResolversTypes['Search'], ParentType, ContextType, RequireFields<QuerySearchArgs, 'input'>>;
+  search: Resolver<ResolversTypes['Search'], ParentType, ContextType, RequireFields<QuerySearchArgs, never>>;
   appointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType, RequireFields<QueryAppointmentsArgs, 'doctorId'>>;
   users: Resolver<ResolversTypes['UsersConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   patients: Resolver<ResolversTypes['PatientsConnection'], ParentType, ContextType, RequireFields<QueryPatientsArgs, never>>;
@@ -685,9 +727,10 @@ export type ReviewsConnectionResolvers<ContextType = Context, ParentType extends
 }>;
 
 export type SearchResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Search'] = ResolversParentTypes['Search']> = ResolversObject<{
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   scope: Resolver<ResolversTypes['SearchScope'], ParentType, ContextType>;
   suggestions: Resolver<ResolversTypes['SearchSuggestions'], ParentType, ContextType>;
-  results: Resolver<ResolversTypes['DoctorsConnection'], ParentType, ContextType>;
+  results: Resolver<ResolversTypes['DoctorsConnection'], ParentType, ContextType, RequireFields<SearchResultsArgs, never>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -720,10 +763,6 @@ export type ServicesConnectionResolvers<ContextType = Context, ParentType extend
   edges: Resolver<Maybe<ReadonlyArray<Maybe<ResolversTypes['ServiceEdge']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
-
-export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Time'], any> {
-  name: 'Time';
-}
 
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
   name: 'URL';
@@ -773,6 +812,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Gender: GenderResolvers;
   Insurance: InsuranceResolvers;
   Length: GraphQLScalarType;
+  Mutation: MutationResolvers<ContextType>;
   Node: NodeResolvers<ContextType>;
   OfferedSlot: OfferedSlotResolvers<ContextType>;
   PageInfo: PageInfoResolvers<ContextType>;
@@ -789,7 +829,6 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Service: ServiceResolvers<ContextType>;
   ServiceEdge: ServiceEdgeResolvers<ContextType>;
   ServicesConnection: ServicesConnectionResolvers<ContextType>;
-  Time: GraphQLScalarType;
   URL: GraphQLScalarType;
   User: UserResolvers<ContextType>;
   UserEdge: UserEdgeResolvers<ContextType>;
