@@ -7,6 +7,7 @@ const nodeTypesTuple = <const> [
     'Followup',
     'Patient',
     'Review',
+    'Search',
     'Service',
     'User',
 ];

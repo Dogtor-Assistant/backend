@@ -11,6 +11,7 @@ import type { IFollowup as IFollowupModel } from 'models/Followup';
 import type { Review as ReviewModel } from 'shims/review';
 import type { Service as ServiceModel } from 'shims/service';
 import type { PageInfo as PageInfoModel, ReviewsConnection as ReviewsConnectionModel, UsersConnection as UsersConnectionModel, DoctorsConnection as DoctorsConnectionModel, PatientsConnection as PatientsConnectionModel, ServicesConnection as ServicesConnectionModel, AppointmentsConnection as AppointmentsConnectionModel, ReviewEdge as ReviewEdgeModel, UserEdge as UserEdgeModel, DoctorEdge as DoctorEdgeModel, PatientEdge as PatientEdgeModel, ServiceEdge as ServiceEdgeModel, AppointmentEdge as AppointmentEdgeModel } from 'pagination';
+import type { SearchObject as SearchObjectModel } from 'search/types';
 import type { Context } from 'context';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -213,11 +214,9 @@ export type QueryNodeArgs = {
 
 
 export type QuerySearchArgs = {
-  input: SearchInput;
-  after: Maybe<Scalars['String']>;
-  first: Maybe<Scalars['Int']>;
-  before: Maybe<Scalars['String']>;
-  last: Maybe<Scalars['Int']>;
+  query: Maybe<Scalars['String']>;
+  specialities: Maybe<ReadonlyArray<Scalars['String']>>;
+  cities: Maybe<ReadonlyArray<Scalars['String']>>;
 };
 
 
@@ -278,16 +277,19 @@ export type ReviewsConnection = {
   readonly edges: Maybe<ReadonlyArray<Maybe<ReviewEdge>>>;
 };
 
-export type Search = {
+export type Search = Node & {
+  readonly id: Scalars['ID'];
   readonly scope: SearchScope;
   readonly suggestions: SearchSuggestions;
   readonly results: DoctorsConnection;
 };
 
-export type SearchInput = {
-  readonly query: Maybe<Scalars['String']>;
-  readonly specialities: Maybe<ReadonlyArray<Scalars['String']>>;
-  readonly cities: Maybe<ReadonlyArray<Scalars['String']>>;
+
+export type SearchResultsArgs = {
+  after: Maybe<Scalars['String']>;
+  first: Maybe<Scalars['Int']>;
+  before: Maybe<Scalars['String']>;
+  last: Maybe<Scalars['Int']>;
 };
 
 export type SearchScope = {
@@ -459,7 +461,7 @@ export type ResolversTypes = ResolversObject<{
   Insurance: ResolverTypeWrapper<InsuranceModel>;
   Length: ResolverTypeWrapper<Scalars['Length']>;
   Mutation: ResolverTypeWrapper<{}>;
-  Node: ResolversTypes['Appointment'] | ResolversTypes['Checkup'] | ResolversTypes['Doctor'] | ResolversTypes['Followup'] | ResolversTypes['Patient'] | ResolversTypes['Review'] | ResolversTypes['Service'] | ResolversTypes['User'];
+  Node: ResolversTypes['Appointment'] | ResolversTypes['Checkup'] | ResolversTypes['Doctor'] | ResolversTypes['Followup'] | ResolversTypes['Patient'] | ResolversTypes['Review'] | ResolversTypes['Search'] | ResolversTypes['Service'] | ResolversTypes['User'];
   OfferedSlot: ResolverTypeWrapper<Omit<OfferedSlot, 'day'> & { day: ResolversTypes['Weekday'] }>;
   OfferedSlotInput: OfferedSlotInput;
   PageInfo: ResolverTypeWrapper<PageInfoModel>;
@@ -470,8 +472,7 @@ export type ResolversTypes = ResolversObject<{
   Review: ResolverTypeWrapper<ReviewModel>;
   ReviewEdge: ResolverTypeWrapper<ReviewEdgeModel>;
   ReviewsConnection: ResolverTypeWrapper<ReviewsConnectionModel>;
-  Search: ResolverTypeWrapper<Omit<Search, 'results'> & { results: ResolversTypes['DoctorsConnection'] }>;
-  SearchInput: SearchInput;
+  Search: ResolverTypeWrapper<SearchObjectModel>;
   SearchScope: ResolverTypeWrapper<SearchScope>;
   SearchSuggestions: ResolverTypeWrapper<SearchSuggestions>;
   Service: ResolverTypeWrapper<ServiceModel>;
@@ -508,7 +509,7 @@ export type ResolversParentTypes = ResolversObject<{
   Followup: IFollowupModel;
   Length: Scalars['Length'];
   Mutation: {};
-  Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
+  Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Search'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
   OfferedSlot: Omit<OfferedSlot, 'day'> & { day: ResolversParentTypes['Weekday'] };
   OfferedSlotInput: OfferedSlotInput;
   PageInfo: PageInfoModel;
@@ -519,8 +520,7 @@ export type ResolversParentTypes = ResolversObject<{
   Review: ReviewModel;
   ReviewEdge: ReviewEdgeModel;
   ReviewsConnection: ReviewsConnectionModel;
-  Search: Omit<Search, 'results'> & { results: ResolversParentTypes['DoctorsConnection'] };
-  SearchInput: SearchInput;
+  Search: SearchObjectModel;
   SearchScope: SearchScope;
   SearchSuggestions: SearchSuggestions;
   Service: ServiceModel;
@@ -639,7 +639,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
 }>;
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'Appointment' | 'Checkup' | 'Doctor' | 'Followup' | 'Patient' | 'Review' | 'Service' | 'User', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'Appointment' | 'Checkup' | 'Doctor' | 'Followup' | 'Patient' | 'Review' | 'Search' | 'Service' | 'User', ParentType, ContextType>;
 }>;
 
 export type OfferedSlotResolvers<ContextType = Context, ParentType extends ResolversParentTypes['OfferedSlot'] = ResolversParentTypes['OfferedSlot']> = ResolversObject<{
@@ -689,7 +689,7 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   greeting: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   me: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
-  search: Resolver<ResolversTypes['Search'], ParentType, ContextType, RequireFields<QuerySearchArgs, 'input'>>;
+  search: Resolver<ResolversTypes['Search'], ParentType, ContextType, RequireFields<QuerySearchArgs, never>>;
   users: Resolver<ResolversTypes['UsersConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   patients: Resolver<ResolversTypes['PatientsConnection'], ParentType, ContextType, RequireFields<QueryPatientsArgs, never>>;
   doctors: Resolver<ResolversTypes['DoctorsConnection'], ParentType, ContextType, RequireFields<QueryDoctorsArgs, never>>;
@@ -720,9 +720,10 @@ export type ReviewsConnectionResolvers<ContextType = Context, ParentType extends
 }>;
 
 export type SearchResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Search'] = ResolversParentTypes['Search']> = ResolversObject<{
+  id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   scope: Resolver<ResolversTypes['SearchScope'], ParentType, ContextType>;
   suggestions: Resolver<ResolversTypes['SearchSuggestions'], ParentType, ContextType>;
-  results: Resolver<ResolversTypes['DoctorsConnection'], ParentType, ContextType>;
+  results: Resolver<ResolversTypes['DoctorsConnection'], ParentType, ContextType, RequireFields<SearchResultsArgs, never>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
