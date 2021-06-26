@@ -66,6 +66,7 @@ export type Appointment = Node & {
   readonly notes: Maybe<Scalars['String']>;
   readonly sharedData: Scalars['Boolean'];
   readonly selectedServices: ReadonlyArray<Service>;
+  readonly isDone: Scalars['Boolean'];
 };
 
 export type AppointmentEdge = {
@@ -140,6 +141,7 @@ export enum Insurance {
 export type Mutation = {
   readonly createUserDoctor: Maybe<User>;
   readonly deleteAppointmentById: Scalars['Boolean'];
+  readonly makeAppointmentAsDone: Scalars['Boolean'];
 };
 
 
@@ -149,6 +151,11 @@ export type MutationCreateUserDoctorArgs = {
 
 
 export type MutationDeleteAppointmentByIdArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationMakeAppointmentAsDoneArgs = {
   id: Scalars['ID'];
 };
 
@@ -566,6 +573,7 @@ export type AppointmentResolvers<ContextType = Context, ParentType extends Resol
   notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sharedData: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   selectedServices: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
+  isDone: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -649,6 +657,7 @@ export interface LengthScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createUserDoctor: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserDoctorArgs, 'input'>>;
   deleteAppointmentById: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteAppointmentByIdArgs, 'id'>>;
+  makeAppointmentAsDone: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMakeAppointmentAsDoneArgs, 'id'>>;
 }>;
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{

@@ -77,6 +77,7 @@ export const typeDefs = gql`
         notes: String
         sharedData: Boolean!
         selectedServices: [Service!]!
+        isDone: Boolean!
     }
 
     type Checkup implements Node {
@@ -304,6 +305,7 @@ export const typeDefs = gql`
     type Mutation {
         createUserDoctor(input: UserDoctorInput!): User
         deleteAppointmentById(id:ID!): Boolean!
+        makeAppointmentAsDone(id:ID!): Boolean!
     }
     
     schema {

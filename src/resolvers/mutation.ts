@@ -54,6 +54,18 @@ const Mutation: MutationResolvers = {
         return true;
          
     },
+    async makeAppointmentAsDone(_, { id }) {
+        const appointment = await Appointment.findById(id);
+
+        if(!appointment) {
+            return false;
+        }
+
+        await Appointment.updateOne({ _id:appointment._id }, { actualTime: new Date() });
+
+        return true;
+         
+    },
 };
 
 export default Mutation;
