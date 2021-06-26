@@ -29,7 +29,6 @@ export type Scalars = {
   DateTime: Date;
   Duration: number;
   Length: number;
-  Time: string;
   URL: string;
   Weight: number;
 };
@@ -317,7 +316,6 @@ export type ServicesConnection = {
 };
 
 
-
 export type User = Node & {
   readonly id: Scalars['ID'];
   readonly firstname: Scalars['String'];
@@ -479,7 +477,6 @@ export type ResolversTypes = ResolversObject<{
   Service: ResolverTypeWrapper<ServiceModel>;
   ServiceEdge: ResolverTypeWrapper<ServiceEdgeModel>;
   ServicesConnection: ResolverTypeWrapper<ServicesConnectionModel>;
-  Time: ResolverTypeWrapper<Scalars['Time']>;
   URL: ResolverTypeWrapper<Scalars['URL']>;
   User: ResolverTypeWrapper<UserModel>;
   UserDoctorInput: UserDoctorInput;
@@ -529,7 +526,6 @@ export type ResolversParentTypes = ResolversObject<{
   Service: ServiceModel;
   ServiceEdge: ServiceEdgeModel;
   ServicesConnection: ServicesConnectionModel;
-  Time: Scalars['Time'];
   URL: Scalars['URL'];
   User: UserModel;
   UserDoctorInput: UserDoctorInput;
@@ -760,10 +756,6 @@ export type ServicesConnectionResolvers<ContextType = Context, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Time'], any> {
-  name: 'Time';
-}
-
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
   name: 'URL';
 }
@@ -829,7 +821,6 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Service: ServiceResolvers<ContextType>;
   ServiceEdge: ServiceEdgeResolvers<ContextType>;
   ServicesConnection: ServicesConnectionResolvers<ContextType>;
-  Time: GraphQLScalarType;
   URL: GraphQLScalarType;
   User: UserResolvers<ContextType>;
   UserEdge: UserEdgeResolvers<ContextType>;
