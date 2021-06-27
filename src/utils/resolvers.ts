@@ -139,11 +139,17 @@ export enum Insurance {
 
 export type Mutation = {
   readonly createUserDoctor: Maybe<User>;
+  readonly createUserPatient: Maybe<User>;
 };
 
 
 export type MutationCreateUserDoctorArgs = {
   input: UserDoctorInput;
+};
+
+
+export type MutationCreateUserPatientArgs = {
+  input: UserPatientInput;
 };
 
 export type Node = {
@@ -335,12 +341,32 @@ export type UserDoctorInput = {
   readonly phoneNumber: Scalars['String'];
   readonly webpage: Maybe<Scalars['URL']>;
   readonly specialities: ReadonlyArray<Scalars['String']>;
-  readonly offeredSlots: ReadonlyArray<OfferedSlotInput>;
+  readonly offeredSlots: ReadonlyArray<Maybe<OfferedSlotInput>>;
 };
 
 export type UserEdge = {
   readonly cursor: Scalars['String'];
   readonly node: Maybe<User>;
+};
+
+export type UserPatientInput = {
+  readonly email: Scalars['String'];
+  readonly firstName: Scalars['String'];
+  readonly lastName: Scalars['String'];
+  readonly password: Scalars['String'];
+  readonly address: AddressInput;
+  readonly phoneNumber: Scalars['String'];
+  readonly insurance: Insurance;
+  readonly birthDate: Maybe<Scalars['DateTime']>;
+  readonly gender: Maybe<Gender>;
+  readonly height: Maybe<Scalars['Int']>;
+  readonly weight: Maybe<Scalars['Int']>;
+  readonly activityLvl: Maybe<ActivityLevel>;
+  readonly smoker: Maybe<Scalars['Boolean']>;
+  readonly allergies: ReadonlyArray<Maybe<Scalars['String']>>;
+  readonly medConditions: ReadonlyArray<Maybe<Scalars['String']>>;
+  readonly medications: ReadonlyArray<Maybe<Scalars['String']>>;
+  readonly surgeries: ReadonlyArray<Maybe<Scalars['String']>>;
 };
 
 export type UsersConnection = {
@@ -482,6 +508,7 @@ export type ResolversTypes = ResolversObject<{
   User: ResolverTypeWrapper<UserModel>;
   UserDoctorInput: UserDoctorInput;
   UserEdge: ResolverTypeWrapper<UserEdgeModel>;
+  UserPatientInput: UserPatientInput;
   UsersConnection: ResolverTypeWrapper<UsersConnectionModel>;
   Weekday: ResolverTypeWrapper<DayModel>;
   Weight: ResolverTypeWrapper<Scalars['Weight']>;
@@ -530,6 +557,7 @@ export type ResolversParentTypes = ResolversObject<{
   User: UserModel;
   UserDoctorInput: UserDoctorInput;
   UserEdge: UserEdgeModel;
+  UserPatientInput: UserPatientInput;
   UsersConnection: UsersConnectionModel;
   Weight: Scalars['Weight'];
 }>;
@@ -636,6 +664,7 @@ export interface LengthScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createUserDoctor: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserDoctorArgs, 'input'>>;
+  createUserPatient: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserPatientArgs, 'input'>>;
 }>;
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{

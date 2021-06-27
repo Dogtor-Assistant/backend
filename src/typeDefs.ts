@@ -279,7 +279,30 @@ export const typeDefs = gql`
         webpage: URL
 
         specialities: [String!]!
-        offeredSlots: [OfferedSlotInput!]!
+        offeredSlots: [OfferedSlotInput]!
+    }
+
+    input UserPatientInput {
+        email: String!
+        firstName: String!
+        lastName: String!
+        password: String!
+
+        address: AddressInput!
+        phoneNumber: String!
+        insurance: Insurance!
+
+        birthDate: DateTime
+        gender: Gender
+        height: Int
+        weight: Int
+        activityLvl: ActivityLevel
+        smoker: Boolean
+
+        allergies: [String]!
+        medConditions: [String]!
+        medications: [String]!
+        surgeries: [String]!
     }
 
     type Query {
@@ -303,6 +326,7 @@ export const typeDefs = gql`
 
     type Mutation {
         createUserDoctor(input: UserDoctorInput!): User
+        createUserPatient(input: UserPatientInput!): User
     }
     
     schema {
