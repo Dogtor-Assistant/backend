@@ -8,6 +8,11 @@ import mongoose from 'mongoose';
 import { user as userShim } from 'shims/user';
 
 const Mutation: MutationResolvers = {
+    async assignFollowup(_, { followupInput }) {
+        //followupInput.doctorNotes;
+        //TODO: implement assign follow up
+        return false;
+    },
     async createUserDoctor(_, { input }) {
         
         const session = await mongoose.startSession();

@@ -282,6 +282,15 @@ export const typeDefs = gql`
         offeredSlots: [OfferedSlotInput!]!
     }
 
+    input FollowupInput {
+        doctorId: ID!,
+        patientId: ID!,
+        services: [String!]!,
+        suggestedDate: DateTime!,
+        isRead: Boolean!,
+        doctorNotes: String
+    }
+
     type Query {
         greeting: String!
         me: User
@@ -306,6 +315,7 @@ export const typeDefs = gql`
         createUserDoctor(input: UserDoctorInput!): User
         deleteAppointmentById(id:ID!): Boolean!
         makeAppointmentAsDone(id:ID!): Boolean!
+        assignFollowup(followupInput:FollowupInput!): Boolean!
     }
     
     schema {
