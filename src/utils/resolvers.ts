@@ -152,13 +152,13 @@ export type Mutation = {
   readonly deleteAppointmentById: Scalars['Boolean'];
   readonly makeAppointmentAsDone: Scalars['Boolean'];
   readonly assignFollowup: Scalars['Boolean'];
+  readonly createUserPatient: Maybe<User>;
 };
 
 
 export type MutationCreateUserDoctorArgs = {
   input: UserDoctorInput;
 };
-
 
 export type MutationDeleteAppointmentByIdArgs = {
   id: Scalars['ID'];
@@ -172,6 +172,9 @@ export type MutationMakeAppointmentAsDoneArgs = {
 
 export type MutationAssignFollowupArgs = {
   followupInput: FollowupInput;
+}
+export type MutationCreateUserPatientArgs = {
+  input: UserPatientInput;
 };
 
 export type Node = {
@@ -369,12 +372,32 @@ export type UserDoctorInput = {
   readonly phoneNumber: Scalars['String'];
   readonly webpage: Maybe<Scalars['URL']>;
   readonly specialities: ReadonlyArray<Scalars['String']>;
-  readonly offeredSlots: ReadonlyArray<OfferedSlotInput>;
+  readonly offeredSlots: ReadonlyArray<Maybe<OfferedSlotInput>>;
 };
 
 export type UserEdge = {
   readonly cursor: Scalars['String'];
   readonly node: Maybe<User>;
+};
+
+export type UserPatientInput = {
+  readonly email: Scalars['String'];
+  readonly firstName: Scalars['String'];
+  readonly lastName: Scalars['String'];
+  readonly password: Scalars['String'];
+  readonly address: AddressInput;
+  readonly phoneNumber: Scalars['String'];
+  readonly insurance: Insurance;
+  readonly birthDate: Maybe<Scalars['DateTime']>;
+  readonly gender: Maybe<Gender>;
+  readonly height: Maybe<Scalars['Int']>;
+  readonly weight: Maybe<Scalars['Int']>;
+  readonly activityLvl: Maybe<ActivityLevel>;
+  readonly smoker: Maybe<Scalars['Boolean']>;
+  readonly allergies: ReadonlyArray<Maybe<Scalars['String']>>;
+  readonly medConditions: ReadonlyArray<Maybe<Scalars['String']>>;
+  readonly medications: ReadonlyArray<Maybe<Scalars['String']>>;
+  readonly surgeries: ReadonlyArray<Maybe<Scalars['String']>>;
 };
 
 export type UsersConnection = {
@@ -517,6 +540,7 @@ export type ResolversTypes = ResolversObject<{
   User: ResolverTypeWrapper<UserModel>;
   UserDoctorInput: UserDoctorInput;
   UserEdge: ResolverTypeWrapper<UserEdgeModel>;
+  UserPatientInput: UserPatientInput;
   UsersConnection: ResolverTypeWrapper<UsersConnectionModel>;
   Weekday: ResolverTypeWrapper<DayModel>;
   Weight: ResolverTypeWrapper<Scalars['Weight']>;
@@ -566,6 +590,7 @@ export type ResolversParentTypes = ResolversObject<{
   User: UserModel;
   UserDoctorInput: UserDoctorInput;
   UserEdge: UserEdgeModel;
+  UserPatientInput: UserPatientInput;
   UsersConnection: UsersConnectionModel;
   Weight: Scalars['Weight'];
 }>;
@@ -676,6 +701,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   deleteAppointmentById: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteAppointmentByIdArgs, 'id'>>;
   makeAppointmentAsDone: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMakeAppointmentAsDoneArgs, 'id'>>;
   assignFollowup: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAssignFollowupArgs, 'followupInput'>>;
+  createUserPatient: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserPatientArgs, 'input'>>;
 }>;
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
