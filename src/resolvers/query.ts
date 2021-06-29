@@ -27,23 +27,7 @@ import { user } from 'shims/user';
 import { deconstructId } from 'utils/ids';
 
 const Query: QueryResolvers = {
-    async appointments(_, { doctorId:doctorId }) {
-
-        console.log(doctorId);
-        
-        const deconstructed = deconstructId(doctorId);
-
-        // using the optional chaining operator because it gave Typescript: Object is possibly 'undefined'
-        const id = deconstructed?.[1];
-        console.log(id);
-        
-        const appointments = await Appointment.find(
-            { 'doctorRef.doctorId': id },
-        );
-        console.log(appointments);
-        return appointments;
-    },
-
+   
     async doctors(_, args) {
         return await doctorsConnection(Doctor.find(), args);
     },

@@ -103,6 +103,7 @@ export type Doctor = Node & {
   readonly topServices: ReadonlyArray<Service>;
   readonly topReviews: ReadonlyArray<Review>;
   readonly webpage: Maybe<Scalars['URL']>;
+  readonly appointments: ReadonlyArray<Appointment>;
 };
 
 export type DoctorEdge = {
@@ -245,7 +246,6 @@ export type Query = {
   readonly me: Maybe<User>;
   readonly node: Maybe<Node>;
   readonly search: Search;
-  readonly appointments: ReadonlyArray<Appointment>;
   readonly users: UsersConnection;
   readonly patients: PatientsConnection;
   readonly doctors: DoctorsConnection;
@@ -264,11 +264,6 @@ export type QuerySearchArgs = {
   query: Maybe<Scalars['String']>;
   specialities: Maybe<ReadonlyArray<Scalars['String']>>;
   cities: Maybe<ReadonlyArray<Scalars['String']>>;
-};
-
-
-export type QueryAppointmentsArgs = {
-  doctorId: Scalars['ID'];
 };
 
 
@@ -686,6 +681,7 @@ export type DoctorResolvers<ContextType = Context, ParentType extends ResolversP
   topServices: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
   topReviews: Resolver<ReadonlyArray<ResolversTypes['Review']>, ParentType, ContextType>;
   webpage: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
+  appointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -783,7 +779,6 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   me: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   node: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, RequireFields<QueryNodeArgs, 'id'>>;
   search: Resolver<ResolversTypes['Search'], ParentType, ContextType, RequireFields<QuerySearchArgs, never>>;
-  appointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType, RequireFields<QueryAppointmentsArgs, 'doctorId'>>;
   users: Resolver<ResolversTypes['UsersConnection'], ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   patients: Resolver<ResolversTypes['PatientsConnection'], ParentType, ContextType, RequireFields<QueryPatientsArgs, never>>;
   doctors: Resolver<ResolversTypes['DoctorsConnection'], ParentType, ContextType, RequireFields<QueryDoctorsArgs, never>>;

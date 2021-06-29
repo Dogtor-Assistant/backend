@@ -104,6 +104,7 @@ export const typeDefs = gql`
         topReviews: [Review!]!
         
         webpage: URL
+        appointments: [Appointment!]!
     }
 
     type Followup implements Node {
@@ -343,7 +344,6 @@ export const typeDefs = gql`
             cities: [String!]
         ): Search!
         
-        appointments(doctorId: ID!): [Appointment!]!
         users(after: String, first: Int, before: String, last: Int): UsersConnection!
         patients(after: String, first: Int, before: String, last: Int): PatientsConnection!
         doctors(after: String, first: Int, before: String, last: Int): DoctorsConnection!

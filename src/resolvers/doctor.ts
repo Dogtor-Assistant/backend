@@ -1,12 +1,26 @@
 import type { DoctorResolvers } from '@resolvers';
 
+import Appointment from 'models/Appointment';
 import { Review } from 'shims/review';
 import { Service } from 'shims/service';
+import { deconstructId } from 'utils/ids';
 
 const Doctor: DoctorResolvers = {
     async address(doctor) {
         const { address } = await doctor.full();
         return address;
+    },
+
+    async appointments(doctor) {
+        const id = doctor.id();
+        const deconstructed = deconstructId(id);
+        const doctorId = deconstructed?.[1];
+
+        const appointments = await Appointment.find(
+            { 'doctorRef.doctorId': doctorId },
+        );
+        
+        return appointments;
     },
 
     async firstname(doctor) {
@@ -53,7 +67,6 @@ const Doctor: DoctorResolvers = {
         const { topServices } = await doctor.full();
         return topServices?.map(service => new Service(service)) ?? [];
     },
-
     async webpage(doctor) {
         const { webpage } = await doctor.full();
         return webpage ?? null;
