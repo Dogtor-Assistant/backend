@@ -138,6 +138,8 @@ export const typeDefs = gql`
         surgeries: [String!]!
         
         isSmoker: Boolean
+
+        address: Address!
     }
 
     type Review implements Node {
@@ -305,12 +307,28 @@ export const typeDefs = gql`
         surgeries: [String]!
     }
 
-    input FollowupInput {
-        doctorId: ID!,
+    input ServiceInput {
+        serviceId: ID!
+        serviceName: String!
+    }
+
+    input MiniPatientInput {
         patientId: ID!,
-        services: [String!]!,
+        patientName: String!,
+        patientInsurance: Insurance,
+        patientAddress: AddressInput!,
+    }
+
+    input MiniDoctorInput {
+        doctorId: ID!,
+        doctorName: String!,
+    }
+
+    input FollowupInput {
+        doctorRef: MiniDoctorInput!,
+        patientRef: MiniPatientInput!,
+        services: [ServiceInput!]!,
         suggestedDate: DateTime!,
-        isRead: Boolean!,
         doctorNotes: String
     }
 

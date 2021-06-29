@@ -5,6 +5,10 @@ const Patient: PatientResolvers = {
         const { activityLevel } = await patient.full();
         return activityLevel ?? null;
     },
+    async address(patient) {
+        const { address } = await patient.full();
+        return address ?? null;
+    },
     async allergies(patient) {
         const { allergies } = await patient.full();
         return allergies ?? [];

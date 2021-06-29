@@ -5,17 +5,33 @@ import Appointment from 'models/Appointment';
 import Doctor from 'models/Doctor';
 import Patient from 'models/Patient';
 import User from 'models/User';
+import Followup from 'models/Followup';
 import mongoose from 'mongoose';
 import { user as userShim } from 'shims/user';
+import { deconstructId } from 'utils/ids';
 
 const Mutation: MutationResolvers = {
     async assignFollowup(_, { followupInput }) {
-        //followupInput.doctorNotes;
-        //TODO: implement assign follow up
-        return false;
+
+        //TODO: Check again the patient ref not sure how to get from input
+        const followup = new Followup({
+            doctorRef: followupInput.doctorRef,
+            patientRef: followupInput.patientRef,
+            services: followupInput.services,
+            suggestedDate: followupInput.suggestedDate,
+            doctorNotes: followupInput.doctorNotes,
+        });
+
+        try {
+            await followup.save();
+            return true;
+        } catch (error) {
+            return false;
+        }
+
     },
     async createUserDoctor(_, { input }) {
-        
+
         const session = await mongoose.startSession();
 
         session.startTransaction();
@@ -27,6 +43,7 @@ const Mutation: MutationResolvers = {
             phoneNumber: input.phoneNumber,
             specialities: input.specialities,
             webpage: input.webpage,
+
         });
         await doctorIn.save();
 
@@ -40,7 +57,7 @@ const Mutation: MutationResolvers = {
             password: await bcrypt.hash(input.password, salt),
         });
         await userIn.save();
-        
+
         await session.commitTransaction();
         session.endSession();
 
@@ -49,28 +66,36 @@ const Mutation: MutationResolvers = {
         return userShim(userIn._id);
     },
     async deleteAppointmentById(_, { id }) {
-        const appointment = await Appointment.findById(id);
 
-        if(!appointment) {
+        const deconstructed = deconstructId(id);
+        const appointmentId = deconstructed?.[1];
+
+        const appointment = await Appointment.findById(appointmentId);
+
+        if (!appointment) {
             return false;
         }
 
-        await Appointment.deleteOne({ _id:appointment._id });
+        await Appointment.deleteOne({ _id: appointment._id });
 
         return true;
-         
+
     },
     async makeAppointmentAsDone(_, { id }) {
-        const appointment = await Appointment.findById(id);
 
-        if(!appointment) {
+        const deconstructed = deconstructId(id);
+        const appointmentId = deconstructed?.[1];
+
+        const appointment = await Appointment.findById(appointmentId);
+
+        if (!appointment) {
             return false;
         }
 
-        await Appointment.updateOne({ _id:appointment._id }, { actualTime: new Date() });
+        await Appointment.updateOne({ _id: appointment._id }, { actualTime: new Date() });
 
         return true;
-         
+
     },
     async createUserPatient(_, { input }) {
         const session = await mongoose.startSession();
@@ -105,7 +130,7 @@ const Mutation: MutationResolvers = {
             patientRef: patientIn._id,
         });
         await userIn.save();
-        
+
         await session.commitTransaction();
         session.endSession();
 
