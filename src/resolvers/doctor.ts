@@ -1,6 +1,7 @@
 import type { DoctorResolvers } from '@resolvers';
 
 import Appointment from 'models/Appointment';
+import ServiceModel from 'models/Service';
 import { Review } from 'shims/review';
 import { Service } from 'shims/service';
 import { deconstructId } from 'utils/ids';
@@ -51,6 +52,17 @@ const Doctor: DoctorResolvers = {
     async rating(doctor) {
         const { starRating } = await doctor.full();
         return starRating ?? 0;
+    },
+
+    async services(doctor) {
+        const id = doctor.id();
+        const deconstructed = deconstructId(id);
+        const doctorId = deconstructed?.[1];
+
+        const services = await ServiceModel.find(
+            { doctorRef: doctorId },
+        );
+        return services?.map(service => new Service(service)) ?? [];
     },
 
     async specialities(doctor) {

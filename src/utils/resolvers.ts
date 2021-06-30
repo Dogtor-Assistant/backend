@@ -104,6 +104,7 @@ export type Doctor = Node & {
   readonly topReviews: ReadonlyArray<Review>;
   readonly webpage: Maybe<Scalars['URL']>;
   readonly appointments: ReadonlyArray<Appointment>;
+  readonly services: ReadonlyArray<Service>;
 };
 
 export type DoctorEdge = {
@@ -126,8 +127,7 @@ export type Followup = Node & {
 };
 
 export type FollowupInput = {
-  readonly doctorRef: MiniDoctorInput;
-  readonly patientRef: MiniPatientInput;
+  readonly doctorRef: Scalars['String'];
   readonly services: ReadonlyArray<ServiceInput>;
   readonly suggestedDate: Scalars['DateTime'];
   readonly doctorNotes: Maybe<Scalars['String']>;
@@ -146,18 +146,6 @@ export enum Insurance {
   Private = 'Private'
 }
 
-
-export type MiniDoctorInput = {
-  readonly doctorId: Scalars['ID'];
-  readonly doctorName: Scalars['String'];
-};
-
-export type MiniPatientInput = {
-  readonly patientId: Scalars['ID'];
-  readonly patientName: Scalars['String'];
-  readonly patientInsurance: Maybe<Insurance>;
-  readonly patientAddress: AddressInput;
-};
 
 export type Mutation = {
   readonly createUserDoctor: Maybe<User>;
@@ -352,6 +340,13 @@ export type SearchSuggestions = {
 
 export type Service = Node & {
   readonly id: Scalars['ID'];
+  readonly name: Scalars['String'];
+  readonly doctor: Doctor;
+  readonly description: Maybe<Scalars['String']>;
+  readonly estimatedDuration: Maybe<Scalars['Duration']>;
+  readonly publicCovered: Maybe<Scalars['Boolean']>;
+  readonly privateCovered: Maybe<Scalars['Boolean']>;
+  readonly timesSelected: Scalars['Int'];
 };
 
 export type ServiceEdge = {
@@ -533,8 +528,6 @@ export type ResolversTypes = ResolversObject<{
   Gender: ResolverTypeWrapper<GenderModel>;
   Insurance: ResolverTypeWrapper<InsuranceModel>;
   Length: ResolverTypeWrapper<Scalars['Length']>;
-  MiniDoctorInput: MiniDoctorInput;
-  MiniPatientInput: MiniPatientInput;
   Mutation: ResolverTypeWrapper<{}>;
   Node: ResolversTypes['Appointment'] | ResolversTypes['Checkup'] | ResolversTypes['Doctor'] | ResolversTypes['Followup'] | ResolversTypes['Patient'] | ResolversTypes['Review'] | ResolversTypes['Search'] | ResolversTypes['Service'] | ResolversTypes['User'];
   OfferedSlot: ResolverTypeWrapper<Omit<OfferedSlot, 'day'> & { day: ResolversTypes['Weekday'] }>;
@@ -586,8 +579,6 @@ export type ResolversParentTypes = ResolversObject<{
   Followup: IFollowupModel;
   FollowupInput: FollowupInput;
   Length: Scalars['Length'];
-  MiniDoctorInput: MiniDoctorInput;
-  MiniPatientInput: MiniPatientInput;
   Mutation: {};
   Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Search'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
   OfferedSlot: Omit<OfferedSlot, 'day'> & { day: ResolversParentTypes['Weekday'] };
@@ -682,6 +673,7 @@ export type DoctorResolvers<ContextType = Context, ParentType extends ResolversP
   topReviews: Resolver<ReadonlyArray<ResolversTypes['Review']>, ParentType, ContextType>;
   webpage: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
   appointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType>;
+  services: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -831,6 +823,13 @@ export type SearchSuggestionsResolvers<ContextType = Context, ParentType extends
 
 export type ServiceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Service'] = ResolversParentTypes['Service']> = ResolversObject<{
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  doctor: Resolver<ResolversTypes['Doctor'], ParentType, ContextType>;
+  description: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  estimatedDuration: Resolver<Maybe<ResolversTypes['Duration']>, ParentType, ContextType>;
+  publicCovered: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  privateCovered: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  timesSelected: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

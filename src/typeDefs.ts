@@ -105,6 +105,7 @@ export const typeDefs = gql`
         
         webpage: URL
         appointments: [Appointment!]!
+        services: [Service!]!
     }
 
     type Followup implements Node {
@@ -156,6 +157,15 @@ export const typeDefs = gql`
 
     type Service implements Node {
         id: ID!
+        name: String!
+
+        doctor:Doctor!
+
+        description: String
+        estimatedDuration: Duration
+        publicCovered: Boolean
+        privateCovered: Boolean
+        timesSelected: Int!
     }
 
     type User implements Node {
@@ -313,21 +323,8 @@ export const typeDefs = gql`
         serviceName: String!
     }
 
-    input MiniPatientInput {
-        patientId: ID!,
-        patientName: String!,
-        patientInsurance: Insurance,
-        patientAddress: AddressInput!,
-    }
-
-    input MiniDoctorInput {
-        doctorId: ID!,
-        doctorName: String!,
-    }
-
     input FollowupInput {
-        doctorRef: MiniDoctorInput!,
-        patientRef: MiniPatientInput!,
+        doctorRef: String!,
         services: [ServiceInput!]!,
         suggestedDate: DateTime!,
         doctorNotes: String

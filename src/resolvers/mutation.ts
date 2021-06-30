@@ -12,12 +12,14 @@ import { deconstructId } from 'utils/ids';
 
 const Mutation: MutationResolvers = {
     async assignFollowup(_, { followupInput }, { authenticated }) {
+
+        const user = await authenticated?.full();
     
-        //TODO: Check again the patient ref not sure how to get from input
+        //TODO: Check again the patient ref not sure how to get from input**
         const followup = new Followup({
             doctorNotes: followupInput.doctorNotes,
-            doctorRef: followupInput.doctorRef,
-            patientRef: followupInput.patientRef,
+            doctorRef: user?.doctorRef,
+            //patientRef: ,
             services: followupInput.services,
             suggestedDate: followupInput.suggestedDate,
         });
