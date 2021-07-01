@@ -127,7 +127,8 @@ export type Followup = Node & {
 };
 
 export type FollowupInput = {
-  readonly doctorRef: Scalars['String'];
+  readonly doctorRef: Scalars['ID'];
+  readonly patientRef: Scalars['ID'];
   readonly services: ReadonlyArray<ServiceInput>;
   readonly suggestedDate: Scalars['DateTime'];
   readonly doctorNotes: Maybe<Scalars['String']>;

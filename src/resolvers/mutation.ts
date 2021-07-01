@@ -7,6 +7,8 @@ import Followup from 'models/Followup';
 import Patient from 'models/Patient';
 import User from 'models/User';
 import mongoose from 'mongoose';
+import { Doctor as DoctorShim } from 'shims/doctor';
+import { Patient as PatientShim } from 'shims/patient';
 import { user as userShim } from 'shims/user';
 import { deconstructId } from 'utils/ids';
 
@@ -14,12 +16,28 @@ const Mutation: MutationResolvers = {
     async assignFollowup(_, { followupInput }, { authenticated }) {
 
         const user = await authenticated?.full();
-    
-        //TODO: Check again the patient ref not sure how to get from input**
+        user?.doctorRef;
+
+        const valuePatient = await Patient.findById(followupInput.patientRef);
+        const patient = valuePatient && new PatientShim(valuePatient);
+        const patientUser = await patient?.user();
+
+        const valueDoctor = await Doctor.findById(followupInput.doctorRef);
+        const doctor = valueDoctor && new DoctorShim(valueDoctor);
+        const doctorUser = await doctor?.user();
+
         const followup = new Followup({
             doctorNotes: followupInput.doctorNotes,
-            doctorRef: user?.doctorRef,
-            //patientRef: ,
+            doctorRef: {
+                doctorId: valueDoctor?._id,
+                doctorName: doctorUser?.firstName,
+            },
+            patientRef:{
+                patientAddress: valuePatient?.address,
+                patientId: valuePatient?._id,
+                patientInsurance: valuePatient?.insurance,
+                patientName: patientUser?.firstName,
+            },
             services: followupInput.services,
             suggestedDate: followupInput.suggestedDate,
         });

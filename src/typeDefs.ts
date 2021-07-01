@@ -324,7 +324,8 @@ export const typeDefs = gql`
     }
 
     input FollowupInput {
-        doctorRef: String!,
+        doctorRef: ID!,
+        patientRef: ID!,
         services: [ServiceInput!]!,
         suggestedDate: DateTime!,
         doctorNotes: String
