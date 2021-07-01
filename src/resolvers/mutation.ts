@@ -18,11 +18,17 @@ const Mutation: MutationResolvers = {
         const user = await authenticated?.full();
         user?.doctorRef;
 
-        const valuePatient = await Patient.findById(followupInput.patientRef);
+        const deconstructedDoctorId = deconstructId(followupInput.doctorRef);
+        const doctorId = deconstructedDoctorId?.[1];
+
+        const deconstructedPatientId = deconstructId(followupInput.patientRef);
+        const patientId = deconstructedPatientId?.[1];
+
+        const valuePatient = await Patient.findById(patientId);
         const patient = valuePatient && new PatientShim(valuePatient);
         const patientUser = await patient?.user();
 
-        const valueDoctor = await Doctor.findById(followupInput.doctorRef);
+        const valueDoctor = await Doctor.findById(doctorId);
         const doctor = valueDoctor && new DoctorShim(valueDoctor);
         const doctorUser = await doctor?.user();
 
