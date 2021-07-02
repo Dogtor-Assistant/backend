@@ -13,10 +13,7 @@ import { user as userShim } from 'shims/user';
 import { deconstructId } from 'utils/ids';
 
 const Mutation: MutationResolvers = {
-    async assignFollowup(_, { followupInput }, { authenticated }) {
-
-        const user = await authenticated?.full();
-        user?.doctorRef;
+    async assignFollowup(_, { followupInput }) {
 
         const deconstructedDoctorId = deconstructId(followupInput.doctorRef);
         const doctorId = deconstructedDoctorId?.[1];
