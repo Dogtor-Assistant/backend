@@ -1,4 +1,3 @@
-
 import { gql } from 'apollo-server-express';
 
 export const typeDefs = gql`
@@ -78,6 +77,7 @@ export const typeDefs = gql`
         notes: String
         sharedData: Boolean!
         selectedServices: [Service!]!
+        isDone: Boolean!
     }
 
     type Checkup implements Node {
@@ -104,6 +104,8 @@ export const typeDefs = gql`
         topReviews: [Review!]!
         
         webpage: URL
+        appointments: [Appointment!]!
+        services: [Service!]!
     }
 
     type Followup implements Node {
@@ -138,6 +140,8 @@ export const typeDefs = gql`
         surgeries: [String!]!
         
         isSmoker: Boolean
+
+        address: Address!
     }
 
     type Review implements Node {
@@ -153,6 +157,15 @@ export const typeDefs = gql`
 
     type Service implements Node {
         id: ID!
+        name: String!
+
+        doctor:Doctor!
+
+        description: String
+        estimatedDuration: Duration
+        publicCovered: Boolean
+        privateCovered: Boolean
+        timesSelected: Int!
     }
 
     type User implements Node {
@@ -305,6 +318,19 @@ export const typeDefs = gql`
         surgeries: [String]!
     }
 
+    input ServiceInput {
+        serviceId: ID!
+        serviceName: String!
+    }
+
+    input FollowupInput {
+        doctorRef: ID!,
+        patientRef: ID!,
+        services: [ServiceInput!]!,
+        suggestedDate: DateTime!,
+        doctorNotes: String
+    }
+
     type Query {
         greeting: String!
         me: User
@@ -315,7 +341,7 @@ export const typeDefs = gql`
             specialities: [String!]
             cities: [String!]
         ): Search!
-
+        
         users(after: String, first: Int, before: String, last: Int): UsersConnection!
         patients(after: String, first: Int, before: String, last: Int): PatientsConnection!
         doctors(after: String, first: Int, before: String, last: Int): DoctorsConnection!
@@ -326,6 +352,9 @@ export const typeDefs = gql`
 
     type Mutation {
         createUserDoctor(input: UserDoctorInput!): User
+        deleteAppointmentById(id:ID!): Boolean!
+        makeAppointmentAsDone(id:ID!): Boolean!
+        assignFollowup(followupInput:FollowupInput!): Boolean!
         createUserPatient(input: UserPatientInput!): User
     }
     

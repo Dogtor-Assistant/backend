@@ -27,6 +27,7 @@ import { user } from 'shims/user';
 import { deconstructId } from 'utils/ids';
 
 const Query: QueryResolvers = {
+   
     async doctors(_, args) {
         return await doctorsConnection(Doctor.find(), args);
     },

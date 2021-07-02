@@ -1,15 +1,60 @@
 import type { MutationResolvers } from '@resolvers';
 
 import bcrypt from 'bcrypt';
+import Appointment from 'models/Appointment';
 import Doctor from 'models/Doctor';
+import Followup from 'models/Followup';
 import Patient from 'models/Patient';
 import User from 'models/User';
 import mongoose from 'mongoose';
+import { Doctor as DoctorShim } from 'shims/doctor';
+import { Patient as PatientShim } from 'shims/patient';
 import { user as userShim } from 'shims/user';
+import { deconstructId } from 'utils/ids';
 
 const Mutation: MutationResolvers = {
+    async assignFollowup(_, { followupInput }) {
+
+        const deconstructedDoctorId = deconstructId(followupInput.doctorRef);
+        const doctorId = deconstructedDoctorId?.[1];
+
+        const deconstructedPatientId = deconstructId(followupInput.patientRef);
+        const patientId = deconstructedPatientId?.[1];
+
+        const valuePatient = await Patient.findById(patientId);
+        const patient = valuePatient && new PatientShim(valuePatient);
+        const patientUser = await patient?.user();
+
+        const valueDoctor = await Doctor.findById(doctorId);
+        const doctor = valueDoctor && new DoctorShim(valueDoctor);
+        const doctorUser = await doctor?.user();
+
+        const followup = new Followup({
+            doctorNotes: followupInput.doctorNotes,
+            doctorRef: {
+                doctorId: valueDoctor?._id,
+                doctorName: doctorUser?.firstName,
+            },
+            patientRef:{
+                patientAddress: valuePatient?.address,
+                patientId: valuePatient?._id,
+                patientInsurance: valuePatient?.insurance,
+                patientName: patientUser?.firstName,
+            },
+            services: followupInput.services,
+            suggestedDate: followupInput.suggestedDate,
+        });
+
+        try {
+            await followup.save();
+            return true;
+        } catch (error) {
+            return false;
+        }
+
+    },
     async createUserDoctor(_, { input }) {
-        
+
         const session = await mongoose.startSession();
 
         session.startTransaction();
@@ -21,6 +66,7 @@ const Mutation: MutationResolvers = {
             phoneNumber: input.phoneNumber,
             specialities: input.specialities,
             webpage: input.webpage,
+
         });
         await doctorIn.save();
 
@@ -34,7 +80,7 @@ const Mutation: MutationResolvers = {
             password: await bcrypt.hash(input.password, salt),
         });
         await userIn.save();
-        
+
         await session.commitTransaction();
         session.endSession();
 
@@ -75,13 +121,45 @@ const Mutation: MutationResolvers = {
             patientRef: patientIn._id,
         });
         await userIn.save();
-        
+
         await session.commitTransaction();
         session.endSession();
 
         // if statement should never succeed
         if (userIn._id === undefined) throw 'Error';
         return userShim(userIn._id);
+    },
+    async deleteAppointmentById(_, { id }) {
+
+        const deconstructed = deconstructId(id);
+        const appointmentId = deconstructed?.[1];
+
+        const appointment = await Appointment.findById(appointmentId);
+
+        if (!appointment) {
+            return false;
+        }
+
+        await Appointment.deleteOne({ _id: appointment._id });
+
+        return true;
+
+    },
+    async makeAppointmentAsDone(_, { id }) {
+
+        const deconstructed = deconstructId(id);
+        const appointmentId = deconstructed?.[1];
+
+        const appointment = await Appointment.findById(appointmentId);
+
+        if (!appointment) {
+            return false;
+        }
+
+        await Appointment.updateOne({ _id: appointment._id }, { actualTime: new Date() });
+
+        return true;
+
     },
 };
 

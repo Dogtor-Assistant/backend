@@ -66,6 +66,7 @@ export type Appointment = Node & {
   readonly notes: Maybe<Scalars['String']>;
   readonly sharedData: Scalars['Boolean'];
   readonly selectedServices: ReadonlyArray<Service>;
+  readonly isDone: Scalars['Boolean'];
 };
 
 export type AppointmentEdge = {
@@ -102,6 +103,8 @@ export type Doctor = Node & {
   readonly topServices: ReadonlyArray<Service>;
   readonly topReviews: ReadonlyArray<Review>;
   readonly webpage: Maybe<Scalars['URL']>;
+  readonly appointments: ReadonlyArray<Appointment>;
+  readonly services: ReadonlyArray<Service>;
 };
 
 export type DoctorEdge = {
@@ -123,6 +126,14 @@ export type Followup = Node & {
   readonly suggestedDate: Scalars['DateTime'];
 };
 
+export type FollowupInput = {
+  readonly doctorRef: Scalars['ID'];
+  readonly patientRef: Scalars['ID'];
+  readonly services: ReadonlyArray<ServiceInput>;
+  readonly suggestedDate: Scalars['DateTime'];
+  readonly doctorNotes: Maybe<Scalars['String']>;
+};
+
 export enum Gender {
   Male = 'Male',
   Female = 'Female',
@@ -139,12 +150,30 @@ export enum Insurance {
 
 export type Mutation = {
   readonly createUserDoctor: Maybe<User>;
+  readonly deleteAppointmentById: Scalars['Boolean'];
+  readonly makeAppointmentAsDone: Scalars['Boolean'];
+  readonly assignFollowup: Scalars['Boolean'];
   readonly createUserPatient: Maybe<User>;
 };
 
 
 export type MutationCreateUserDoctorArgs = {
   input: UserDoctorInput;
+};
+
+
+export type MutationDeleteAppointmentByIdArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationMakeAppointmentAsDoneArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationAssignFollowupArgs = {
+  followupInput: FollowupInput;
 };
 
 
@@ -188,6 +217,7 @@ export type Patient = Node & {
   readonly allergies: ReadonlyArray<Scalars['String']>;
   readonly surgeries: ReadonlyArray<Scalars['String']>;
   readonly isSmoker: Maybe<Scalars['Boolean']>;
+  readonly address: Address;
 };
 
 export type PatientEdge = {
@@ -311,11 +341,23 @@ export type SearchSuggestions = {
 
 export type Service = Node & {
   readonly id: Scalars['ID'];
+  readonly name: Scalars['String'];
+  readonly doctor: Doctor;
+  readonly description: Maybe<Scalars['String']>;
+  readonly estimatedDuration: Maybe<Scalars['Duration']>;
+  readonly publicCovered: Maybe<Scalars['Boolean']>;
+  readonly privateCovered: Maybe<Scalars['Boolean']>;
+  readonly timesSelected: Scalars['Int'];
 };
 
 export type ServiceEdge = {
   readonly cursor: Scalars['String'];
   readonly node: Maybe<Service>;
+};
+
+export type ServiceInput = {
+  readonly serviceId: Scalars['ID'];
+  readonly serviceName: Scalars['String'];
 };
 
 export type ServicesConnection = {
@@ -483,6 +525,7 @@ export type ResolversTypes = ResolversObject<{
   DoctorsConnection: ResolverTypeWrapper<DoctorsConnectionModel>;
   Duration: ResolverTypeWrapper<Scalars['Duration']>;
   Followup: ResolverTypeWrapper<IFollowupModel>;
+  FollowupInput: FollowupInput;
   Gender: ResolverTypeWrapper<GenderModel>;
   Insurance: ResolverTypeWrapper<InsuranceModel>;
   Length: ResolverTypeWrapper<Scalars['Length']>;
@@ -503,6 +546,7 @@ export type ResolversTypes = ResolversObject<{
   SearchSuggestions: ResolverTypeWrapper<SearchSuggestions>;
   Service: ResolverTypeWrapper<ServiceModel>;
   ServiceEdge: ResolverTypeWrapper<ServiceEdgeModel>;
+  ServiceInput: ServiceInput;
   ServicesConnection: ResolverTypeWrapper<ServicesConnectionModel>;
   URL: ResolverTypeWrapper<Scalars['URL']>;
   User: ResolverTypeWrapper<UserModel>;
@@ -534,6 +578,7 @@ export type ResolversParentTypes = ResolversObject<{
   DoctorsConnection: DoctorsConnectionModel;
   Duration: Scalars['Duration'];
   Followup: IFollowupModel;
+  FollowupInput: FollowupInput;
   Length: Scalars['Length'];
   Mutation: {};
   Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Search'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
@@ -552,6 +597,7 @@ export type ResolversParentTypes = ResolversObject<{
   SearchSuggestions: SearchSuggestions;
   Service: ServiceModel;
   ServiceEdge: ServiceEdgeModel;
+  ServiceInput: ServiceInput;
   ServicesConnection: ServicesConnectionModel;
   URL: Scalars['URL'];
   User: UserModel;
@@ -582,6 +628,7 @@ export type AppointmentResolvers<ContextType = Context, ParentType extends Resol
   notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sharedData: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   selectedServices: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
+  isDone: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -626,6 +673,8 @@ export type DoctorResolvers<ContextType = Context, ParentType extends ResolversP
   topServices: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
   topReviews: Resolver<ReadonlyArray<ResolversTypes['Review']>, ParentType, ContextType>;
   webpage: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
+  appointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType>;
+  services: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -664,6 +713,9 @@ export interface LengthScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createUserDoctor: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserDoctorArgs, 'input'>>;
+  deleteAppointmentById: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteAppointmentByIdArgs, 'id'>>;
+  makeAppointmentAsDone: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMakeAppointmentAsDoneArgs, 'id'>>;
+  assignFollowup: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAssignFollowupArgs, 'followupInput'>>;
   createUserPatient: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserPatientArgs, 'input'>>;
 }>;
 
@@ -699,6 +751,7 @@ export type PatientResolvers<ContextType = Context, ParentType extends Resolvers
   allergies: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
   surgeries: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
   isSmoker: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  address: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -771,6 +824,13 @@ export type SearchSuggestionsResolvers<ContextType = Context, ParentType extends
 
 export type ServiceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Service'] = ResolversParentTypes['Service']> = ResolversObject<{
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  doctor: Resolver<ResolversTypes['Doctor'], ParentType, ContextType>;
+  description: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  estimatedDuration: Resolver<Maybe<ResolversTypes['Duration']>, ParentType, ContextType>;
+  publicCovered: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  privateCovered: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  timesSelected: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
