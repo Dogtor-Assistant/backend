@@ -28,7 +28,6 @@ export type Scalars = {
   Int: number;
   Float: number;
   DateTime: Date;
-  Duration: number;
   Length: number;
   URL: string;
   Weight: number;
@@ -76,7 +75,7 @@ export type AppointmentEdge = {
 
 export type AppointmentTime = {
   readonly start: Maybe<Scalars['DateTime']>;
-  readonly duration: Maybe<Scalars['Duration']>;
+  readonly duration: Maybe<Scalars['Int']>;
 };
 
 export type AppointmentsConnection = {
@@ -116,7 +115,6 @@ export type DoctorsConnection = {
   readonly pageInfo: PageInfo;
   readonly edges: Maybe<ReadonlyArray<Maybe<DoctorEdge>>>;
 };
-
 
 export type Followup = Node & {
   readonly id: Scalars['ID'];
@@ -241,6 +239,8 @@ export type Query = {
   readonly reviews: ReviewsConnection;
   readonly services: ServicesConnection;
   readonly latestReviews: ReadonlyArray<Review>;
+  readonly patientUpcomingAppointments: ReadonlyArray<Appointment>;
+  readonly patientPreviousAppointments: ReadonlyArray<Appointment>;
 };
 
 
@@ -295,6 +295,16 @@ export type QueryServicesArgs = {
   last: Maybe<Scalars['Int']>;
 };
 
+
+export type QueryPatientUpcomingAppointmentsArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryPatientPreviousAppointmentsArgs = {
+  id: Scalars['ID'];
+};
+
 export type Review = Node & {
   readonly id: Scalars['ID'];
   readonly rating: Scalars['Int'];
@@ -344,7 +354,7 @@ export type Service = Node & {
   readonly name: Scalars['String'];
   readonly doctor: Doctor;
   readonly description: Maybe<Scalars['String']>;
-  readonly estimatedDuration: Maybe<Scalars['Duration']>;
+  readonly estimatedDuration: Maybe<Scalars['Int']>;
   readonly publicCovered: Maybe<Scalars['Boolean']>;
   readonly privateCovered: Maybe<Scalars['Boolean']>;
   readonly timesSelected: Scalars['Int'];
@@ -523,7 +533,6 @@ export type ResolversTypes = ResolversObject<{
   Float: ResolverTypeWrapper<Scalars['Float']>;
   DoctorEdge: ResolverTypeWrapper<DoctorEdgeModel>;
   DoctorsConnection: ResolverTypeWrapper<DoctorsConnectionModel>;
-  Duration: ResolverTypeWrapper<Scalars['Duration']>;
   Followup: ResolverTypeWrapper<IFollowupModel>;
   FollowupInput: FollowupInput;
   Gender: ResolverTypeWrapper<GenderModel>;
@@ -576,7 +585,6 @@ export type ResolversParentTypes = ResolversObject<{
   Float: Scalars['Float'];
   DoctorEdge: DoctorEdgeModel;
   DoctorsConnection: DoctorsConnectionModel;
-  Duration: Scalars['Duration'];
   Followup: IFollowupModel;
   FollowupInput: FollowupInput;
   Length: Scalars['Length'];
@@ -640,7 +648,7 @@ export type AppointmentEdgeResolvers<ContextType = Context, ParentType extends R
 
 export type AppointmentTimeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['AppointmentTime'] = ResolversParentTypes['AppointmentTime']> = ResolversObject<{
   start: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  duration: Resolver<Maybe<ResolversTypes['Duration']>, ParentType, ContextType>;
+  duration: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -689,10 +697,6 @@ export type DoctorsConnectionResolvers<ContextType = Context, ParentType extends
   edges: Resolver<Maybe<ReadonlyArray<Maybe<ResolversTypes['DoctorEdge']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
-
-export interface DurationScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Duration'], any> {
-  name: 'Duration';
-}
 
 export type FollowupResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Followup'] = ResolversParentTypes['Followup']> = ResolversObject<{
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -778,6 +782,8 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   reviews: Resolver<ResolversTypes['ReviewsConnection'], ParentType, ContextType, RequireFields<QueryReviewsArgs, never>>;
   services: Resolver<ResolversTypes['ServicesConnection'], ParentType, ContextType, RequireFields<QueryServicesArgs, never>>;
   latestReviews: Resolver<ReadonlyArray<ResolversTypes['Review']>, ParentType, ContextType>;
+  patientUpcomingAppointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType, RequireFields<QueryPatientUpcomingAppointmentsArgs, 'id'>>;
+  patientPreviousAppointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType, RequireFields<QueryPatientPreviousAppointmentsArgs, 'id'>>;
 }>;
 
 export type ReviewResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = ResolversObject<{
@@ -827,7 +833,7 @@ export type ServiceResolvers<ContextType = Context, ParentType extends Resolvers
   name: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   doctor: Resolver<ResolversTypes['Doctor'], ParentType, ContextType>;
   description: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  estimatedDuration: Resolver<Maybe<ResolversTypes['Duration']>, ParentType, ContextType>;
+  estimatedDuration: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   publicCovered: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   privateCovered: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   timesSelected: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -889,7 +895,6 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Doctor: DoctorResolvers<ContextType>;
   DoctorEdge: DoctorEdgeResolvers<ContextType>;
   DoctorsConnection: DoctorsConnectionResolvers<ContextType>;
-  Duration: GraphQLScalarType;
   Followup: FollowupResolvers<ContextType>;
   Gender: GenderResolvers;
   Insurance: InsuranceResolvers;
