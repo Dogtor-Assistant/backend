@@ -2,8 +2,6 @@ interface Node {
   id: ID!
 }
 
-scalar Duration
-
 scalar DateTime
 
 scalar URL
@@ -52,7 +50,7 @@ type Address {
 
 type AppointmentTime {
   start: DateTime
-  duration: Duration
+  duration: Int
 }
 
 type Appointment implements Node {
@@ -133,7 +131,7 @@ type Service implements Node {
   name: String!
   doctor: Doctor!
   description: String
-  estimatedDuration: Duration
+  estimatedDuration: Int
   publicCovered: Boolean
   privateCovered: Boolean
   timesSelected: Int!
@@ -301,6 +299,8 @@ type Query {
   reviews(after: String, first: Int, before: String, last: Int): ReviewsConnection!
   services(after: String, first: Int, before: String, last: Int): ServicesConnection!
   latestReviews: [Review!]!
+  patientUpcomingAppointments(id: ID!): [Appointment!]!
+  patientPreviousAppointments(id: ID!): [Appointment!]!
 }
 
 type Mutation {
