@@ -1,6 +1,5 @@
 
 import type { QueryResolvers, QuerySearchArgs } from '@resolvers';
-import type { IAppointment } from 'models/Appointment';
 import type { IReview } from 'models/Review';
 
 import Appointment from 'models/Appointment';
@@ -96,11 +95,10 @@ const Query: QueryResolvers = {
         const [nodeType, id] = deconstructed;
 
         if (nodeType === 'Patient') {
-            const appointments = await Appointment.find({
+            return Appointment.find({
                 expectedTime: { $lt: new Date() },
                 'patientRef.patientId': mongoose.Types.ObjectId(id),
             });
-            return appointments.map((appointment: IAppointment) => new Appointment(appointment));
         }
         return [];
     },
@@ -113,11 +111,10 @@ const Query: QueryResolvers = {
         const [nodeType, id] = deconstructed;
 
         if (nodeType === 'Patient') {
-            const appointments = await Appointment.find({
+            return await Appointment.find({
                 expectedTime: { $gte: new Date() },
                 'patientRef.patientId': mongoose.Types.ObjectId(id),
             });
-            return appointments.map((appointment: IAppointment) => new Appointment(appointment));
         }
         return [];
     },
