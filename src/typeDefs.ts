@@ -7,9 +7,6 @@ export const typeDefs = gql`
         id: ID!
     }
 
-    # Duration of time encoded as a floating point number of seconds
-    scalar Duration
-    
     # Date and time of an event encoded as an ISO 8601 string
     scalar DateTime
 
@@ -61,7 +58,7 @@ export const typeDefs = gql`
 
     type AppointmentTime {
         start: DateTime
-        duration: Duration
+        duration: Int
     }
 
     type Appointment implements Node {
@@ -162,7 +159,7 @@ export const typeDefs = gql`
         doctor:Doctor!
 
         description: String
-        estimatedDuration: Duration
+        estimatedDuration: Int
         publicCovered: Boolean
         privateCovered: Boolean
         timesSelected: Int!
@@ -348,6 +345,8 @@ export const typeDefs = gql`
         reviews(after: String, first: Int, before: String, last: Int): ReviewsConnection!
         services(after: String, first: Int, before: String, last: Int): ServicesConnection!
         latestReviews: [Review!]!
+        patientUpcomingAppointments(id: ID!): [Appointment!]!
+        patientPreviousAppointments(id: ID!): [Appointment!]!
     }
 
     type Mutation {

@@ -1,5 +1,6 @@
 
 import type { QueryResolvers, QuerySearchArgs } from '@resolvers';
+import type { IAppointment } from 'models/Appointment';
 import type { IReview } from 'models/Review';
 
 import Appointment from 'models/Appointment';
@@ -10,6 +11,7 @@ import Patient from 'models/Patient';
 import ReviewModel from 'models/Review';
 import Service from 'models/Service';
 import User from 'models/User';
+import mongoose from 'mongoose';
 import {
     doctorsConnection,
     patientsConnection,
@@ -84,6 +86,40 @@ const Query: QueryResolvers = {
         case 'User':
             return await user(id);
         }
+    },
+    async patientPreviousAppointments(_, { id: nodeId }) {
+        const deconstructed = deconstructId(nodeId);
+        if (deconstructed == null) {
+            return [];
+        }
+
+        const [nodeType, id] = deconstructed;
+
+        if (nodeType === 'Patient') {
+            const appointments = await Appointment.find({
+                expectedTime: { $lt: new Date() },
+                'patientRef.patientId': mongoose.Types.ObjectId(id),
+            });
+            return appointments.map((appointment: IAppointment) => new Appointment(appointment));
+        }
+        return [];
+    },
+    async patientUpcomingAppointments(_, { id: nodeId }) {
+        const deconstructed = deconstructId(nodeId);
+        if (deconstructed == null) {
+            return [];
+        }
+
+        const [nodeType, id] = deconstructed;
+
+        if (nodeType === 'Patient') {
+            const appointments = await Appointment.find({
+                expectedTime: { $gte: new Date() },
+                'patientRef.patientId': mongoose.Types.ObjectId(id),
+            });
+            return appointments.map((appointment: IAppointment) => new Appointment(appointment));
+        }
+        return [];
     },
     async patients(_, args) {
         return await patientsConnection(Patient.find(), args);
