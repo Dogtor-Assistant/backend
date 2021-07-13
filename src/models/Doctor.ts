@@ -9,6 +9,14 @@ const AddressSchema: Schema = new Schema({
         required: true,
         type: String,
     },
+    lat: {
+        required: true,
+        type: Number,
+    },
+    lon: {
+        required: true,
+        type: Number,
+    },
     streetName: {
         required: true,
         type: String,
@@ -27,6 +35,8 @@ const AddressSchema: Schema = new Schema({
 
 interface IAddress extends Document {
     city: string,
+    lat: number,
+    lon: number,
     streetName: string,
     streetNumber: number,
     zipCode: number,

@@ -31,6 +31,8 @@ const db = mongoose.connection;
 const cities = ['Munich', 'Berlin', 'Hamburg', 'Stuttgart', 'Cologne', 'Frankfurt'];
 const streets = ['Kaufingerstraße', 'Friedrichstraße', 'Poststraße', 'Königstraße', 'Schildergasse', 'Zeil'];
 const zips = [80331, 10117, 20354, 70173, 50667, 60547];
+const lat = [48.137154, 52.520008, 53.551086, 48.783333, 50.935173, 50.110924];
+const lon = [11.576124, 13.404954, 9.993682, 9.183333, 6.953101, 8.682127];
 
 /*-----------------------------------------------*/
 function readNames() {
@@ -77,6 +79,8 @@ async function createPatients(): Promise<IPatient[]> {
             activityLevel: Math.floor(Math.random() * 5),
             address: {
                 city: cities[randomIndex],
+                lat: lat[randomIndex] + (Math.random() / 1000000),
+                lon: lon[randomIndex] + (Math.random() / 1000000),
                 streetName: streets[randomIndex],
                 streetNumber: Math.floor(Math.random() * 200) + 1,
                 zipCode: zips[randomIndex],
@@ -117,6 +121,8 @@ async function createDoctors(): Promise<IDoctor[]> {
         doctorsArray.push(new Doctor({
             address: {
                 city: cities[randomIndex],
+                lat: lat[randomIndex] + (Math.random() / 1000000),
+                lon: lon[randomIndex] + (Math.random() / 1000000),
                 streetName: streets[randomIndex],
                 streetNumber: Math.floor(Math.random() * 200) + 1,
                 zipCode: zips[randomIndex],
