@@ -40,7 +40,7 @@ import User from './user';
 import Weekday from './weekday';
 import Weight from './weight';
 
-import { GraphQLDateTime as DateTime, GraphQLDuration as Duration, GraphQLURL as URL } from 'graphql-scalars';
+import { GraphQLDateTime as DateTime, GraphQLURL as URL } from 'graphql-scalars';
 
 const resolvers: Resolvers = {
     ActivityLevel,
@@ -54,7 +54,6 @@ const resolvers: Resolvers = {
     Doctor,
     DoctorEdge,
     DoctorsConnection,
-    Duration,
     Followup,
     Gender,
     Insurance,

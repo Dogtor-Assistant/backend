@@ -10,6 +10,7 @@ import Patient from 'models/Patient';
 import ReviewModel from 'models/Review';
 import Service from 'models/Service';
 import User from 'models/User';
+import mongoose from 'mongoose';
 import {
     doctorsConnection,
     patientsConnection,
@@ -84,6 +85,38 @@ const Query: QueryResolvers = {
         case 'User':
             return await user(id);
         }
+    },
+    async patientPreviousAppointments(_, { id: nodeId }) {
+        const deconstructed = deconstructId(nodeId);
+        if (deconstructed == null) {
+            return [];
+        }
+
+        const [nodeType, id] = deconstructed;
+
+        if (nodeType === 'Patient') {
+            return Appointment.find({
+                expectedTime: { $lt: new Date() },
+                'patientRef.patientId': mongoose.Types.ObjectId(id),
+            });
+        }
+        return [];
+    },
+    async patientUpcomingAppointments(_, { id: nodeId }) {
+        const deconstructed = deconstructId(nodeId);
+        if (deconstructed == null) {
+            return [];
+        }
+
+        const [nodeType, id] = deconstructed;
+
+        if (nodeType === 'Patient') {
+            return await Appointment.find({
+                expectedTime: { $gte: new Date() },
+                'patientRef.patientId': mongoose.Types.ObjectId(id),
+            });
+        }
+        return [];
     },
     async patients(_, args) {
         return await patientsConnection(Patient.find(), args);
