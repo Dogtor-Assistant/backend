@@ -53,6 +53,8 @@ export type AddressInput = {
   readonly streetNumber: Scalars['Int'];
   readonly city: Scalars['String'];
   readonly zipCode: Scalars['Int'];
+  readonly lat: Scalars['Float'];
+  readonly lon: Scalars['Float'];
 };
 
 export type Appointment = Node & {
@@ -521,6 +523,7 @@ export type ResolversTypes = ResolversObject<{
   String: ResolverTypeWrapper<Scalars['String']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   AddressInput: AddressInput;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   Appointment: ResolverTypeWrapper<IAppointmentModel>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -530,7 +533,6 @@ export type ResolversTypes = ResolversObject<{
   Checkup: ResolverTypeWrapper<ICheckupModel>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   Doctor: ResolverTypeWrapper<DoctorModel>;
-  Float: ResolverTypeWrapper<Scalars['Float']>;
   DoctorEdge: ResolverTypeWrapper<DoctorEdgeModel>;
   DoctorsConnection: ResolverTypeWrapper<DoctorsConnectionModel>;
   Followup: ResolverTypeWrapper<IFollowupModel>;
@@ -573,6 +575,7 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars['String'];
   Int: Scalars['Int'];
   AddressInput: AddressInput;
+  Float: Scalars['Float'];
   Appointment: IAppointmentModel;
   ID: Scalars['ID'];
   Boolean: Scalars['Boolean'];
@@ -582,7 +585,6 @@ export type ResolversParentTypes = ResolversObject<{
   Checkup: ICheckupModel;
   DateTime: Scalars['DateTime'];
   Doctor: DoctorModel;
-  Float: Scalars['Float'];
   DoctorEdge: DoctorEdgeModel;
   DoctorsConnection: DoctorsConnectionModel;
   Followup: IFollowupModel;
