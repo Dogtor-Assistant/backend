@@ -18,11 +18,9 @@ export type Suggestions = {
     readonly cities?: string[],
 }
 
-export type SmartFilter = {
-    languageTag: string,
-    filterFromInput: (filters: AppliedFilters) => (FilterQuery<IDoctor> | null),
-    filterFromWords: (words: string[]) => [FilterQuery<IDoctor>, AppliedFilters],
-}
+export type SmartScopeModifier = ((scope: Scope) => Scope) | SmartScopeModifier[]
+
+export type QueryGenerator = ((scope: Scope) => FilterQuery<IDoctor> | null) | QueryGenerator[]
 
 export type SmartSuggestions = {
     create: (scope: Scope, context: Context) => Promise<Suggestions | null>,
