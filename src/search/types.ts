@@ -22,9 +22,7 @@ export type SmartScopeModifier = ((scope: Scope) => Scope) | SmartScopeModifier[
 
 export type QueryGenerator = ((scope: Scope) => FilterQuery<IDoctor> | null) | QueryGenerator[]
 
-export type SmartSuggestions = {
-    create: (scope: Scope, context: Context) => Promise<Suggestions | null>,
-}
+export type SmartSuggestions = ((scope: Scope, context: Context) => Promise<Suggestions | null>) | SmartSuggestions[]
 
 export type SearchObject = {
     __typename: 'Search',

@@ -4,6 +4,7 @@ import type {
     SearchObject,
     SmartScopeModifier,
     SmartSuggestions,
+    Suggestions,
 } from './types';
 import type { QuerySearchArgs, RequireFields } from '@resolvers';
 import type { Context } from 'context';
@@ -40,12 +41,40 @@ function generate(scope: Scope, generator: QueryGenerator): FilterQuery<IDoctor>
     }
 }
 
+async function suggest(
+    scope: Scope,
+    context: Context,
+    suggestions: SmartSuggestions,
+): Promise<Suggestions> {
+    switch (typeof suggestions) {
+    case 'function': {
+        const result = await suggestions(scope, context);
+        return result ?? {};
+    }
+    case 'object': {
+        const partialSuggestions = await Promise.all(
+            suggestions.map(element => suggest(scope, context, element)),
+        );
+
+        return partialSuggestions.reduce((acc, object) => {
+            if (object == null) {
+                return acc;
+            }
+            return {
+                ...acc,
+                ...object,
+            };
+        }) ?? {};
+    }
+    }
+}
+
 async function searchImpl(
     scope: Scope,
     context: Context,
     modifier: SmartScopeModifier,
     generator: QueryGenerator,
-    smartSuggestions: SmartSuggestions[],
+    smartSuggestions: SmartSuggestions,
 ): Promise<Omit<Omit<SearchObject, 'input'>, '__typename'>> {
     const actualScope = modify(scope, modifier);
     console.log(actualScope);
@@ -60,20 +89,8 @@ async function searchImpl(
                 rating: -1,
             },
         );
-
-    const partialSuggestions = await Promise.all(
-        smartSuggestions.map(suggestion => suggestion.create(actualScope, context)),
-    );
-
-    const suggestions = partialSuggestions.reduce((acc, object) => {
-        if (object == null) {
-            return acc;
-        }
-        return {
-            ...acc,
-            ...object,
-        };
-    }) ?? {};
+        
+    const suggestions = await suggest(actualScope, context, smartSuggestions);
 
     return {
         query: dbQuery,
@@ -87,7 +104,7 @@ export async function search(
     context: Context,
     modifier: SmartScopeModifier = defaultModifier,
     generator: QueryGenerator = defaultGenerator,
-    smartSuggestions: SmartSuggestions[] = defaultSuggestions,
+    smartSuggestions: SmartSuggestions = defaultSuggestions,
 ): Promise<SearchObject> {
     const results = await searchImpl(
         {

@@ -25,29 +25,27 @@ async function clientCity(context: Context): Promise<string | null> {
     }
 }
 
-const suggestions: SmartSuggestions = {
-    async create({ cities }, context) {
-        if (cities != null && cities.length > 0) {
-            return null;
-        }
-
-        const possibleCities = [
-            await userCity(context),
-            await clientCity(context),
-        ];
-
-        const values = possibleCities.
-            compactMap(value => value).
-            unique();
-
-        if (values.length > 0) {
-            return {
-                cities: values,
-            };
-        }
-
+const suggestions: SmartSuggestions = async ({ cities }, context) => {
+    if (cities != null && cities.length > 0) {
         return null;
-    },
+    }
+
+    const possibleCities = [
+        await userCity(context),
+        await clientCity(context),
+    ];
+
+    const values = possibleCities.
+        compactMap(value => value).
+        unique();
+
+    if (values.length > 0) {
+        return {
+            cities: values,
+        };
+    }
+
+    return null;
 };
 
 export default suggestions;
