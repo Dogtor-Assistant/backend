@@ -246,6 +246,8 @@ export type Query = {
   readonly latestReviews: ReadonlyArray<Review>;
   readonly patientUpcomingAppointments: ReadonlyArray<Appointment>;
   readonly patientPreviousAppointments: ReadonlyArray<Appointment>;
+  readonly cities: ReadonlyArray<Scalars['String']>;
+  readonly specialities: ReadonlyArray<Scalars['String']>;
 };
 
 
@@ -800,6 +802,8 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   latestReviews: Resolver<ReadonlyArray<ResolversTypes['Review']>, ParentType, ContextType>;
   patientUpcomingAppointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType, RequireFields<QueryPatientUpcomingAppointmentsArgs, 'id'>>;
   patientPreviousAppointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType, RequireFields<QueryPatientPreviousAppointmentsArgs, 'id'>>;
+  cities: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
+  specialities: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
 export type RecommendationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Recommendation'] = ResolversParentTypes['Recommendation']> = ResolversObject<{

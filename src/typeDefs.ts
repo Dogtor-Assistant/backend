@@ -359,6 +359,9 @@ export const typeDefs = gql`
         latestReviews: [Review!]!
         patientUpcomingAppointments(id: ID!): [Appointment!]!
         patientPreviousAppointments(id: ID!): [Appointment!]!
+
+        cities: [String!]!
+        specialities: [String!]!
     }
 
     type Mutation {
