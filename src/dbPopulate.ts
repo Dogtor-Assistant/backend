@@ -79,8 +79,12 @@ async function createPatients(): Promise<IPatient[]> {
             activityLevel: Math.floor(Math.random() * 5),
             address: {
                 city: cities[randomIndex],
-                lat: lat[randomIndex] + (Math.random() / 1000000),
-                lon: lon[randomIndex] + (Math.random() / 1000000),
+                location: {
+                    coordinates: [
+                        lat[randomIndex] + (Math.random() / 1000000),
+                        lon[randomIndex] + (Math.random() / 1000000)],
+                    type: 'Point',
+                },
                 streetName: streets[randomIndex],
                 streetNumber: Math.floor(Math.random() * 200) + 1,
                 zipCode: zips[randomIndex],
@@ -101,7 +105,7 @@ async function createPatients(): Promise<IPatient[]> {
     return await Patient.insertMany(patientsArray);
 }
 
-async function createDoctors(): Promise<IDoctor[]> {
+async function createDoctors(names: any[]): Promise<IDoctor[]> {
     let i = 0;
 
     const specialties = ['General Practicioner', 'Dentist', 'Dermatologist', 'Neurologist', 'Opthalmologist',
@@ -121,12 +125,18 @@ async function createDoctors(): Promise<IDoctor[]> {
         doctorsArray.push(new Doctor({
             address: {
                 city: cities[randomIndex],
-                lat: lat[randomIndex] + (Math.random() / 1000000),
-                lon: lon[randomIndex] + (Math.random() / 1000000),
+                location: {
+                    coordinates: [
+                        lat[randomIndex] + (Math.random() / 1000000),
+                        lon[randomIndex] + (Math.random() / 1000000)],
+                    type: 'Point',
+                },
                 streetName: streets[randomIndex],
                 streetNumber: Math.floor(Math.random() * 200) + 1,
                 zipCode: zips[randomIndex],
             },
+            firstName: names[i+86].firstName,
+            lastName: names[i+86].lastName,
             offeredSlots: slots.slice(slicer, slicer + 3),
             phoneNumber: `170${num.toString()}`,
             specialities: specialties[Math.floor(Math.random() * specialties.length)],
@@ -406,7 +416,7 @@ export async function populateDB() {
     console.log('Insert Patients OK');
 
     // Insert Doctors
-    const doctors = await createDoctors();
+    const doctors = await createDoctors(names);
     const doctorsId = doctors.map(function(doctor) { return doctor._id; });
     console.log('Insert Doctors OK');
 

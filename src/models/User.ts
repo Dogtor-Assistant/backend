@@ -34,8 +34,6 @@ const UserSchema: Schema = new Schema({
     timestamps: true,
 });
 
-UserSchema.index({ lastName: 1 }, { partialFilterExpression: { doctorRef: { $exists: true }}});
-
 export interface IUser extends Document<string> {
     email: string,
     password: string,
