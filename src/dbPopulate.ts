@@ -81,8 +81,9 @@ async function createPatients(): Promise<IPatient[]> {
                 city: cities[randomIndex],
                 location: {
                     coordinates: [
+                        lon[randomIndex] + (Math.random() / 1000000),
                         lat[randomIndex] + (Math.random() / 1000000),
-                        lon[randomIndex] + (Math.random() / 1000000)],
+                    ],
                     type: 'Point',
                 },
                 streetName: streets[randomIndex],
@@ -127,8 +128,9 @@ async function createDoctors(names: any[]): Promise<IDoctor[]> {
                 city: cities[randomIndex],
                 location: {
                     coordinates: [
+                        lon[randomIndex] + (Math.random() / 1000000),
                         lat[randomIndex] + (Math.random() / 1000000),
-                        lon[randomIndex] + (Math.random() / 1000000)],
+                    ],
                     type: 'Point',
                 },
                 streetName: streets[randomIndex],
