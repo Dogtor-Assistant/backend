@@ -120,6 +120,12 @@ export const typeDefs = gql`
         end: String!
     }
 
+    type Recommendation {
+        service: String!
+        kind: String!
+        periodInDays: Int
+    }
+
     type Patient implements Node {
         id: ID!
         
@@ -139,6 +145,8 @@ export const typeDefs = gql`
         isSmoker: Boolean
 
         address: Address!
+
+        checkupRecommendations: [Recommendation!]!
     }
 
     type Review implements Node {
