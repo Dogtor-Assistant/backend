@@ -15,6 +15,10 @@ const Patient: PatientResolvers = {
         const { allergies } = await patient.full();
         return allergies ?? [];
     },
+    async birthDate(patient) {
+        const { birthDate } = await patient.full();
+        return birthDate ?? null;
+    },
     async checkupRecommendations(patient) {
         const recService = new RecommendationService();
         const { birthDate, insurance, gender, medications, medicalConditions } = await patient.full();
@@ -63,6 +67,10 @@ const Patient: PatientResolvers = {
     },
     id(patient) {
         return patient.id();
+    },
+    async insurance(patient) {
+        const { insurance } = await patient.full();
+        return insurance ?? null;
     },
     async isSmoker(patient) {
         const { smoker } = await patient.full();

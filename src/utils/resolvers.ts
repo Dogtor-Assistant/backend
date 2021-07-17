@@ -209,6 +209,8 @@ export type Patient = Node & {
   readonly firstname: Scalars['String'];
   readonly lastname: Scalars['String'];
   readonly activityLevel: Maybe<ActivityLevel>;
+  readonly birthDate: Maybe<Scalars['DateTime']>;
+  readonly insurance: Insurance;
   readonly gender: Maybe<Gender>;
   readonly height: Maybe<Scalars['Length']>;
   readonly weight: Maybe<Scalars['Weight']>;
@@ -758,6 +760,8 @@ export type PatientResolvers<ContextType = Context, ParentType extends Resolvers
   firstname: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastname: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   activityLevel: Resolver<Maybe<ResolversTypes['ActivityLevel']>, ParentType, ContextType>;
+  birthDate: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  insurance: Resolver<ResolversTypes['Insurance'], ParentType, ContextType>;
   gender: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;
   height: Resolver<Maybe<ResolversTypes['Length']>, ParentType, ContextType>;
   weight: Resolver<Maybe<ResolversTypes['Weight']>, ParentType, ContextType>;

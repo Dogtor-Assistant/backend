@@ -133,6 +133,8 @@ export const typeDefs = gql`
         lastname: String!
 
         activityLevel: ActivityLevel
+        birthDate: DateTime
+        insurance: Insurance!
         gender: Gender
         height: Length
         weight: Weight
