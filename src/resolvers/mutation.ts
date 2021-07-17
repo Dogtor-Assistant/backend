@@ -62,6 +62,8 @@ const Mutation: MutationResolvers = {
         // Insert doctor document
         const doctorIn = new Doctor({
             address: input.address,
+            firstName: input.firstName,
+            lastName: input.lastName,
             offeredSlots: input.offeredSlots,
             phoneNumber: input.phoneNumber,
             specialities: input.specialities,
