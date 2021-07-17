@@ -102,11 +102,19 @@ type OfferedSlot {
   end: String!
 }
 
+type Recommendation {
+  service: String!
+  kind: String!
+  periodInDays: Int
+}
+
 type Patient implements Node {
   id: ID!
   firstname: String!
   lastname: String!
   activityLevel: ActivityLevel
+  birthDate: DateTime
+  insurance: Insurance!
   gender: Gender
   height: Length
   weight: Weight
@@ -116,6 +124,7 @@ type Patient implements Node {
   surgeries: [String!]!
   isSmoker: Boolean
   address: Address!
+  checkupRecommendations: [Recommendation!]!
 }
 
 type Review implements Node {
