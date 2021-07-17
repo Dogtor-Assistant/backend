@@ -7,6 +7,17 @@ const AddressSchema: Schema = new Schema({
         required: true,
         type: String,
     },
+    location: {
+        coordinates: {
+            required: true,
+            type: [Number],
+        },
+        type: {
+            enum: ['Point'],
+            required: true,
+            type: String,
+        },
+    },
     streetName: {
         required: true,
         type: String,
@@ -25,6 +36,7 @@ const AddressSchema: Schema = new Schema({
 
 interface IAddress extends Document {
     city: string,
+    location: { coordinates: number[], type: string },
     streetName: string,
     streetNumber: number,
     zipCode: number,
