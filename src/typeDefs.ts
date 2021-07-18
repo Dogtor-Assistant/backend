@@ -250,15 +250,39 @@ export const typeDefs = gql`
         edges: [AppointmentEdge]
     }
 
+    type Coordinates {
+        latitude: Float!
+        longitude: Float!
+    }
+
+    type NearbyLocation {
+        label: String!
+        coordinates: Coordinates!
+        maximumDistanceInMeters: Int!
+    }
+
+    input CoordinatesInput {
+        latitude: Float!
+        longitude: Float!
+    }
+
+    input NearbyLocationInput {
+        label: String!
+        coordinates: CoordinatesInput!
+        maximumDistanceInMeters: Int!
+    }
+
     type SearchScope {
         query: String
         specialities: [String!]
         cities: [String!]
+        nearby: NearbyLocation
     }
 
     type SearchSuggestions {
         specialities: [String!]
         cities: [String!]
+        nearby: NearbyLocation
     }
 
     type Search implements Node {
@@ -349,6 +373,7 @@ export const typeDefs = gql`
             query: String
             specialities: [String!]
             cities: [String!]
+            nearby: NearbyLocationInput
         ): Search!
         
         users(after: String, first: Int, before: String, last: Int): UsersConnection!

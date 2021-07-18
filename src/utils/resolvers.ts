@@ -92,6 +92,16 @@ export type Checkup = Node & {
   readonly suggestedDate: Scalars['DateTime'];
 };
 
+export type Coordinates = {
+  readonly latitude: Scalars['Float'];
+  readonly longitude: Scalars['Float'];
+};
+
+export type CoordinatesInput = {
+  readonly latitude: Scalars['Float'];
+  readonly longitude: Scalars['Float'];
+};
+
 
 export type Doctor = Node & {
   readonly id: Scalars['ID'];
@@ -181,6 +191,18 @@ export type MutationCreateUserPatientArgs = {
   input: UserPatientInput;
 };
 
+export type NearbyLocation = {
+  readonly label: Scalars['String'];
+  readonly coordinates: Coordinates;
+  readonly maximumDistanceInMeters: Scalars['Int'];
+};
+
+export type NearbyLocationInput = {
+  readonly label: Scalars['String'];
+  readonly coordinates: CoordinatesInput;
+  readonly maximumDistanceInMeters: Scalars['Int'];
+};
+
 export type Node = {
   readonly id: Scalars['ID'];
 };
@@ -260,6 +282,7 @@ export type QuerySearchArgs = {
   query: Maybe<Scalars['String']>;
   specialities: Maybe<ReadonlyArray<Scalars['String']>>;
   cities: Maybe<ReadonlyArray<Scalars['String']>>;
+  nearby: Maybe<NearbyLocationInput>;
 };
 
 
@@ -355,11 +378,13 @@ export type SearchScope = {
   readonly query: Maybe<Scalars['String']>;
   readonly specialities: Maybe<ReadonlyArray<Scalars['String']>>;
   readonly cities: Maybe<ReadonlyArray<Scalars['String']>>;
+  readonly nearby: Maybe<NearbyLocation>;
 };
 
 export type SearchSuggestions = {
   readonly specialities: Maybe<ReadonlyArray<Scalars['String']>>;
   readonly cities: Maybe<ReadonlyArray<Scalars['String']>>;
+  readonly nearby: Maybe<NearbyLocation>;
 };
 
 export type Service = Node & {
@@ -542,6 +567,8 @@ export type ResolversTypes = ResolversObject<{
   AppointmentTime: ResolverTypeWrapper<AppointmentTime>;
   AppointmentsConnection: ResolverTypeWrapper<AppointmentsConnectionModel>;
   Checkup: ResolverTypeWrapper<ICheckupModel>;
+  Coordinates: ResolverTypeWrapper<Coordinates>;
+  CoordinatesInput: CoordinatesInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   Doctor: ResolverTypeWrapper<DoctorModel>;
   DoctorEdge: ResolverTypeWrapper<DoctorEdgeModel>;
@@ -552,6 +579,8 @@ export type ResolversTypes = ResolversObject<{
   Insurance: ResolverTypeWrapper<InsuranceModel>;
   Length: ResolverTypeWrapper<Scalars['Length']>;
   Mutation: ResolverTypeWrapper<{}>;
+  NearbyLocation: ResolverTypeWrapper<NearbyLocation>;
+  NearbyLocationInput: NearbyLocationInput;
   Node: ResolversTypes['Appointment'] | ResolversTypes['Checkup'] | ResolversTypes['Doctor'] | ResolversTypes['Followup'] | ResolversTypes['Patient'] | ResolversTypes['Review'] | ResolversTypes['Search'] | ResolversTypes['Service'] | ResolversTypes['User'];
   OfferedSlot: ResolverTypeWrapper<Omit<OfferedSlot, 'day'> & { day: ResolversTypes['Weekday'] }>;
   OfferedSlotInput: OfferedSlotInput;
@@ -595,6 +624,8 @@ export type ResolversParentTypes = ResolversObject<{
   AppointmentTime: AppointmentTime;
   AppointmentsConnection: AppointmentsConnectionModel;
   Checkup: ICheckupModel;
+  Coordinates: Coordinates;
+  CoordinatesInput: CoordinatesInput;
   DateTime: Scalars['DateTime'];
   Doctor: DoctorModel;
   DoctorEdge: DoctorEdgeModel;
@@ -603,6 +634,8 @@ export type ResolversParentTypes = ResolversObject<{
   FollowupInput: FollowupInput;
   Length: Scalars['Length'];
   Mutation: {};
+  NearbyLocation: NearbyLocation;
+  NearbyLocationInput: NearbyLocationInput;
   Node: ResolversParentTypes['Appointment'] | ResolversParentTypes['Checkup'] | ResolversParentTypes['Doctor'] | ResolversParentTypes['Followup'] | ResolversParentTypes['Patient'] | ResolversParentTypes['Review'] | ResolversParentTypes['Search'] | ResolversParentTypes['Service'] | ResolversParentTypes['User'];
   OfferedSlot: Omit<OfferedSlot, 'day'> & { day: ResolversParentTypes['Weekday'] };
   OfferedSlotInput: OfferedSlotInput;
@@ -681,6 +714,12 @@ export type CheckupResolvers<ContextType = Context, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type CoordinatesResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Coordinates'] = ResolversParentTypes['Coordinates']> = ResolversObject<{
+  latitude: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  longitude: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
 }
@@ -736,6 +775,13 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   makeAppointmentAsDone: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMakeAppointmentAsDoneArgs, 'id'>>;
   assignFollowup: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAssignFollowupArgs, 'followupInput'>>;
   createUserPatient: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserPatientArgs, 'input'>>;
+}>;
+
+export type NearbyLocationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['NearbyLocation'] = ResolversParentTypes['NearbyLocation']> = ResolversObject<{
+  label: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  coordinates: Resolver<ResolversTypes['Coordinates'], ParentType, ContextType>;
+  maximumDistanceInMeters: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{
@@ -846,12 +892,14 @@ export type SearchScopeResolvers<ContextType = Context, ParentType extends Resol
   query: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   specialities: Resolver<Maybe<ReadonlyArray<ResolversTypes['String']>>, ParentType, ContextType>;
   cities: Resolver<Maybe<ReadonlyArray<ResolversTypes['String']>>, ParentType, ContextType>;
+  nearby: Resolver<Maybe<ResolversTypes['NearbyLocation']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type SearchSuggestionsResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SearchSuggestions'] = ResolversParentTypes['SearchSuggestions']> = ResolversObject<{
   specialities: Resolver<Maybe<ReadonlyArray<ResolversTypes['String']>>, ParentType, ContextType>;
   cities: Resolver<Maybe<ReadonlyArray<ResolversTypes['String']>>, ParentType, ContextType>;
+  nearby: Resolver<Maybe<ResolversTypes['NearbyLocation']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -918,6 +966,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   AppointmentTime: AppointmentTimeResolvers<ContextType>;
   AppointmentsConnection: AppointmentsConnectionResolvers<ContextType>;
   Checkup: CheckupResolvers<ContextType>;
+  Coordinates: CoordinatesResolvers<ContextType>;
   DateTime: GraphQLScalarType;
   Doctor: DoctorResolvers<ContextType>;
   DoctorEdge: DoctorEdgeResolvers<ContextType>;
@@ -927,6 +976,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Insurance: InsuranceResolvers;
   Length: GraphQLScalarType;
   Mutation: MutationResolvers<ContextType>;
+  NearbyLocation: NearbyLocationResolvers<ContextType>;
   Node: NodeResolvers<ContextType>;
   OfferedSlot: OfferedSlotResolvers<ContextType>;
   PageInfo: PageInfoResolvers<ContextType>;
