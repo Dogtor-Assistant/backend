@@ -31,6 +31,7 @@ const Search: SearchResolvers = {
     scope({ scope }) {
         return {
             cities: scope?.cities ?? null,
+            nearby: scope.nearby ?? null,
             query: scope?.query ?? null,
             specialities: scope.specialities ?? null,
         };
@@ -38,6 +39,7 @@ const Search: SearchResolvers = {
     suggestions({ suggestions }) {
         return {
             cities: suggestions.cities ?? null,
+            nearby: suggestions.nearby ?? null,
             specialities: suggestions.specialities ?? null,
         };
     },
