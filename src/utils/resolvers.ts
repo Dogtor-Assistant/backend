@@ -12,6 +12,7 @@ import type { Review as ReviewModel } from 'shims/review';
 import type { Service as ServiceModel } from 'shims/service';
 import type { PageInfo as PageInfoModel, ReviewsConnection as ReviewsConnectionModel, UsersConnection as UsersConnectionModel, DoctorsConnection as DoctorsConnectionModel, PatientsConnection as PatientsConnectionModel, ServicesConnection as ServicesConnectionModel, AppointmentsConnection as AppointmentsConnectionModel, ReviewEdge as ReviewEdgeModel, UserEdge as UserEdgeModel, DoctorEdge as DoctorEdgeModel, PatientEdge as PatientEdgeModel, ServiceEdge as ServiceEdgeModel, AppointmentEdge as AppointmentEdgeModel } from 'pagination';
 import type { SearchObject as SearchObjectModel } from 'search/types';
+import type { IAddress as IAddressModel } from 'models/common/Address';
 import type { Context } from 'context';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -46,6 +47,7 @@ export type Address = {
   readonly streetNumber: Scalars['Int'];
   readonly city: Scalars['String'];
   readonly zipCode: Scalars['Int'];
+  readonly coordinates: Coordinates;
 };
 
 export type AddressInput = {
@@ -555,7 +557,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   ActivityLevel: ResolverTypeWrapper<ActivityLevelModel>;
-  Address: ResolverTypeWrapper<Address>;
+  Address: ResolverTypeWrapper<IAddressModel>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   AddressInput: AddressInput;
@@ -612,7 +614,7 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
-  Address: Address;
+  Address: IAddressModel;
   String: Scalars['String'];
   Int: Scalars['Int'];
   AddressInput: AddressInput;
@@ -671,6 +673,7 @@ export type AddressResolvers<ContextType = Context, ParentType extends Resolvers
   streetNumber: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   city: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   zipCode: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  coordinates: Resolver<ResolversTypes['Coordinates'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

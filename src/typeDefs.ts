@@ -54,6 +54,7 @@ export const typeDefs = gql`
         streetNumber: Int!
         city: String!
         zipCode: Int!
+        coordinates: Coordinates!
     }
 
     type AppointmentTime {
