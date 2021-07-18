@@ -77,7 +77,6 @@ async function searchImpl(
     smartSuggestions: SmartSuggestions,
 ): Promise<Omit<Omit<SearchObject, 'input'>, '__typename'>> {
     const actualScope = modify(scope, modifier);
-    console.log(actualScope);
     const composedQuery = generate(actualScope, generator);
         
     const dbQuery = Doctor.
