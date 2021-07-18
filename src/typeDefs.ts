@@ -327,6 +327,13 @@ export const typeDefs = gql`
         surgeries: [String]!
     }
 
+    input UserPatientInputUpd {
+        id: ID!
+        birthDate: DateTime!
+        gender: Gender!
+        insurance: Insurance!
+    }
+
     input ServiceInput {
         serviceId: ID!
         serviceName: String!
@@ -367,6 +374,7 @@ export const typeDefs = gql`
         makeAppointmentAsDone(id:ID!): Boolean!
         assignFollowup(followupInput:FollowupInput!): Boolean!
         createUserPatient(input: UserPatientInput!): User
+        updateUserPatientProfile(input: UserPatientInputUpd!): Patient
     }
     
     schema {

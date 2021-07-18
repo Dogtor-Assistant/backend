@@ -154,6 +154,7 @@ export type Mutation = {
   readonly makeAppointmentAsDone: Scalars['Boolean'];
   readonly assignFollowup: Scalars['Boolean'];
   readonly createUserPatient: Maybe<User>;
+  readonly updateUserPatientProfile: Maybe<Patient>;
 };
 
 
@@ -179,6 +180,11 @@ export type MutationAssignFollowupArgs = {
 
 export type MutationCreateUserPatientArgs = {
   input: UserPatientInput;
+};
+
+
+export type MutationUpdateUserPatientProfileArgs = {
+  input: UserPatientInputUpd;
 };
 
 export type Node = {
@@ -432,6 +438,13 @@ export type UserPatientInput = {
   readonly surgeries: ReadonlyArray<Maybe<Scalars['String']>>;
 };
 
+export type UserPatientInputUpd = {
+  readonly id: Scalars['ID'];
+  readonly birthDate: Scalars['DateTime'];
+  readonly gender: Gender;
+  readonly insurance: Insurance;
+};
+
 export type UsersConnection = {
   readonly pageInfo: PageInfo;
   readonly edges: Maybe<ReadonlyArray<Maybe<UserEdge>>>;
@@ -574,6 +587,7 @@ export type ResolversTypes = ResolversObject<{
   UserDoctorInput: UserDoctorInput;
   UserEdge: ResolverTypeWrapper<UserEdgeModel>;
   UserPatientInput: UserPatientInput;
+  UserPatientInputUpd: UserPatientInputUpd;
   UsersConnection: ResolverTypeWrapper<UsersConnectionModel>;
   Weekday: ResolverTypeWrapper<DayModel>;
   Weight: ResolverTypeWrapper<Scalars['Weight']>;
@@ -625,6 +639,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserDoctorInput: UserDoctorInput;
   UserEdge: UserEdgeModel;
   UserPatientInput: UserPatientInput;
+  UserPatientInputUpd: UserPatientInputUpd;
   UsersConnection: UsersConnectionModel;
   Weight: Scalars['Weight'];
 }>;
@@ -734,6 +749,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   makeAppointmentAsDone: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMakeAppointmentAsDoneArgs, 'id'>>;
   assignFollowup: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAssignFollowupArgs, 'followupInput'>>;
   createUserPatient: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserPatientArgs, 'input'>>;
+  updateUserPatientProfile: Resolver<Maybe<ResolversTypes['Patient']>, ParentType, ContextType, RequireFields<MutationUpdateUserPatientProfileArgs, 'input'>>;
 }>;
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{

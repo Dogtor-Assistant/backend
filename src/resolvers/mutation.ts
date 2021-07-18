@@ -4,13 +4,16 @@ import bcrypt from 'bcrypt';
 import Appointment from 'models/Appointment';
 import Doctor from 'models/Doctor';
 import Followup from 'models/Followup';
+import { Gender as GenderM, Insurance as InsuranceM } from 'models/Patient';
 import Patient from 'models/Patient';
 import User from 'models/User';
 import mongoose from 'mongoose';
 import { Doctor as DoctorShim } from 'shims/doctor';
 import { Patient as PatientShim } from 'shims/patient';
+import { patient as patientShim } from 'shims/patient';
 import { user as userShim } from 'shims/user';
 import { deconstructId } from 'utils/ids';
+import { Insurance } from 'utils/resolvers';
 
 const Mutation: MutationResolvers = {
     async assignFollowup(_, { followupInput }) {
@@ -160,6 +163,31 @@ const Mutation: MutationResolvers = {
 
         return true;
 
+    },
+    async updateUserPatientProfile(_, { input }) {
+        const deconstructedPatientId = deconstructId(input.id);
+        const patientId = deconstructedPatientId?.[1];
+
+        const patientUpd = await Patient.findOne({ _id: patientId });
+        
+        let gender = GenderM.MALE;
+        if (input.gender as unknown as number === 0) gender = GenderM.FEMALE;
+        else if (input.gender as unknown as number === 1) gender = GenderM.MALE;
+        else if (input.gender as unknown as number === 2) gender = GenderM.TRANSGENDER_FEMALE;
+        else if (input.gender as unknown as number === 3) gender = GenderM.TRANSGENDER_MALE;
+        else if (input.gender as unknown as number === 4) gender = GenderM.NON_BINARY;
+        else gender = GenderM.FEMALE;
+
+        if (patientUpd != null) {
+            patientUpd.birthDate = input.birthDate;
+            patientUpd.gender = gender;
+            patientUpd.insurance = input.insurance === Insurance.Public ? InsuranceM.PUBLIC : InsuranceM. PRIVATE;
+
+            await patientUpd.save();
+            if (patientUpd._id !== undefined) return patientShim(patientUpd._id);
+        }
+
+        throw 'Error';
     },
 };
 
