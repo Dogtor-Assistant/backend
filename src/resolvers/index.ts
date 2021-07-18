@@ -21,12 +21,14 @@ import {
     UserEdge,
     UsersConnection,
 } from './connections';
+import Coordinates from './coordinates';
 import Doctor from './doctor';
 import Followup from './followup';
 import Gender from './gender';
 import Insurance from './insurance';
 import Length from './length';
 import Mutation from './mutation';
+import NearbyLocation from './nearbyLocation';
 import Node from './node';
 import OfferedSlot from './offeredSlot';
 import Patient from './patient';
@@ -51,6 +53,7 @@ const resolvers: Resolvers = {
     AppointmentTime,
     AppointmentsConnection,
     Checkup,
+    Coordinates,
     DateTime,
     Doctor,
     DoctorEdge,
@@ -60,6 +63,7 @@ const resolvers: Resolvers = {
     Insurance,
     Length,
     Mutation,
+    NearbyLocation,
     Node,
     OfferedSlot,
     PageInfo,
