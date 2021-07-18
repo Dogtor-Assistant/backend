@@ -14,11 +14,7 @@ export type Scope = AppliedFilters & {
     readonly query?: string,
 }
 
-export type Suggestions = {
-    readonly specialities?: string[],
-    readonly cities?: string[],
-}
-
+export type Suggestions = AppliedFilters
 export type SmartScopeModifier = ((scope: Scope) => Scope) | SmartScopeModifier[]
 
 export type QueryGenerator = ((scope: Scope) => FilterQuery<IDoctor> | null) | QueryGenerator[]
