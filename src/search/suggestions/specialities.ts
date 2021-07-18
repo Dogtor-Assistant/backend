@@ -33,32 +33,30 @@ classifier.addDocument('I feel too much pressure on my eyes', 'Opthalmologist');
 classifier.addDocument('I need surgery', 'Surgeon');
 classifier.train();
 
-const suggestions: SmartSuggestions = {
-    async create({ query }) {
-        if (query == null) {
-            return null;
-        }
-
-        const classifications = classifier.getClassifications(query);
-        if (classifications.length === 0) {
-            return null;
-        }
-
-        const average = classifications.
-            reduce((acc, classification) => acc + classification.value, 0) / classifications.length;
-        
-        const valuable = classifications.
-            filter(classification => classification.value >= Math.min(1.5 * average, average + 0.1)).
-            map(classification => classification.label);
-
-        if (valuable.length > 0 && valuable.length < 3) {
-            return {
-                specialities: valuable,
-            };
-        }
-        
+const suggestions: SmartSuggestions = async ({ query }) => {
+    if (query == null) {
         return null;
-    },
+    }
+
+    const classifications = classifier.getClassifications(query);
+    if (classifications.length === 0) {
+        return null;
+    }
+
+    const average = classifications.
+        reduce((acc, classification) => acc + classification.value, 0) / classifications.length;
+        
+    const valuable = classifications.
+        filter(classification => classification.value >= Math.min(1.5 * average, average + 0.1)).
+        map(classification => classification.label);
+
+    if (valuable.length > 0 && valuable.length < 3) {
+        return {
+            specialities: valuable,
+        };
+    }
+        
+    return null;
 };
 
 export default suggestions;

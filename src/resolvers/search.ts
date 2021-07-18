@@ -8,9 +8,14 @@ const Search: SearchResolvers = {
         const inputAsRecord = input as Record<string, unknown>;
         const orderedInput = Object.keys(inputAsRecord).sort().reduce(
             (obj, key) => {
+                const value = inputAsRecord[key];
+                if (value == null) {
+                    return obj;
+                }
+                
                 return {
                     ...obj,
-                    [key]: inputAsRecord[key],
+                    [key]: value,
                 };
             },
             {},

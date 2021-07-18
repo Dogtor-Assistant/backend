@@ -120,6 +120,12 @@ export const typeDefs = gql`
         end: String!
     }
 
+    type Recommendation {
+        service: String!
+        kind: String!
+        periodInDays: Int
+    }
+
     type Patient implements Node {
         id: ID!
         
@@ -127,6 +133,8 @@ export const typeDefs = gql`
         lastname: String!
 
         activityLevel: ActivityLevel
+        birthDate: DateTime
+        insurance: Insurance!
         gender: Gender
         height: Length
         weight: Weight
@@ -139,6 +147,8 @@ export const typeDefs = gql`
         isSmoker: Boolean
 
         address: Address!
+
+        checkupRecommendations: [Recommendation!]!
     }
 
     type Review implements Node {
@@ -270,6 +280,8 @@ export const typeDefs = gql`
         streetNumber: Int!
         city: String!
         zipCode: Int!
+        lat: Float!
+        lon: Float!
     }
 
     input OfferedSlotInput {

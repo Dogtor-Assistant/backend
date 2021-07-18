@@ -53,6 +53,8 @@ export type AddressInput = {
   readonly streetNumber: Scalars['Int'];
   readonly city: Scalars['String'];
   readonly zipCode: Scalars['Int'];
+  readonly lat: Scalars['Float'];
+  readonly lon: Scalars['Float'];
 };
 
 export type Appointment = Node & {
@@ -207,6 +209,8 @@ export type Patient = Node & {
   readonly firstname: Scalars['String'];
   readonly lastname: Scalars['String'];
   readonly activityLevel: Maybe<ActivityLevel>;
+  readonly birthDate: Maybe<Scalars['DateTime']>;
+  readonly insurance: Insurance;
   readonly gender: Maybe<Gender>;
   readonly height: Maybe<Scalars['Length']>;
   readonly weight: Maybe<Scalars['Weight']>;
@@ -216,6 +220,7 @@ export type Patient = Node & {
   readonly surgeries: ReadonlyArray<Scalars['String']>;
   readonly isSmoker: Maybe<Scalars['Boolean']>;
   readonly address: Address;
+  readonly checkupRecommendations: ReadonlyArray<Recommendation>;
 };
 
 export type PatientEdge = {
@@ -303,6 +308,12 @@ export type QueryPatientUpcomingAppointmentsArgs = {
 
 export type QueryPatientPreviousAppointmentsArgs = {
   id: Scalars['ID'];
+};
+
+export type Recommendation = {
+  readonly service: Scalars['String'];
+  readonly kind: Scalars['String'];
+  readonly periodInDays: Maybe<Scalars['Int']>;
 };
 
 export type Review = Node & {
@@ -521,6 +532,7 @@ export type ResolversTypes = ResolversObject<{
   String: ResolverTypeWrapper<Scalars['String']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   AddressInput: AddressInput;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
   Appointment: ResolverTypeWrapper<IAppointmentModel>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -530,7 +542,6 @@ export type ResolversTypes = ResolversObject<{
   Checkup: ResolverTypeWrapper<ICheckupModel>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   Doctor: ResolverTypeWrapper<DoctorModel>;
-  Float: ResolverTypeWrapper<Scalars['Float']>;
   DoctorEdge: ResolverTypeWrapper<DoctorEdgeModel>;
   DoctorsConnection: ResolverTypeWrapper<DoctorsConnectionModel>;
   Followup: ResolverTypeWrapper<IFollowupModel>;
@@ -547,6 +558,7 @@ export type ResolversTypes = ResolversObject<{
   PatientEdge: ResolverTypeWrapper<PatientEdgeModel>;
   PatientsConnection: ResolverTypeWrapper<PatientsConnectionModel>;
   Query: ResolverTypeWrapper<{}>;
+  Recommendation: ResolverTypeWrapper<Recommendation>;
   Review: ResolverTypeWrapper<ReviewModel>;
   ReviewEdge: ResolverTypeWrapper<ReviewEdgeModel>;
   ReviewsConnection: ResolverTypeWrapper<ReviewsConnectionModel>;
@@ -573,6 +585,7 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars['String'];
   Int: Scalars['Int'];
   AddressInput: AddressInput;
+  Float: Scalars['Float'];
   Appointment: IAppointmentModel;
   ID: Scalars['ID'];
   Boolean: Scalars['Boolean'];
@@ -582,7 +595,6 @@ export type ResolversParentTypes = ResolversObject<{
   Checkup: ICheckupModel;
   DateTime: Scalars['DateTime'];
   Doctor: DoctorModel;
-  Float: Scalars['Float'];
   DoctorEdge: DoctorEdgeModel;
   DoctorsConnection: DoctorsConnectionModel;
   Followup: IFollowupModel;
@@ -597,6 +609,7 @@ export type ResolversParentTypes = ResolversObject<{
   PatientEdge: PatientEdgeModel;
   PatientsConnection: PatientsConnectionModel;
   Query: {};
+  Recommendation: Recommendation;
   Review: ReviewModel;
   ReviewEdge: ReviewEdgeModel;
   ReviewsConnection: ReviewsConnectionModel;
@@ -747,6 +760,8 @@ export type PatientResolvers<ContextType = Context, ParentType extends Resolvers
   firstname: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastname: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   activityLevel: Resolver<Maybe<ResolversTypes['ActivityLevel']>, ParentType, ContextType>;
+  birthDate: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  insurance: Resolver<ResolversTypes['Insurance'], ParentType, ContextType>;
   gender: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;
   height: Resolver<Maybe<ResolversTypes['Length']>, ParentType, ContextType>;
   weight: Resolver<Maybe<ResolversTypes['Weight']>, ParentType, ContextType>;
@@ -756,6 +771,7 @@ export type PatientResolvers<ContextType = Context, ParentType extends Resolvers
   surgeries: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
   isSmoker: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   address: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
+  checkupRecommendations: Resolver<ReadonlyArray<ResolversTypes['Recommendation']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -784,6 +800,13 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   latestReviews: Resolver<ReadonlyArray<ResolversTypes['Review']>, ParentType, ContextType>;
   patientUpcomingAppointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType, RequireFields<QueryPatientUpcomingAppointmentsArgs, 'id'>>;
   patientPreviousAppointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType, RequireFields<QueryPatientPreviousAppointmentsArgs, 'id'>>;
+}>;
+
+export type RecommendationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Recommendation'] = ResolversParentTypes['Recommendation']> = ResolversObject<{
+  service: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  kind: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  periodInDays: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type ReviewResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = ResolversObject<{
@@ -907,6 +930,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   PatientEdge: PatientEdgeResolvers<ContextType>;
   PatientsConnection: PatientsConnectionResolvers<ContextType>;
   Query: QueryResolvers<ContextType>;
+  Recommendation: RecommendationResolvers<ContextType>;
   Review: ReviewResolvers<ContextType>;
   ReviewEdge: ReviewEdgeResolvers<ContextType>;
   ReviewsConnection: ReviewsConnectionResolvers<ContextType>;
