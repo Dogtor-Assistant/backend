@@ -26,7 +26,7 @@ const Search: SearchResolvers = {
         return buildId('Search', encoded);
     },
     results({ query }, connectionArgs) {
-        return doctorsConnection(query, connectionArgs);
+        return doctorsConnection(query ?? [], connectionArgs);
     },
     scope({ scope }) {
         return {

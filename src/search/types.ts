@@ -24,7 +24,7 @@ export type SmartSuggestions = ((scope: Scope, context: Context) => Promise<Sugg
 export type SearchObject = {
     __typename: 'Search',
     input: RequireFields<QuerySearchArgs, never>,
-    query: Query<IDoctor[], IDoctor>,
+    query: Query<IDoctor[], IDoctor> | null,
     scope: Scope,
     suggestions: Suggestions,
 }

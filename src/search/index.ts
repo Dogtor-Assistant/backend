@@ -69,6 +69,17 @@ async function suggest(
     }
 }
 
+function isScopeEmpty(scope: Scope) {
+    const scopeRecord = scope as Record<string, unknown>;
+    const keys = Object.keys(scopeRecord);
+    for (const key of keys) {
+        if (scopeRecord[key] != null) {
+            return false;
+        }
+    }
+    return true;
+}
+
 async function searchImpl(
     scope: Scope,
     context: Context,
@@ -77,6 +88,13 @@ async function searchImpl(
     smartSuggestions: SmartSuggestions,
 ): Promise<Omit<Omit<SearchObject, 'input'>, '__typename'>> {
     const actualScope = modify(scope, modifier);
+    if (isScopeEmpty(actualScope)) {
+        return {
+            query: null,
+            scope: {},
+            suggestions: {},
+        };
+    }
     const composedQuery = generate(actualScope, generator);
         
     const dbQuery = Doctor.
