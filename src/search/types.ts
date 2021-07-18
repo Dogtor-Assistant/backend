@@ -1,5 +1,5 @@
 
-import type { QuerySearchArgs, RequireFields } from '@resolvers';
+import type { NearbyLocationInput, QuerySearchArgs, RequireFields } from '@resolvers';
 import type { Context } from 'context';
 import type { IDoctor } from 'models/Doctor';
 import type { FilterQuery, Query } from 'mongoose';
@@ -7,6 +7,7 @@ import type { FilterQuery, Query } from 'mongoose';
 export type AppliedFilters = {
     readonly specialities?: string[],
     readonly cities?: string[],
+    readonly nearby?: NearbyLocationInput,
 }
 
 export type Scope = AppliedFilters & {

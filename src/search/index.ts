@@ -109,6 +109,7 @@ export async function search(
     const results = await searchImpl(
         {
             cities: input.cities != null ? [...input.cities] : undefined,
+            nearby: input.nearby ?? undefined,
             query: input.query ?? undefined,
             specialities: input.specialities != null ? [...input.specialities] : undefined,
         },
