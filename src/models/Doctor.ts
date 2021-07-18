@@ -1,48 +1,11 @@
+import type { IAddress } from './common/Address';
 import type { IReview } from './Review';
 import type { IService } from './Service';
 import type { Document, Model } from 'mongoose';
 
+import { AddressSchema } from './common/Address';
+
 import { model, Schema } from 'mongoose';
-
-const AddressSchema: Schema = new Schema({
-    city: {
-        required: true,
-        type: String,
-    },
-    location: {
-        coordinates: {
-            required: true,
-            type: [Number],
-        },
-        type: {
-            enum: ['Point'],
-            required: true,
-            type: String,
-        },
-    },
-    streetName: {
-        required: true,
-        type: String,
-    },
-    streetNumber: {
-        required: true,
-        type: Number,
-    },
-    zipCode: {
-        required: true,
-        type: Number,
-    },
-}, {
-    _id: false,
-});
-
-interface IAddress extends Document {
-    city: string,
-    location: { coordinates: number[], type: string },
-    streetName: string,
-    streetNumber: number,
-    zipCode: number,
-}
 
 const MiniServiceSchema: Schema = new Schema({
     serviceId: {
