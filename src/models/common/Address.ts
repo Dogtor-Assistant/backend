@@ -35,6 +35,8 @@ export const AddressSchema: Schema = new Schema({
     _id: false,
 });
 
+AddressSchema.index({ location: '2dsphere' });
+
 export interface IAddress extends Document {
     city: string,
     location: { coordinates: [number, number], type: 'Point' },
