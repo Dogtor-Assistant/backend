@@ -278,12 +278,14 @@ export const typeDefs = gql`
         specialities: [String!]
         cities: [String!]
         nearby: NearbyLocation
+        minRating: Float
     }
 
     type SearchSuggestions {
         specialities: [String!]
         cities: [String!]
         nearby: NearbyLocation
+        minRating: Float
     }
 
     type Search implements Node {
@@ -375,6 +377,7 @@ export const typeDefs = gql`
             specialities: [String!]
             cities: [String!]
             nearby: NearbyLocationInput
+            minRating: Float
         ): Search!
         
         users(after: String, first: Int, before: String, last: Int): UsersConnection!

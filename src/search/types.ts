@@ -8,6 +8,7 @@ export type AppliedFilters = {
     readonly specialities?: string[],
     readonly cities?: string[],
     readonly nearby?: NearbyLocationInput,
+    readonly minRating?: number,
 }
 
 export type Scope = AppliedFilters & {

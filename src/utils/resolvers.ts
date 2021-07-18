@@ -285,6 +285,7 @@ export type QuerySearchArgs = {
   specialities: Maybe<ReadonlyArray<Scalars['String']>>;
   cities: Maybe<ReadonlyArray<Scalars['String']>>;
   nearby: Maybe<NearbyLocationInput>;
+  minRating: Maybe<Scalars['Float']>;
 };
 
 
@@ -381,12 +382,14 @@ export type SearchScope = {
   readonly specialities: Maybe<ReadonlyArray<Scalars['String']>>;
   readonly cities: Maybe<ReadonlyArray<Scalars['String']>>;
   readonly nearby: Maybe<NearbyLocation>;
+  readonly minRating: Maybe<Scalars['Float']>;
 };
 
 export type SearchSuggestions = {
   readonly specialities: Maybe<ReadonlyArray<Scalars['String']>>;
   readonly cities: Maybe<ReadonlyArray<Scalars['String']>>;
   readonly nearby: Maybe<NearbyLocation>;
+  readonly minRating: Maybe<Scalars['Float']>;
 };
 
 export type Service = Node & {
@@ -896,6 +899,7 @@ export type SearchScopeResolvers<ContextType = Context, ParentType extends Resol
   specialities: Resolver<Maybe<ReadonlyArray<ResolversTypes['String']>>, ParentType, ContextType>;
   cities: Resolver<Maybe<ReadonlyArray<ResolversTypes['String']>>, ParentType, ContextType>;
   nearby: Resolver<Maybe<ResolversTypes['NearbyLocation']>, ParentType, ContextType>;
+  minRating: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -903,6 +907,7 @@ export type SearchSuggestionsResolvers<ContextType = Context, ParentType extends
   specialities: Resolver<Maybe<ReadonlyArray<ResolversTypes['String']>>, ParentType, ContextType>;
   cities: Resolver<Maybe<ReadonlyArray<ResolversTypes['String']>>, ParentType, ContextType>;
   nearby: Resolver<Maybe<ResolversTypes['NearbyLocation']>, ParentType, ContextType>;
+  minRating: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
