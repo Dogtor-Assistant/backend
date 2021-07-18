@@ -9,7 +9,7 @@ const generator: QueryGenerator = ({ nearby }) => {
         'address.location': {
             $near: {
                 $geometry: {
-                    coordinates: [nearby.coordinates.longitude, nearby.coordinates.longitude],
+                    coordinates: [nearby.coordinates.longitude, nearby.coordinates.latitude],
                     type: 'Point',
                 },
                 $maxDistance: nearby.maximumDistanceInMeters,
