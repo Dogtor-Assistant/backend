@@ -41,7 +41,14 @@ const Mutation: MutationResolvers = {
                 patientInsurance: valuePatient?.insurance,
                 patientName: patientUser?.firstName,
             },
-            services: followupInput.services,
+            services: followupInput.services.map(service => {
+                const deconstructedSerivceId = deconstructId(service.serviceId);
+                const serviceId = deconstructedSerivceId?.[1];
+                return ({
+                    serviceId: serviceId,
+                    serviceName: service.serviceName,
+                });
+            }),
             suggestedDate: followupInput.suggestedDate,
         });
 
