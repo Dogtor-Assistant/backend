@@ -1,6 +1,5 @@
 import type { CheckupResolvers } from '@resolvers';
 
-import { Service } from 'shims/service';
 import { buildId } from 'utils/ids';
 
 const Checkup: CheckupResolvers = {
