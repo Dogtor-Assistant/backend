@@ -227,6 +227,7 @@ export type Patient = Node & {
   readonly isSmoker: Maybe<Scalars['Boolean']>;
   readonly address: Address;
   readonly checkupRecommendations: ReadonlyArray<Recommendation>;
+  readonly unreadCheckups: ReadonlyArray<Checkup>;
 };
 
 export type PatientEdge = {
@@ -788,6 +789,7 @@ export type PatientResolvers<ContextType = Context, ParentType extends Resolvers
   isSmoker: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   address: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
   checkupRecommendations: Resolver<ReadonlyArray<ResolversTypes['Recommendation']>, ParentType, ContextType>;
+  unreadCheckups: Resolver<ReadonlyArray<ResolversTypes['Checkup']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

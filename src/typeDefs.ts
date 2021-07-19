@@ -149,6 +149,7 @@ export const typeDefs = gql`
         address: Address!
 
         checkupRecommendations: [Recommendation!]!
+        unreadCheckups: [Checkup!]!
     }
 
     type Review implements Node {
