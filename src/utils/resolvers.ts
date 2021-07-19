@@ -88,8 +88,13 @@ export type AppointmentsConnection = {
 export type Checkup = Node & {
   readonly id: Scalars['ID'];
   readonly isRead: Scalars['Boolean'];
-  readonly services: ReadonlyArray<Service>;
+  readonly services: ReadonlyArray<Scalars['String']>;
   readonly suggestedDate: Scalars['DateTime'];
+};
+
+export type CheckupsGenInput = {
+  readonly id: Scalars['ID'];
+  readonly recommendations: ReadonlyArray<RecommendationInput>;
 };
 
 
@@ -155,6 +160,7 @@ export type Mutation = {
   readonly assignFollowup: Scalars['Boolean'];
   readonly createUserPatient: Maybe<User>;
   readonly updateUserPatientProfile: Maybe<Patient>;
+  readonly generateCheckups: ReadonlyArray<Checkup>;
 };
 
 
@@ -185,6 +191,11 @@ export type MutationCreateUserPatientArgs = {
 
 export type MutationUpdateUserPatientProfileArgs = {
   input: UserPatientInputUpd;
+};
+
+
+export type MutationGenerateCheckupsArgs = {
+  input: CheckupsGenInput;
 };
 
 export type Node = {
@@ -318,6 +329,12 @@ export type QueryPatientPreviousAppointmentsArgs = {
 };
 
 export type Recommendation = {
+  readonly service: Scalars['String'];
+  readonly kind: Scalars['String'];
+  readonly periodInDays: Maybe<Scalars['Int']>;
+};
+
+export type RecommendationInput = {
   readonly service: Scalars['String'];
   readonly kind: Scalars['String'];
   readonly periodInDays: Maybe<Scalars['Int']>;
@@ -554,6 +571,7 @@ export type ResolversTypes = ResolversObject<{
   AppointmentTime: ResolverTypeWrapper<AppointmentTime>;
   AppointmentsConnection: ResolverTypeWrapper<AppointmentsConnectionModel>;
   Checkup: ResolverTypeWrapper<ICheckupModel>;
+  CheckupsGenInput: CheckupsGenInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   Doctor: ResolverTypeWrapper<DoctorModel>;
   DoctorEdge: ResolverTypeWrapper<DoctorEdgeModel>;
@@ -573,6 +591,7 @@ export type ResolversTypes = ResolversObject<{
   PatientsConnection: ResolverTypeWrapper<PatientsConnectionModel>;
   Query: ResolverTypeWrapper<{}>;
   Recommendation: ResolverTypeWrapper<Recommendation>;
+  RecommendationInput: RecommendationInput;
   Review: ResolverTypeWrapper<ReviewModel>;
   ReviewEdge: ResolverTypeWrapper<ReviewEdgeModel>;
   ReviewsConnection: ResolverTypeWrapper<ReviewsConnectionModel>;
@@ -608,6 +627,7 @@ export type ResolversParentTypes = ResolversObject<{
   AppointmentTime: AppointmentTime;
   AppointmentsConnection: AppointmentsConnectionModel;
   Checkup: ICheckupModel;
+  CheckupsGenInput: CheckupsGenInput;
   DateTime: Scalars['DateTime'];
   Doctor: DoctorModel;
   DoctorEdge: DoctorEdgeModel;
@@ -625,6 +645,7 @@ export type ResolversParentTypes = ResolversObject<{
   PatientsConnection: PatientsConnectionModel;
   Query: {};
   Recommendation: Recommendation;
+  RecommendationInput: RecommendationInput;
   Review: ReviewModel;
   ReviewEdge: ReviewEdgeModel;
   ReviewsConnection: ReviewsConnectionModel;
@@ -690,7 +711,7 @@ export type AppointmentsConnectionResolvers<ContextType = Context, ParentType ex
 export type CheckupResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Checkup'] = ResolversParentTypes['Checkup']> = ResolversObject<{
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isRead: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  services: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
+  services: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
   suggestedDate: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -751,6 +772,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   assignFollowup: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAssignFollowupArgs, 'followupInput'>>;
   createUserPatient: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserPatientArgs, 'input'>>;
   updateUserPatientProfile: Resolver<Maybe<ResolversTypes['Patient']>, ParentType, ContextType, RequireFields<MutationUpdateUserPatientProfileArgs, 'input'>>;
+  generateCheckups: Resolver<ReadonlyArray<ResolversTypes['Checkup']>, ParentType, ContextType, RequireFields<MutationGenerateCheckupsArgs, 'input'>>;
 }>;
 
 export type NodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Node'] = ResolversParentTypes['Node']> = ResolversObject<{

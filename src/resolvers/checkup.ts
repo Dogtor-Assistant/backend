@@ -15,7 +15,7 @@ const Checkup: CheckupResolvers = {
         return isRead;
     },
     services({ services }) {
-        return services?.map(service => new Service(service)) ?? [];
+        return services ?? [];
     },
     suggestedDate({ suggestedDate }) {
         return suggestedDate;

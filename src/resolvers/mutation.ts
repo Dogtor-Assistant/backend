@@ -2,6 +2,7 @@ import type { MutationResolvers } from '@resolvers';
 
 import bcrypt from 'bcrypt';
 import Appointment from 'models/Appointment';
+import Checkup from 'models/Checkup';
 import Doctor from 'models/Doctor';
 import Followup from 'models/Followup';
 import { Gender as GenderM, Insurance as InsuranceM } from 'models/Patient';
@@ -147,6 +148,78 @@ const Mutation: MutationResolvers = {
 
         return true;
 
+    },
+    async generateCheckups(_, { input }) {
+        const deconstructedPatientId = deconstructId(input.id);
+        const patientId = deconstructedPatientId?.[1];
+
+        const patient = await Patient.findById(patientId);
+        
+        if (patient != null) {
+            const { _id, address, insurance } = patient;
+            const recommendations = input.recommendations;
+
+            const oldCheckups = await Checkup.find({ 'patientRef.patientId': _id });
+
+            const newRec = recommendations.filter(rec => {
+
+                //One time recommendation
+                if (rec.kind === 'single') {
+                    let makeRecommendation = true;
+                    oldCheckups.forEach(oldCheckup => {
+                        if (oldCheckup.services[0] === rec.service.toString()) {
+                            makeRecommendation = false;
+                        }
+                    });
+                    return makeRecommendation;
+                }
+
+                //Periodic recommendation
+                if (rec.kind === 'periodic') {
+                    let makeRecommendation = true;
+                    oldCheckups.forEach(oldCheckup => {
+                        const periodInDays = rec.periodInDays == null ? 0 : rec.periodInDays;
+                        const lim = new Date();
+                        lim.setDate(oldCheckup.suggestedDate.getDate() + periodInDays - 14);
+                        
+                        if (oldCheckup.services[0] === rec.service.toString() &&
+                            new Date() < lim) {
+                            makeRecommendation = false;
+                        }
+                            
+                    });
+                    return makeRecommendation;
+                }
+            });
+
+            // Insert recommendations as checkups in DB
+            const suggestedDate = new Date();
+            suggestedDate.setDate(suggestedDate.getDate() + 14);
+
+            const newCheckups = newRec.map(rec => {
+                return new Checkup({
+                    'isRead': false,
+                    'patientRef': {
+                        'patientAddress': address,
+                        'patientId': _id,
+                        'patientInsurance': insurance,
+                        'patientName': 'Test',
+                    },
+                    'services' : [rec.service.toString()],
+                    'suggestedDate' : suggestedDate,
+                });
+            });
+
+            const insertedCheckups = await Checkup.insertMany(newCheckups);
+
+            if (insertedCheckups.length > 0) {
+                // TODO: send email notification
+                return insertedCheckups;
+            }
+            return [];
+        }
+        
+        return [];
     },
     async makeAppointmentAsDone(_, { id }) {
 

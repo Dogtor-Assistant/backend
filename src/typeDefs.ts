@@ -80,7 +80,7 @@ export const typeDefs = gql`
     type Checkup implements Node {
         id: ID!
         isRead: Boolean!
-        services: [Service!]!
+        services: [String!]!
         suggestedDate: DateTime!
     }
 
@@ -348,6 +348,17 @@ export const typeDefs = gql`
         doctorNotes: String
     }
 
+    input RecommendationInput {
+        service: String!
+        kind: String!
+        periodInDays: Int
+    }
+
+    input CheckupsGenInput {
+        id: ID!
+        recommendations: [RecommendationInput!]!
+    }
+
     type Query {
         greeting: String!
         me: User
@@ -376,6 +387,7 @@ export const typeDefs = gql`
         assignFollowup(followupInput:FollowupInput!): Boolean!
         createUserPatient(input: UserPatientInput!): User
         updateUserPatientProfile(input: UserPatientInputUpd!): Patient
+        generateCheckups(input: CheckupsGenInput!): [Checkup!]!
     }
     
     schema {
