@@ -159,6 +159,10 @@ const Mutation: MutationResolvers = {
             const { _id, address, insurance } = patient;
             const recommendations = input.recommendations;
 
+            const user = await User.find({ patientRef: _id });
+            if (user != null) return [];
+            const { firstName, lastName } = user;
+
             const oldCheckups = await Checkup.find({ 'patientRef.patientId': _id });
 
             const newRec = recommendations.filter(rec => {
@@ -203,7 +207,7 @@ const Mutation: MutationResolvers = {
                         'patientAddress': address,
                         'patientId': _id,
                         'patientInsurance': insurance,
-                        'patientName': 'Test',
+                        'patientName': `${firstName} ${lastName}`,
                     },
                     'services' : [rec.service.toString()],
                     'suggestedDate' : suggestedDate,
