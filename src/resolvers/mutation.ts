@@ -237,6 +237,21 @@ const Mutation: MutationResolvers = {
         return true;
 
     },
+    async markCheckupAsRead(_, { id }) {
+        const deconstructed = deconstructId(id);
+        
+        const nodeType = deconstructed?.[0];
+        const checkupId = deconstructed?.[1];
+
+        if (nodeType !== 'Checkup')
+        {
+            return false;
+        }
+
+        await Checkup.updateOne({ _id: checkupId }, { isRead: true });
+
+        return true;
+    },
     async updateUserPatientProfile(_, { input }) {
         const deconstructedPatientId = deconstructId(input.id);
         const patientId = deconstructedPatientId?.[1];

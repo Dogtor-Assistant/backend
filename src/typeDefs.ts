@@ -388,6 +388,7 @@ export const typeDefs = gql`
         createUserPatient(input: UserPatientInput!): User
         updateUserPatientProfile(input: UserPatientInputUpd!): Patient
         generateCheckups(input: CheckupsGenInput!): [Checkup!]!
+        markCheckupAsRead(id: ID!): Boolean!
     }
     
     schema {
