@@ -4,6 +4,12 @@ const SearchScope: SearchScopeResolvers = {
     cities({ cities }) {
         return cities;
     },
+    minRating({ minRating }) {
+        return minRating;
+    },
+    nearby({ nearby }) {
+        return nearby;
+    },
     query({ query }) {
         return query;
     },

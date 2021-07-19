@@ -26,11 +26,13 @@ const Search: SearchResolvers = {
         return buildId('Search', encoded);
     },
     results({ query }, connectionArgs) {
-        return doctorsConnection(query, connectionArgs);
+        return doctorsConnection(query ?? [], connectionArgs);
     },
     scope({ scope }) {
         return {
             cities: scope?.cities ?? null,
+            minRating: scope.minRating ?? null,
+            nearby: scope.nearby ?? null,
             query: scope?.query ?? null,
             specialities: scope.specialities ?? null,
         };
@@ -38,6 +40,8 @@ const Search: SearchResolvers = {
     suggestions({ suggestions }) {
         return {
             cities: suggestions.cities ?? null,
+            minRating: suggestions.minRating ?? null,
+            nearby: suggestions.nearby ?? null,
             specialities: suggestions.specialities ?? null,
         };
     },
