@@ -317,6 +317,17 @@ export const typeDefs = gql`
         slotStop: String!
     }
 
+    input AppointmentInput{
+        doctorId: ID!
+        expectedDuration : Int!
+        expectedTime : DateTime!
+        insurance : Insurance!
+        patientNotes: String,
+        selectedServices : [ID!]!
+        shareData: Boolean!
+    }
+
+
     input UserDoctorInput {
         email: String!
         firstName: String!
@@ -399,6 +410,7 @@ export const typeDefs = gql`
         makeAppointmentAsDone(id:ID!): Boolean!
         assignFollowup(followupInput:FollowupInput!): Boolean!
         createUserPatient(input: UserPatientInput!): User
+        createAppointment(input: AppointmentInput!): Appointment!
     }
     
     schema {

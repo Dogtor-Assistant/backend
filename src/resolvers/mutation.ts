@@ -61,6 +61,40 @@ const Mutation: MutationResolvers = {
         }
 
     },
+    async createAppointment(_, { input }, { authenticated }) {
+
+        if(authenticated == null) {
+            throw new Error('not logged in');
+        }
+        
+        const user = await authenticated.full();
+        if(user.patientRef == null) {
+            throw new Error('user not patient');
+        }
+
+        const session = await mongoose.startSession();
+
+        session.startTransaction();
+
+        // Insert doctor document
+        const appointmentIn = new Appointment({
+            expectedDuration: input.expectedDuration,
+            expectedTime: input.expectedTime,
+            insurance: input.insurance,
+            patientNotes: input.patientNotes,
+            selectedServices: input.selectedServices,
+            shareData: input.shareData,
+        });
+        await appointmentIn.save();
+
+        await session.commitTransaction();
+        session.endSession();
+
+        // if statement should never succeed
+        if (appointmentIn._id === undefined) throw 'Error';
+        return userShim(appointmentIn._id);
+    },
+
     async createUserDoctor(_, { input }) {
 
         const session = await mongoose.startSession();
