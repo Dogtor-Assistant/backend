@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/Dogtor-Assistant/backend#readme",
   "dependencies": {
+    "@sendgrid/mail": "^7.4.5",
     "apollo-server-express": "^2.25.0",
     "bcrypt": "^5.0.1",
     "bent": "^7.3.12",
