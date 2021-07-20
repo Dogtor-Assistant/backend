@@ -159,8 +159,8 @@ const Mutation: MutationResolvers = {
             const { _id, address, insurance } = patient;
             const recommendations = input.recommendations;
 
-            const user = await User.find({ patientRef: _id });
-            if (user != null) return [];
+            const user = await User.findOne({ patientRef: _id });
+            if (user == null) return [];
             const { firstName, lastName } = user;
 
             const oldCheckups = await Checkup.find({ 'patientRef.patientId': _id });
