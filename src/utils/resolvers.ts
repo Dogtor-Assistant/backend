@@ -101,8 +101,13 @@ export type AppointmentInput = {
 export type Checkup = Node & {
   readonly id: Scalars['ID'];
   readonly isRead: Scalars['Boolean'];
-  readonly services: ReadonlyArray<Service>;
+  readonly services: ReadonlyArray<Scalars['String']>;
   readonly suggestedDate: Scalars['DateTime'];
+};
+
+export type CheckupsGenInput = {
+  readonly id: Scalars['ID'];
+  readonly recommendations: ReadonlyArray<RecommendationInput>;
 };
 
 export type Coordinates = {
@@ -178,6 +183,9 @@ export type Mutation = {
   readonly assignFollowup: Scalars['Boolean'];
   readonly createUserPatient: Maybe<User>;
   readonly createAppointment: Appointment;
+  readonly updateUserPatientProfile: Maybe<Patient>;
+  readonly generateCheckups: ReadonlyArray<Checkup>;
+  readonly markCheckupAsRead: Scalars['Boolean'];
 };
 
 
@@ -208,6 +216,21 @@ export type MutationAssignFollowupArgs = {
 
 export type MutationCreateUserPatientArgs = {
   input: UserPatientInput;
+};
+
+
+export type MutationUpdateUserPatientProfileArgs = {
+  input: UserPatientInputUpd;
+};
+
+
+export type MutationGenerateCheckupsArgs = {
+  input: CheckupsGenInput;
+};
+
+
+export type MutationMarkCheckupAsReadArgs = {
+  id: Scalars['ID'];
 };
 
 export type NearbyLocation = {
@@ -262,6 +285,7 @@ export type Patient = Node & {
   readonly isSmoker: Maybe<Scalars['Boolean']>;
   readonly address: Address;
   readonly checkupRecommendations: ReadonlyArray<Recommendation>;
+  readonly unreadCheckups: ReadonlyArray<Checkup>;
 };
 
 export type PatientEdge = {
@@ -356,6 +380,12 @@ export type QueryPatientPreviousAppointmentsArgs = {
 };
 
 export type Recommendation = {
+  readonly service: Scalars['String'];
+  readonly kind: Scalars['String'];
+  readonly periodInDays: Maybe<Scalars['Int']>;
+};
+
+export type RecommendationInput = {
   readonly service: Scalars['String'];
   readonly kind: Scalars['String'];
   readonly periodInDays: Maybe<Scalars['Int']>;
@@ -481,6 +511,13 @@ export type UserPatientInput = {
   readonly surgeries: ReadonlyArray<Maybe<Scalars['String']>>;
 };
 
+export type UserPatientInputUpd = {
+  readonly id: Scalars['ID'];
+  readonly birthDate: Scalars['DateTime'];
+  readonly gender: Gender;
+  readonly insurance: Insurance;
+};
+
 export type UsersConnection = {
   readonly pageInfo: PageInfo;
   readonly edges: Maybe<ReadonlyArray<Maybe<UserEdge>>>;
@@ -590,6 +627,7 @@ export type ResolversTypes = ResolversObject<{
   AppointmentTime: ResolverTypeWrapper<AppointmentTime>;
   AppointmentsConnection: ResolverTypeWrapper<AppointmentsConnectionModel>;
   Checkup: ResolverTypeWrapper<ICheckupModel>;
+  CheckupsGenInput: CheckupsGenInput;
   Coordinates: ResolverTypeWrapper<Coordinates>;
   CoordinatesInput: CoordinatesInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
@@ -613,6 +651,7 @@ export type ResolversTypes = ResolversObject<{
   PatientsConnection: ResolverTypeWrapper<PatientsConnectionModel>;
   Query: ResolverTypeWrapper<{}>;
   Recommendation: ResolverTypeWrapper<Recommendation>;
+  RecommendationInput: RecommendationInput;
   Review: ResolverTypeWrapper<ReviewModel>;
   ReviewEdge: ResolverTypeWrapper<ReviewEdgeModel>;
   ReviewsConnection: ResolverTypeWrapper<ReviewsConnectionModel>;
@@ -628,6 +667,7 @@ export type ResolversTypes = ResolversObject<{
   UserDoctorInput: UserDoctorInput;
   UserEdge: ResolverTypeWrapper<UserEdgeModel>;
   UserPatientInput: UserPatientInput;
+  UserPatientInputUpd: UserPatientInputUpd;
   UsersConnection: ResolverTypeWrapper<UsersConnectionModel>;
   Weekday: ResolverTypeWrapper<DayModel>;
   Weight: ResolverTypeWrapper<Scalars['Weight']>;
@@ -648,6 +688,7 @@ export type ResolversParentTypes = ResolversObject<{
   AppointmentTime: AppointmentTime;
   AppointmentsConnection: AppointmentsConnectionModel;
   Checkup: ICheckupModel;
+  CheckupsGenInput: CheckupsGenInput;
   Coordinates: Coordinates;
   CoordinatesInput: CoordinatesInput;
   DateTime: Scalars['DateTime'];
@@ -669,6 +710,7 @@ export type ResolversParentTypes = ResolversObject<{
   PatientsConnection: PatientsConnectionModel;
   Query: {};
   Recommendation: Recommendation;
+  RecommendationInput: RecommendationInput;
   Review: ReviewModel;
   ReviewEdge: ReviewEdgeModel;
   ReviewsConnection: ReviewsConnectionModel;
@@ -684,6 +726,7 @@ export type ResolversParentTypes = ResolversObject<{
   UserDoctorInput: UserDoctorInput;
   UserEdge: UserEdgeModel;
   UserPatientInput: UserPatientInput;
+  UserPatientInputUpd: UserPatientInputUpd;
   UsersConnection: UsersConnectionModel;
   Weight: Scalars['Weight'];
 }>;
@@ -734,7 +777,7 @@ export type AppointmentsConnectionResolvers<ContextType = Context, ParentType ex
 export type CheckupResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Checkup'] = ResolversParentTypes['Checkup']> = ResolversObject<{
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isRead: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  services: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
+  services: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
   suggestedDate: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -801,6 +844,9 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   assignFollowup: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAssignFollowupArgs, 'followupInput'>>;
   createUserPatient: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserPatientArgs, 'input'>>;
   createAppointment: Resolver<ResolversTypes['Appointment'], ParentType, ContextType, RequireFields<MutationCreateAppointmentArgs, 'input'>>;
+  updateUserPatientProfile: Resolver<Maybe<ResolversTypes['Patient']>, ParentType, ContextType, RequireFields<MutationUpdateUserPatientProfileArgs, 'input'>>;
+  generateCheckups: Resolver<ReadonlyArray<ResolversTypes['Checkup']>, ParentType, ContextType, RequireFields<MutationGenerateCheckupsArgs, 'input'>>;
+  markCheckupAsRead: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMarkCheckupAsReadArgs, 'id'>>;
 }>;
 
 export type NearbyLocationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['NearbyLocation'] = ResolversParentTypes['NearbyLocation']> = ResolversObject<{
@@ -846,6 +892,7 @@ export type PatientResolvers<ContextType = Context, ParentType extends Resolvers
   isSmoker: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   address: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
   checkupRecommendations: Resolver<ReadonlyArray<ResolversTypes['Recommendation']>, ParentType, ContextType>;
+  unreadCheckups: Resolver<ReadonlyArray<ResolversTypes['Checkup']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
