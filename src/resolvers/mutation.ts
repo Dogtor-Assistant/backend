@@ -60,6 +60,22 @@ const Mutation: MutationResolvers = {
 
         try {
             await followup.save();
+
+            const apiKey:string = process.env.SENDGRID_API_KEY || '';
+            sendGridMail.setApiKey(apiKey);
+            const msg = {
+
+                from: 'pellumb.baboci@tum.de',
+                html: `<strong>This is an automatic message</strong> 
+                    
+            <p> You have new FollowUp on date ${followupInput.suggestedDate.toLocaleDateString()}</p>
+            <p> Please go and check from you account https://dogtor.xyz/login</p>
+            `,
+                subject: 'Assigned new FollowUp ',
+                to: patientUser?.email,
+            };
+            sendGridMail.send(msg);
+
             return true;
         } catch (error) {
             return false;
