@@ -1,6 +1,8 @@
 import type { PatientResolvers } from '@resolvers';
 
+import Checkup from 'models/Checkup';
 import RecommendationService from 'recommendations';
+import { deconstructId } from 'utils/ids';
 
 const Patient: PatientResolvers = {
     async activityLevel(patient) {
@@ -91,6 +93,22 @@ const Patient: PatientResolvers = {
     async surgeries(patient) {
         const { surgeries } = await patient.full();
         return surgeries ?? [];
+    },
+    async unreadCheckups(patient) {
+        const id = await patient.id();
+        
+        const deconstructed = deconstructId(id);
+        if (deconstructed == null) {
+            return [];
+        }
+
+        const [nodeType, patientId] = deconstructed;
+        if (nodeType !== 'Patient') {
+            return [];
+        }
+
+        const unreadCheckups = await Checkup.find({ isRead: false, 'patientRef.patientId': patientId });
+        return unreadCheckups;
     },
     async weight(patient) {
         const { weight } = await patient.full();
