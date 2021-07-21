@@ -423,8 +423,13 @@ export const typeDefs = gql`
         markCheckupAsRead(id: ID!): Boolean!
     }
     
+    type Subscription {
+        appointmentFinished(appId: ID!): Appointment!
+    }
+    
     schema {
         query: Query
         mutation: Mutation
+        subscription: Subscription
     }
 `;

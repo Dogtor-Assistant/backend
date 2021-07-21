@@ -448,6 +448,15 @@ export type ServicesConnection = {
   readonly edges: Maybe<ReadonlyArray<Maybe<ServiceEdge>>>;
 };
 
+export type Subscription = {
+  readonly appointmentFinished: Appointment;
+};
+
+
+export type SubscriptionAppointmentFinishedArgs = {
+  appId: Scalars['ID'];
+};
+
 
 export type User = Node & {
   readonly id: Scalars['ID'];
@@ -644,6 +653,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceEdge: ResolverTypeWrapper<ServiceEdgeModel>;
   ServiceInput: ServiceInput;
   ServicesConnection: ResolverTypeWrapper<ServicesConnectionModel>;
+  Subscription: ResolverTypeWrapper<{}>;
   URL: ResolverTypeWrapper<Scalars['URL']>;
   User: ResolverTypeWrapper<UserModel>;
   UserDoctorInput: UserDoctorInput;
@@ -702,6 +712,7 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceEdge: ServiceEdgeModel;
   ServiceInput: ServiceInput;
   ServicesConnection: ServicesConnectionModel;
+  Subscription: {};
   URL: Scalars['URL'];
   User: UserModel;
   UserDoctorInput: UserDoctorInput;
@@ -982,6 +993,10 @@ export type ServicesConnectionResolvers<ContextType = Context, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  appointmentFinished: SubscriptionResolver<ResolversTypes['Appointment'], "appointmentFinished", ParentType, ContextType, RequireFields<SubscriptionAppointmentFinishedArgs, 'appId'>>;
+}>;
+
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
   name: 'URL';
 }
@@ -1049,6 +1064,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Service: ServiceResolvers<ContextType>;
   ServiceEdge: ServiceEdgeResolvers<ContextType>;
   ServicesConnection: ServicesConnectionResolvers<ContextType>;
+  Subscription: SubscriptionResolvers<ContextType>;
   URL: GraphQLScalarType;
   User: UserResolvers<ContextType>;
   UserEdge: UserEdgeResolvers<ContextType>;

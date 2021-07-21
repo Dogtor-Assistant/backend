@@ -4,6 +4,7 @@ import type { IService } from './Service';
 import type { Document, Model } from 'mongoose';
 
 import { model, Schema } from 'mongoose';
+import { pubsub } from 'resolvers/subscription';
 
 const MiniPatientSchema: Schema = new Schema({
     patientId: {
@@ -113,6 +114,13 @@ export enum Insurance {
     PRIVATE = 1,
     PUBLIC = 0
 }
+
+AppointmentSchema.pre('save', function(this: IAppointment) {
+    if (this.isModified('actualDuration')) {
+        // TODO: Add publish logic
+        pubsub.publish('appointmentFinished', { appointmentFinished: { id: this._id }});
+    }
+});
 
 export interface IAppointment extends Document<string> {
     __typename: 'Appointment',
