@@ -80,7 +80,7 @@ export const typeDefs = gql`
     type Checkup implements Node {
         id: ID!
         isRead: Boolean!
-        services: [Service!]!
+        services: [String!]!
         suggestedDate: DateTime!
     }
 
@@ -120,6 +120,12 @@ export const typeDefs = gql`
         end: String!
     }
 
+    type Recommendation {
+        service: String!
+        kind: String!
+        periodInDays: Int
+    }
+
     type Patient implements Node {
         id: ID!
         
@@ -127,6 +133,8 @@ export const typeDefs = gql`
         lastname: String!
 
         activityLevel: ActivityLevel
+        birthDate: DateTime
+        insurance: Insurance!
         gender: Gender
         height: Length
         weight: Weight
@@ -139,6 +147,9 @@ export const typeDefs = gql`
         isSmoker: Boolean
 
         address: Address!
+
+        checkupRecommendations: [Recommendation!]!
+        unreadCheckups: [Checkup!]!
     }
 
     type Review implements Node {
@@ -317,6 +328,13 @@ export const typeDefs = gql`
         surgeries: [String]!
     }
 
+    input UserPatientInputUpd {
+        id: ID!
+        birthDate: DateTime!
+        gender: Gender!
+        insurance: Insurance!
+    }
+
     input ServiceInput {
         serviceId: ID!
         serviceName: String!
@@ -328,6 +346,17 @@ export const typeDefs = gql`
         services: [ServiceInput!]!,
         suggestedDate: DateTime!,
         doctorNotes: String
+    }
+
+    input RecommendationInput {
+        service: String!
+        kind: String!
+        periodInDays: Int
+    }
+
+    input CheckupsGenInput {
+        id: ID!
+        recommendations: [RecommendationInput!]!
     }
 
     type Query {
@@ -357,6 +386,9 @@ export const typeDefs = gql`
         makeAppointmentAsDone(id:ID!): Boolean!
         assignFollowup(followupInput:FollowupInput!): Boolean!
         createUserPatient(input: UserPatientInput!): User
+        updateUserPatientProfile(input: UserPatientInputUpd!): Patient
+        generateCheckups(input: CheckupsGenInput!): [Checkup!]!
+        markCheckupAsRead(id: ID!): Boolean!
     }
     
     schema {

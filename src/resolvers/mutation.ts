@@ -2,15 +2,19 @@ import type { MutationResolvers } from '@resolvers';
 
 import bcrypt from 'bcrypt';
 import Appointment from 'models/Appointment';
+import Checkup from 'models/Checkup';
 import Doctor from 'models/Doctor';
 import Followup from 'models/Followup';
+import { Gender as GenderM, Insurance as InsuranceM } from 'models/Patient';
 import Patient from 'models/Patient';
 import User from 'models/User';
 import mongoose from 'mongoose';
 import { Doctor as DoctorShim } from 'shims/doctor';
 import { Patient as PatientShim } from 'shims/patient';
+import { patient as patientShim } from 'shims/patient';
 import { user as userShim } from 'shims/user';
 import { deconstructId } from 'utils/ids';
+import { Insurance } from 'utils/resolvers';
 
 const Mutation: MutationResolvers = {
     async assignFollowup(_, { followupInput }) {
@@ -145,6 +149,82 @@ const Mutation: MutationResolvers = {
         return true;
 
     },
+    async generateCheckups(_, { input }) {
+        const deconstructedPatientId = deconstructId(input.id);
+        const patientId = deconstructedPatientId?.[1];
+
+        const patient = await Patient.findById(patientId);
+        
+        if (patient != null) {
+            const { _id, address, insurance } = patient;
+            const recommendations = input.recommendations;
+
+            const user = await User.findOne({ patientRef: _id });
+            if (user == null) return [];
+            const { firstName, lastName } = user;
+
+            const oldCheckups = await Checkup.find({ 'patientRef.patientId': _id });
+
+            const newRec = recommendations.filter(rec => {
+
+                //One time recommendation
+                if (rec.kind === 'single') {
+                    let makeRecommendation = true;
+                    oldCheckups.forEach(oldCheckup => {
+                        if (oldCheckup.services[0] === rec.service.toString()) {
+                            makeRecommendation = false;
+                        }
+                    });
+                    return makeRecommendation;
+                }
+
+                //Periodic recommendation
+                if (rec.kind === 'periodic') {
+                    let makeRecommendation = true;
+                    oldCheckups.forEach(oldCheckup => {
+                        const periodInDays = rec.periodInDays == null ? 0 : rec.periodInDays;
+                        const lim = new Date();
+                        lim.setDate(oldCheckup.suggestedDate.getDate() + periodInDays - 14);
+                        
+                        if (oldCheckup.services[0] === rec.service.toString() &&
+                            new Date() < lim) {
+                            makeRecommendation = false;
+                        }
+                            
+                    });
+                    return makeRecommendation;
+                }
+            });
+
+            // Insert recommendations as checkups in DB
+            const suggestedDate = new Date();
+            suggestedDate.setDate(suggestedDate.getDate() + 14);
+
+            const newCheckups = newRec.map(rec => {
+                return new Checkup({
+                    'isRead': false,
+                    'patientRef': {
+                        'patientAddress': address,
+                        'patientId': _id,
+                        'patientInsurance': insurance,
+                        'patientName': `${firstName} ${lastName}`,
+                    },
+                    'services' : [rec.service.toString()],
+                    'suggestedDate' : suggestedDate,
+                });
+            });
+
+            const insertedCheckups = await Checkup.insertMany(newCheckups);
+
+            if (insertedCheckups.length > 0) {
+                // TODO: send email notification
+                return insertedCheckups;
+            }
+            return [];
+        }
+        
+        return [];
+    },
     async makeAppointmentAsDone(_, { id }) {
 
         const deconstructed = deconstructId(id);
@@ -160,6 +240,46 @@ const Mutation: MutationResolvers = {
 
         return true;
 
+    },
+    async markCheckupAsRead(_, { id }) {
+        const deconstructed = deconstructId(id);
+        
+        const nodeType = deconstructed?.[0];
+        const checkupId = deconstructed?.[1];
+
+        if (nodeType !== 'Checkup')
+        {
+            return false;
+        }
+
+        await Checkup.updateOne({ _id: checkupId }, { isRead: true });
+
+        return true;
+    },
+    async updateUserPatientProfile(_, { input }) {
+        const deconstructedPatientId = deconstructId(input.id);
+        const patientId = deconstructedPatientId?.[1];
+
+        const patientUpd = await Patient.findOne({ _id: patientId });
+        
+        let gender = GenderM.MALE;
+        if (input.gender as unknown as number === 0) gender = GenderM.FEMALE;
+        else if (input.gender as unknown as number === 1) gender = GenderM.MALE;
+        else if (input.gender as unknown as number === 2) gender = GenderM.TRANSGENDER_FEMALE;
+        else if (input.gender as unknown as number === 3) gender = GenderM.TRANSGENDER_MALE;
+        else if (input.gender as unknown as number === 4) gender = GenderM.NON_BINARY;
+        else gender = GenderM.FEMALE;
+
+        if (patientUpd != null) {
+            patientUpd.birthDate = input.birthDate;
+            patientUpd.gender = gender;
+            patientUpd.insurance = input.insurance === Insurance.Public ? InsuranceM.PUBLIC : InsuranceM. PRIVATE;
+
+            await patientUpd.save();
+            if (patientUpd._id !== undefined) return patientShim(patientUpd._id);
+        }
+
+        throw 'Error';
     },
 };
 

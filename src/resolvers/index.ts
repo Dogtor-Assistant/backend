@@ -31,6 +31,7 @@ import Node from './node';
 import OfferedSlot from './offeredSlot';
 import Patient from './patient';
 import Query from './query';
+import Recommendation from './recommendation';
 import Review from './review';
 import Search from './search';
 import SearchScope from './searchScope';
@@ -66,6 +67,7 @@ const resolvers: Resolvers = {
     PatientEdge,
     PatientsConnection,
     Query,
+    Recommendation,
     Review,
     ReviewEdge,
     ReviewsConnection,
