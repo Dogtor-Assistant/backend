@@ -70,7 +70,7 @@ type Appointment implements Node {
 type Checkup implements Node {
   id: ID!
   isRead: Boolean!
-  services: [Service!]!
+  services: [String!]!
   suggestedDate: DateTime!
 }
 
@@ -126,6 +126,7 @@ type Patient implements Node {
   isSmoker: Boolean
   address: Address!
   checkupRecommendations: [Recommendation!]!
+  unreadCheckups: [Checkup!]!
 }
 
 type Review implements Node {
@@ -313,6 +314,13 @@ input UserPatientInput {
   surgeries: [String]!
 }
 
+input UserPatientInputUpd {
+  id: ID!
+  birthDate: DateTime!
+  gender: Gender!
+  insurance: Insurance!
+}
+
 input ServiceInput {
   serviceId: ID!
   serviceName: String!
@@ -324,6 +332,17 @@ input FollowupInput {
   services: [ServiceInput!]!
   suggestedDate: DateTime!
   doctorNotes: String
+}
+
+input RecommendationInput {
+  service: String!
+  kind: String!
+  periodInDays: Int
+}
+
+input CheckupsGenInput {
+  id: ID!
+  recommendations: [RecommendationInput!]!
 }
 
 type Query {
@@ -349,4 +368,7 @@ type Mutation {
   makeAppointmentAsDone(id: ID!): Boolean!
   assignFollowup(followupInput: FollowupInput!): Boolean!
   createUserPatient(input: UserPatientInput!): User
+  updateUserPatientProfile(input: UserPatientInputUpd!): Patient
+  generateCheckups(input: CheckupsGenInput!): [Checkup!]!
+  markCheckupAsRead(id: ID!): Boolean!
 }
