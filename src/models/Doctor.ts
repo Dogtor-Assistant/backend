@@ -1,46 +1,11 @@
+import type { IAddress } from './common/Address';
 import type { IReview } from './Review';
 import type { IService } from './Service';
 import type { Document, Model } from 'mongoose';
 
+import { AddressSchema } from './common/Address';
+
 import { model, Schema } from 'mongoose';
-
-const AddressSchema: Schema = new Schema({
-    city: {
-        required: true,
-        type: String,
-    },
-    lat: {
-        required: true,
-        type: Number,
-    },
-    lon: {
-        required: true,
-        type: Number,
-    },
-    streetName: {
-        required: true,
-        type: String,
-    },
-    streetNumber: {
-        required: true,
-        type: Number,
-    },
-    zipCode: {
-        required: true,
-        type: Number,
-    },
-}, {
-    _id: false,
-});
-
-interface IAddress extends Document {
-    city: string,
-    lat: number,
-    lon: number,
-    streetName: string,
-    streetNumber: number,
-    zipCode: number,
-}
 
 const MiniServiceSchema: Schema = new Schema({
     serviceId: {
@@ -125,6 +90,14 @@ const DoctorSchema: Schema = new Schema({
         required: true,
         type: AddressSchema,
     },
+    firstName: {
+        required: true,
+        type: String,
+    },
+    lastName: {
+        required: true,
+        type: String,
+    },
     offeredSlots: {
         default: [],
         type: [SlotSchema],
@@ -157,8 +130,32 @@ const DoctorSchema: Schema = new Schema({
     timestamps: true,
 });
 
+DoctorSchema.index(
+    {
+        'address.city': 'text',
+        'address.streetName': 'text',
+        'specialities': 'text',
+        'topServices.serviceName': 'text',
+        'webpage': 'text',
+    },
+    {
+        weights: {
+            'address.city': 2,
+            'address.streetName': 3,
+            'specialities': 4,
+            'topServices.serviceName': 5,
+            'webpage': 1,
+        },
+    },
+);
+
+// eslint-disable-next-line sort-keys-fix/sort-keys-fix
+DoctorSchema.index({ lastName: 'text', firstName: 'text' });
+
 export interface IDoctor extends Document<string> {
     address: IAddress,
+    firstName: string,
+    lastName: string,
     phoneNumber: string,
     webpage?: string,
     specialities: Array<string>,

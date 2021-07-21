@@ -1,5 +1,6 @@
 import type { MutationResolvers } from '@resolvers';
 
+import sendGridMail from '@sendgrid/mail';
 import bcrypt from 'bcrypt';
 import Appointment from 'models/Appointment';
 import Checkup from 'models/Checkup';
@@ -45,7 +46,14 @@ const Mutation: MutationResolvers = {
                 patientInsurance: valuePatient?.insurance,
                 patientName: patientUser?.firstName,
             },
-            services: followupInput.services,
+            services: followupInput.services.map(service => {
+                const deconstructedSerivceId = deconstructId(service.serviceId);
+                const serviceId = deconstructedSerivceId?.[1];
+                return ({
+                    serviceId: serviceId,
+                    serviceName: service.serviceName,
+                });
+            }),
             suggestedDate: followupInput.suggestedDate,
         });
 
@@ -66,6 +74,8 @@ const Mutation: MutationResolvers = {
         // Insert doctor document
         const doctorIn = new Doctor({
             address: input.address,
+            firstName: input.firstName,
+            lastName: input.lastName,
             offeredSlots: input.offeredSlots,
             phoneNumber: input.phoneNumber,
             specialities: input.specialities,
@@ -139,12 +149,28 @@ const Mutation: MutationResolvers = {
         const appointmentId = deconstructed?.[1];
 
         const appointment = await Appointment.findById(appointmentId);
-
         if (!appointment) {
             return false;
         }
 
         await Appointment.deleteOne({ _id: appointment._id });
+
+        const valuePatient = await Patient.findById(appointment.patientRef.patientId);
+        const patient = valuePatient && new PatientShim(valuePatient);
+        const patientUser = await patient?.user();
+
+        const apiKey:string = process.env.SENDGRID_API_KEY || '';
+        sendGridMail.setApiKey(apiKey);
+        const msg = {
+
+            from: 'pellumb.baboci@tum.de',
+            html: `<strong>This is an automatic message</strong> 
+                    
+            <p> Your appointment has been canceled </p>`,
+            subject: 'Appointment Deletion',
+            to: patientUser?.email,
+        };
+        sendGridMail.send(msg);
 
         return true;
 

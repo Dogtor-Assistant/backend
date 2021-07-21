@@ -28,7 +28,10 @@ import { user } from 'shims/user';
 import { deconstructId } from 'utils/ids';
 
 const Query: QueryResolvers = {
-   
+    async cities() {
+        const cities: string[] = await Doctor.find().distinct('address.city');
+        return cities;
+    },
     async doctors(_, args) {
         return await doctorsConnection(Doctor.find(), args);
     },
@@ -129,6 +132,10 @@ const Query: QueryResolvers = {
     },
     async services(_, args) {
         return await servicesConnection(Service.find(), args);
+    },
+    async specialities() {
+        const specialities: string[] = await Doctor.find().distinct('specialities');
+        return specialities;
     },
     async users(_, args) {
         return await usersConnection(User.find(), args);

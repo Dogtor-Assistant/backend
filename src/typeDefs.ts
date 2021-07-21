@@ -54,6 +54,7 @@ export const typeDefs = gql`
         streetNumber: Int!
         city: String!
         zipCode: Int!
+        coordinates: Coordinates!
     }
 
     type AppointmentTime {
@@ -251,15 +252,41 @@ export const typeDefs = gql`
         edges: [AppointmentEdge]
     }
 
+    type Coordinates {
+        latitude: Float!
+        longitude: Float!
+    }
+
+    type NearbyLocation {
+        label: String!
+        coordinates: Coordinates!
+        maximumDistanceInMeters: Int!
+    }
+
+    input CoordinatesInput {
+        latitude: Float!
+        longitude: Float!
+    }
+
+    input NearbyLocationInput {
+        label: String!
+        coordinates: CoordinatesInput!
+        maximumDistanceInMeters: Int!
+    }
+
     type SearchScope {
         query: String
         specialities: [String!]
         cities: [String!]
+        nearby: NearbyLocation
+        minRating: Float
     }
 
     type SearchSuggestions {
         specialities: [String!]
         cities: [String!]
+        nearby: NearbyLocation
+        minRating: Float
     }
 
     type Search implements Node {
@@ -368,6 +395,8 @@ export const typeDefs = gql`
             query: String
             specialities: [String!]
             cities: [String!]
+            nearby: NearbyLocationInput
+            minRating: Float
         ): Search!
         
         users(after: String, first: Int, before: String, last: Int): UsersConnection!
@@ -378,6 +407,9 @@ export const typeDefs = gql`
         latestReviews: [Review!]!
         patientUpcomingAppointments(id: ID!): [Appointment!]!
         patientPreviousAppointments(id: ID!): [Appointment!]!
+
+        cities: [String!]!
+        specialities: [String!]!
     }
 
     type Mutation {

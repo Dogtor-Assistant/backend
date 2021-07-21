@@ -50,3 +50,4 @@ generates:
         ServiceEdge: pagination#ServiceEdge
         AppointmentEdge: pagination#AppointmentEdge
         Search: search/types#SearchObject
+        Address: models/common/Address#IAddress

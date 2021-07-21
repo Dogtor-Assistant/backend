@@ -1,44 +1,9 @@
+import type { IAddress } from './common/Address';
 import type { Document, Model } from 'mongoose';
 
+import { AddressSchema } from './common/Address';
+
 import { model, Schema } from 'mongoose';
-
-const AddressSchema: Schema = new Schema({
-    city: {
-        required: true,
-        type: String,
-    },
-    lat: {
-        required: true,
-        type: Number,
-    },
-    lon: {
-        required: true,
-        type: Number,
-    },
-    streetName: {
-        required: true,
-        type: String,
-    },
-    streetNumber: {
-        required: true,
-        type: Number,
-    },
-    zipCode: {
-        required: true,
-        type: Number,
-    },
-}, {
-    _id: false,
-});
-
-interface IAddress extends Document {
-    city: string,
-    lat: number,
-    lon: number,
-    streetName: string,
-    streetNumber: number,
-    zipCode: number,
-}
 
 const PatientSchema: Schema = new Schema({
     activityLevel: {

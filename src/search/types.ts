@@ -1,5 +1,5 @@
 
-import type { QuerySearchArgs, RequireFields } from '@resolvers';
+import type { NearbyLocationInput, QuerySearchArgs, RequireFields } from '@resolvers';
 import type { Context } from 'context';
 import type { IDoctor } from 'models/Doctor';
 import type { FilterQuery, Query } from 'mongoose';
@@ -7,31 +7,25 @@ import type { FilterQuery, Query } from 'mongoose';
 export type AppliedFilters = {
     readonly specialities?: string[],
     readonly cities?: string[],
+    readonly nearby?: NearbyLocationInput,
+    readonly minRating?: number,
 }
 
 export type Scope = AppliedFilters & {
     readonly query?: string,
 }
 
-export type Suggestions = {
-    readonly specialities?: string[],
-    readonly cities?: string[],
-}
+export type Suggestions = AppliedFilters
+export type SmartScopeModifier = ((scope: Scope) => Scope) | SmartScopeModifier[]
 
-export type SmartFilter = {
-    languageTag: string,
-    filterFromInput: (filters: AppliedFilters) => (FilterQuery<IDoctor> | null),
-    filterFromWords: (words: string[]) => [FilterQuery<IDoctor>, AppliedFilters],
-}
+export type QueryGenerator = ((scope: Scope) => FilterQuery<IDoctor> | null) | QueryGenerator[]
 
-export type SmartSuggestions = {
-    create: (scope: Scope, context: Context) => Promise<Suggestions | null>,
-}
+export type SmartSuggestions = ((scope: Scope, context: Context) => Promise<Suggestions | null>) | SmartSuggestions[]
 
 export type SearchObject = {
     __typename: 'Search',
     input: RequireFields<QuerySearchArgs, never>,
-    query: Query<IDoctor[], IDoctor>,
+    query: Query<IDoctor[], IDoctor> | null,
     scope: Scope,
     suggestions: Suggestions,
 }
