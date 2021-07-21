@@ -92,7 +92,7 @@ const Mutation: MutationResolvers = {
 
         // if statement should never succeed
         if (appointmentIn._id === undefined) throw 'Error';
-        return userShim(appointmentIn._id);
+        return appointmentIn;
     },
 
     async createUserDoctor(_, { input }) {
