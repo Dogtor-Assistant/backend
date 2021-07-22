@@ -261,8 +261,33 @@ const Mutation: MutationResolvers = {
         if (!appointment) {
             return false;
         }
+        
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
 
-        await Appointment.updateOne({ _id: appointment._id }, { actualTime: new Date() });
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+
+        const previousOfCurrentAppointment = await Appointment.find({
+            'doctorRef.doctorId': appointment.doctorRef.doctorId,
+            expectedTime: { $gte: start, $lt: end },
+            'patientRef.patientId': { $ne: appointment.patientRef.patientId },
+        }).sort({ _id: -1 }).limit(1);
+
+        const actualTimeOf = previousOfCurrentAppointment[0].actualTime || new Date();
+        const actualDurationOf = previousOfCurrentAppointment[0].actualDuration || 0;
+
+        const endOfPrevAppointment = new Date(actualTimeOf.setTime(actualTimeOf.getTime() + actualDurationOf*60000));
+
+        const diff = Math.abs(new Date().valueOf() - endOfPrevAppointment.valueOf());
+        const minutes = Math.floor(diff / 1000 / 60);
+
+        const actualDurationToBeSet = minutes;
+
+        await Appointment.updateOne({ _id: appointment._id }, {
+            actualDuration: actualDurationToBeSet,
+            actualTime: endOfPrevAppointment,
+        });
 
         return true;
 
