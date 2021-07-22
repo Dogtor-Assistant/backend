@@ -1,7 +1,7 @@
 import type { IDoctor } from './Doctor';
 import type { IPatient } from './Patient';
 import type { IService } from './Service';
-import type { Document, Model, Query } from 'mongoose';
+import type { Document, Model } from 'mongoose';
 
 import { model, Schema } from 'mongoose';
 import { pubsub } from 'resolvers/subscription';
