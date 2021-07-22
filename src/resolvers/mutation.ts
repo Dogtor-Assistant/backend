@@ -289,6 +289,19 @@ const Mutation: MutationResolvers = {
             'patientRef.patientId': { $ne: appointment.patientRef.patientId },
         }).sort({ _id: -1 }).limit(1);
 
+        if(previousOfCurrentAppointment.length < 1 || previousOfCurrentAppointment === undefined) {
+            const diff = Math.abs(new Date().valueOf() - appointment.expectedTime.valueOf());
+            const minutes = Math.floor(diff / 1000 / 60);
+
+            const app = await Appointment.findOne({ _id: appointment._id });
+            if (app != null) {
+                app.actualTime = appointment.expectedTime;
+                app.actualDuration = minutes;
+                await app.save();
+                return true;
+            }
+            return false;
+        }
         const actualTimeOf = previousOfCurrentAppointment[0].actualTime || new Date();
         const actualDurationOf = previousOfCurrentAppointment[0].actualDuration || 0;
 
@@ -297,14 +310,19 @@ const Mutation: MutationResolvers = {
         const diff = Math.abs(new Date().valueOf() - endOfPrevAppointment.valueOf());
         const minutes = Math.floor(diff / 1000 / 60);
 
+        const actualTimeToBeSet = endOfPrevAppointment > appointment.expectedTime ? endOfPrevAppointment
+            : appointment.expectedTime;
+
         const actualDurationToBeSet = minutes;
 
-        await Appointment.updateOne({ _id: appointment._id }, {
-            actualDuration: actualDurationToBeSet,
-            actualTime: endOfPrevAppointment,
-        });
-
-        return true;
+        const app = await Appointment.findOne({ _id: appointment._id });
+        if (app != null) {
+            app.actualTime = actualTimeToBeSet;
+            app.actualDuration = actualDurationToBeSet;
+            await app.save();
+            return true;
+        }
+        return false;
 
     },
     async markCheckupAsRead(_, { id }) {
