@@ -59,6 +59,22 @@ const Mutation: MutationResolvers = {
 
         try {
             await followup.save();
+
+            const apiKey:string = process.env.SENDGRID_API_KEY || '';
+            sendGridMail.setApiKey(apiKey);
+            const msg = {
+
+                from: 'pellumb.baboci@tum.de',
+                html: `<strong>This is an automatic message</strong> 
+                    
+            <p> You have new FollowUp on date ${followupInput.suggestedDate.toLocaleDateString()}</p>
+            <p> Please go and check from you account https://dogtor.xyz/login</p>
+            `,
+                subject: 'Assigned new FollowUp ',
+                to: patientUser?.email,
+            };
+            sendGridMail.send(msg);
+
             return true;
         } catch (error) {
             return false;
@@ -261,10 +277,52 @@ const Mutation: MutationResolvers = {
         if (!appointment) {
             return false;
         }
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
 
-        await Appointment.updateOne({ _id: appointment._id }, { actualTime: new Date() });
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
 
-        return true;
+        const previousOfCurrentAppointment = await Appointment.find({
+            'doctorRef.doctorId': appointment.doctorRef.doctorId,
+            expectedTime: { $gte: start, $lt: end },
+            'patientRef.patientId': { $ne: appointment.patientRef.patientId },
+        }).sort({ _id: -1 }).limit(1);
+
+        if(previousOfCurrentAppointment.length < 1 || previousOfCurrentAppointment === undefined) {
+            const diff = Math.abs(new Date().valueOf() - appointment.expectedTime.valueOf());
+            const minutes = Math.floor(diff / 1000 / 60);
+
+            const app = await Appointment.findOne({ _id: appointment._id });
+            if (app != null) {
+                app.actualTime = appointment.expectedTime;
+                app.actualDuration = minutes;
+                await app.save();
+                return true;
+            }
+            return false;
+        }
+        const actualTimeOf = previousOfCurrentAppointment[0].actualTime || new Date();
+        const actualDurationOf = previousOfCurrentAppointment[0].actualDuration || 0;
+
+        const endOfPrevAppointment = new Date(actualTimeOf.setTime(actualTimeOf.getTime() + actualDurationOf*60000));
+
+        const diff = Math.abs(new Date().valueOf() - endOfPrevAppointment.valueOf());
+        const minutes = Math.floor(diff / 1000 / 60);
+
+        const actualTimeToBeSet = endOfPrevAppointment > appointment.expectedTime ? endOfPrevAppointment
+            : appointment.expectedTime;
+
+        const actualDurationToBeSet = minutes;
+
+        const app = await Appointment.findOne({ _id: appointment._id });
+        if (app != null) {
+            app.actualTime = actualTimeToBeSet;
+            app.actualDuration = actualDurationToBeSet;
+            await app.save();
+            return true;
+        }
+        return false;
 
     },
     async markCheckupAsRead(_, { id }) {

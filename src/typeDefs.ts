@@ -103,6 +103,7 @@ export const typeDefs = gql`
         
         webpage: URL
         appointments: [Appointment!]!
+        reviews(after: String, first: Int, before: String, last: Int): ReviewsConnection!
         services: [Service!]!
     }
 
