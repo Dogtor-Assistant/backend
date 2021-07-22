@@ -133,7 +133,16 @@ export type Doctor = Node & {
   readonly topReviews: ReadonlyArray<Review>;
   readonly webpage: Maybe<Scalars['URL']>;
   readonly appointments: ReadonlyArray<Appointment>;
+  readonly reviews: ReviewsConnection;
   readonly services: ReadonlyArray<Service>;
+};
+
+
+export type DoctorReviewsArgs = {
+  after: Maybe<Scalars['String']>;
+  first: Maybe<Scalars['Int']>;
+  before: Maybe<Scalars['String']>;
+  last: Maybe<Scalars['Int']>;
 };
 
 export type DoctorEdge = {
@@ -804,6 +813,7 @@ export type DoctorResolvers<ContextType = Context, ParentType extends ResolversP
   topReviews: Resolver<ReadonlyArray<ResolversTypes['Review']>, ParentType, ContextType>;
   webpage: Resolver<Maybe<ResolversTypes['URL']>, ParentType, ContextType>;
   appointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType>;
+  reviews: Resolver<ResolversTypes['ReviewsConnection'], ParentType, ContextType, RequireFields<DoctorReviewsArgs, never>>;
   services: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
