@@ -1,7 +1,7 @@
 import type { IDoctor } from './Doctor';
 import type { IPatient } from './Patient';
 import type { IService } from './Service';
-import type { Document, Model } from 'mongoose';
+import type { Document, Model, Query } from 'mongoose';
 
 import { model, Schema } from 'mongoose';
 import { pubsub } from 'resolvers/subscription';
@@ -116,8 +116,7 @@ export enum Insurance {
 }
 
 AppointmentSchema.pre('save', function(this: IAppointment) {
-    if (this.isModified('actualDuration')) {
-        // TODO: Add publish logic
+    if (this.isModified('actualTime')) {
         pubsub.publish('appointmentFinished', { appointmentFinished: { id: this._id }});
     }
 });
