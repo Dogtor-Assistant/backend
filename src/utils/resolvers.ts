@@ -87,6 +87,17 @@ export type AppointmentsConnection = {
   readonly edges: Maybe<ReadonlyArray<Maybe<AppointmentEdge>>>;
 };
 
+export type AppointmentInput = {
+  readonly doctorId: Scalars['ID'];
+  readonly expectedDuration: Scalars['Int'];
+  readonly expectedTime: Scalars['DateTime'];
+  readonly insurance: Insurance;
+  readonly patientNotes: Maybe<Scalars['String']>;
+  readonly selectedServices: ReadonlyArray<Scalars['ID']>;
+  readonly shareData: Scalars['Boolean'];
+};
+
+
 export type Checkup = Node & {
   readonly id: Scalars['ID'];
   readonly isRead: Scalars['Boolean'];
@@ -180,6 +191,7 @@ export type Mutation = {
   readonly makeAppointmentAsDone: Scalars['Boolean'];
   readonly assignFollowup: Scalars['Boolean'];
   readonly createUserPatient: Maybe<User>;
+  readonly createAppointment: Appointment;
   readonly updateUserPatientProfile: Maybe<Patient>;
   readonly generateCheckups: ReadonlyArray<Checkup>;
   readonly markCheckupAsRead: Scalars['Boolean'];
@@ -188,6 +200,11 @@ export type Mutation = {
 
 export type MutationCreateUserDoctorArgs = {
   input: UserDoctorInput;
+};
+
+
+export type MutationCreateAppointmentArgs = {
+  input: AppointmentInput;
 };
 
 
@@ -615,6 +632,7 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   AppointmentEdge: ResolverTypeWrapper<AppointmentEdgeModel>;
+  AppointmentInput: AppointmentInput;
   AppointmentTime: ResolverTypeWrapper<AppointmentTime>;
   AppointmentsConnection: ResolverTypeWrapper<AppointmentsConnectionModel>;
   Checkup: ResolverTypeWrapper<ICheckupModel>;
@@ -675,6 +693,7 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars['ID'];
   Boolean: Scalars['Boolean'];
   AppointmentEdge: AppointmentEdgeModel;
+  AppointmentInput: AppointmentInput;
   AppointmentTime: AppointmentTime;
   AppointmentsConnection: AppointmentsConnectionModel;
   Checkup: ICheckupModel;
@@ -834,6 +853,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   makeAppointmentAsDone: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMakeAppointmentAsDoneArgs, 'id'>>;
   assignFollowup: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationAssignFollowupArgs, 'followupInput'>>;
   createUserPatient: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserPatientArgs, 'input'>>;
+  createAppointment: Resolver<ResolversTypes['Appointment'], ParentType, ContextType, RequireFields<MutationCreateAppointmentArgs, 'input'>>;
   updateUserPatientProfile: Resolver<Maybe<ResolversTypes['Patient']>, ParentType, ContextType, RequireFields<MutationUpdateUserPatientProfileArgs, 'input'>>;
   generateCheckups: Resolver<ReadonlyArray<ResolversTypes['Checkup']>, ParentType, ContextType, RequireFields<MutationGenerateCheckupsArgs, 'input'>>;
   markCheckupAsRead: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMarkCheckupAsReadArgs, 'id'>>;
