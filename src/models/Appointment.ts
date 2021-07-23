@@ -116,8 +116,7 @@ export enum Insurance {
 }
 
 AppointmentSchema.pre('save', function(this: IAppointment) {
-    if (this.isModified('actualDuration')) {
-        // TODO: Add publish logic
+    if (this.isModified('actualTime')) {
         pubsub.publish('appointmentFinished', { appointmentFinished: { id: this._id }});
     }
 });

@@ -43,7 +43,7 @@ const apollo = new ApolloServer(
             return context(req);
         },
         introspection: true,
-        playground: true,
+        playground: { subscriptionEndpoint: '/subscriptions' },
         resolvers,
         typeDefs,
         uploads: false,
