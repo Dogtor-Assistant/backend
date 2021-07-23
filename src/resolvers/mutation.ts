@@ -8,6 +8,7 @@ import Doctor from 'models/Doctor';
 import Followup from 'models/Followup';
 import { Gender as GenderM, Insurance as InsuranceM } from 'models/Patient';
 import Patient from 'models/Patient';
+import Service from 'models/Service';
 import User from 'models/User';
 import mongoose from 'mongoose';
 import { Doctor as DoctorShim } from 'shims/doctor';
@@ -76,18 +77,38 @@ const Mutation: MutationResolvers = {
             throw new Error('user not patient');
         }
 
+        const dogtorID = deconstructId(input.doctorId);
+        if(dogtorID == null) {
+            throw new Error('no valid doctor');
+        }
+        const doctor = new DoctorShim(dogtorID[1]);
+        const { lastName, firstName } = await doctor.full();
+
+        const selectedServices = input.selectedServices.compactMap(id => deconstructId(id)?.[1]);
+        const services = await Service.find({ _id:{ $in:selectedServices }});
+
         const session = await mongoose.startSession();
 
         session.startTransaction();
 
         // Insert doctor document
         const appointmentIn = new Appointment({
+            doctorRef: {
+                doctorId: dogtorID[1],
+                doctorName: firstName + lastName,
+            },
             expectedDuration: input.expectedDuration,
             expectedTime: input.expectedTime,
             insurance: input.insurance,
             patientNotes: input.patientNotes,
-            selectedServices: input.selectedServices,
-            shareData: input.shareData,
+            patientRef:{
+                patientId: user.patientRef,
+                patientName: user.firstName + user.lastName,
+            },
+            selectedServices: services.map(service => {
+                return { serviceId:service.id, serviceName: service.name };
+            }),
+            sharedData: input.shareData,
         });
         await appointmentIn.save();
 
