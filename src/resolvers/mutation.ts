@@ -10,6 +10,7 @@ import { Gender as GenderM, Insurance as InsuranceM } from 'models/Patient';
 import Patient from 'models/Patient';
 import User from 'models/User';
 import mongoose from 'mongoose';
+import { pubsub } from 'resolvers/subscription';
 import { Doctor as DoctorShim } from 'shims/doctor';
 import { Patient as PatientShim } from 'shims/patient';
 import { patient as patientShim } from 'shims/patient';
@@ -298,6 +299,8 @@ const Mutation: MutationResolvers = {
                 app.actualTime = appointment.expectedTime;
                 app.actualDuration = minutes;
                 await app.save();
+                console.log('saved11');
+                pubsub.publish('appointmentFinished', { appointmentFinished: appointment });
                 return true;
             }
             return false;
@@ -320,6 +323,8 @@ const Mutation: MutationResolvers = {
             app.actualTime = actualTimeToBeSet;
             app.actualDuration = actualDurationToBeSet;
             await app.save();
+            console.log('saved');
+            pubsub.publish('appointmentFinished', { appointmentFinished: appointment });
             return true;
         }
         return false;

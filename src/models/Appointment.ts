@@ -115,12 +115,6 @@ export enum Insurance {
     PUBLIC = 0
 }
 
-AppointmentSchema.pre('save', function(this: IAppointment) {
-    if (this.isModified('actualTime')) {
-        pubsub.publish('appointmentFinished', { appointmentFinished: { id: this._id }});
-    }
-});
-
 export interface IAppointment extends Document<string> {
     __typename: 'Appointment',
     patientRef: IMiniPatient,
