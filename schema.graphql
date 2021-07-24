@@ -104,12 +104,6 @@ type OfferedSlot {
   end: String!
 }
 
-type Recommendation {
-  service: String!
-  kind: String!
-  periodInDays: Int
-}
-
 type Patient implements Node {
   id: ID!
   firstname: String!
@@ -126,7 +120,6 @@ type Patient implements Node {
   surgeries: [String!]!
   isSmoker: Boolean
   address: Address!
-  checkupRecommendations: [Recommendation!]!
   unreadCheckups: [Checkup!]!
 }
 
@@ -345,17 +338,6 @@ input FollowupInput {
   doctorNotes: String
 }
 
-input RecommendationInput {
-  service: String!
-  kind: String!
-  periodInDays: Int
-}
-
-input CheckupsGenInput {
-  id: ID!
-  recommendations: [RecommendationInput!]!
-}
-
 type Query {
   greeting: String!
   me: User
@@ -381,6 +363,5 @@ type Mutation {
   createUserPatient(input: UserPatientInput!): User
   createAppointment(input: AppointmentInput!): Appointment!
   updateUserPatientProfile(input: UserPatientInputUpd!): Patient
-  generateCheckups(input: CheckupsGenInput!): [Checkup!]!
   markCheckupAsRead(id: ID!): Boolean!
 }
