@@ -75,6 +75,7 @@ export const typeDefs = gql`
         notes: String
         sharedData: Boolean!
         selectedServices: [Service!]!
+        estimatedStart: DateTime!
         isDone: Boolean!
     }
 
@@ -417,8 +418,13 @@ export const typeDefs = gql`
         markCheckupAsRead(id: ID!): Boolean!
     }
     
+    type Subscription {
+        estimatedWaitingTime(id:ID!): Appointment!
+    }
+    
     schema {
         query: Query
         mutation: Mutation
+        subscription: Subscription
     }
 `;

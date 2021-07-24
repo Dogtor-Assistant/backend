@@ -69,6 +69,7 @@ export type Appointment = Node & {
   readonly notes: Maybe<Scalars['String']>;
   readonly sharedData: Scalars['Boolean'];
   readonly selectedServices: ReadonlyArray<Service>;
+  readonly estimatedStart: Scalars['DateTime'];
   readonly isDone: Scalars['Boolean'];
 };
 
@@ -449,6 +450,15 @@ export type ServicesConnection = {
   readonly edges: Maybe<ReadonlyArray<Maybe<ServiceEdge>>>;
 };
 
+export type Subscription = {
+  readonly estimatedWaitingTime: Appointment;
+};
+
+
+export type SubscriptionEstimatedWaitingTimeArgs = {
+  id: Scalars['ID'];
+};
+
 
 export type User = Node & {
   readonly id: Scalars['ID'];
@@ -643,6 +653,7 @@ export type ResolversTypes = ResolversObject<{
   ServiceEdge: ResolverTypeWrapper<ServiceEdgeModel>;
   ServiceInput: ServiceInput;
   ServicesConnection: ResolverTypeWrapper<ServicesConnectionModel>;
+  Subscription: ResolverTypeWrapper<{}>;
   URL: ResolverTypeWrapper<Scalars['URL']>;
   User: ResolverTypeWrapper<UserModel>;
   UserDoctorInput: UserDoctorInput;
@@ -699,6 +710,7 @@ export type ResolversParentTypes = ResolversObject<{
   ServiceEdge: ServiceEdgeModel;
   ServiceInput: ServiceInput;
   ServicesConnection: ServicesConnectionModel;
+  Subscription: {};
   URL: Scalars['URL'];
   User: UserModel;
   UserDoctorInput: UserDoctorInput;
@@ -730,6 +742,7 @@ export type AppointmentResolvers<ContextType = Context, ParentType extends Resol
   notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sharedData: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   selectedServices: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
+  estimatedStart: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   isDone: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -972,6 +985,10 @@ export type ServicesConnectionResolvers<ContextType = Context, ParentType extend
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  estimatedWaitingTime: SubscriptionResolver<ResolversTypes['Appointment'], "estimatedWaitingTime", ParentType, ContextType, RequireFields<SubscriptionEstimatedWaitingTimeArgs, 'id'>>;
+}>;
+
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
   name: 'URL';
 }
@@ -1038,6 +1055,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Service: ServiceResolvers<ContextType>;
   ServiceEdge: ServiceEdgeResolvers<ContextType>;
   ServicesConnection: ServicesConnectionResolvers<ContextType>;
+  Subscription: SubscriptionResolvers<ContextType>;
   URL: GraphQLScalarType;
   User: UserResolvers<ContextType>;
   UserEdge: UserEdgeResolvers<ContextType>;

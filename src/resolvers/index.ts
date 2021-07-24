@@ -38,6 +38,7 @@ import Search from './search';
 import SearchScope from './searchScope';
 import SearchSuggestions from './searchSuggestions';
 import Service from './service';
+import Subscription from './subscription';
 import User from './user';
 import Weekday from './weekday';
 import Weight from './weight';
@@ -79,6 +80,7 @@ const resolvers: Resolvers = {
     Service,
     ServiceEdge,
     ServicesConnection,
+    Subscription,
     URL,
     User,
     UserEdge,
