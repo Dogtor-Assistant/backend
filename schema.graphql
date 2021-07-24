@@ -91,11 +91,16 @@ type Doctor implements Node {
   services: [Service!]!
 }
 
+type MiniService {
+  serviceId: ID!
+  serviceName: String!
+}
+
 type Followup implements Node {
   id: ID!
   isRead: Boolean!
   doctor: Doctor!
-  services: [Service!]!
+  services: [MiniService!]!
   suggestedDate: DateTime!
 }
 
@@ -122,6 +127,7 @@ type Patient implements Node {
   isSmoker: Boolean
   address: Address!
   unreadCheckups: [Checkup!]!
+  unreadFollowups: [Followup!]!
 }
 
 type Review implements Node {
@@ -267,8 +273,6 @@ input AddressInput {
   streetNumber: Int!
   city: String!
   zipCode: Int!
-  lat: Float!
-  lon: Float!
 }
 
 input OfferedSlotInput {
@@ -365,6 +369,7 @@ type Mutation {
   createAppointment(input: AppointmentInput!): Appointment!
   updateUserPatientProfile(input: UserPatientInputUpd!): Patient
   markCheckupAsRead(id: ID!): Boolean!
+  markFollowupAsRead(id: ID!): Boolean!
 }
 
 type Subscription {
