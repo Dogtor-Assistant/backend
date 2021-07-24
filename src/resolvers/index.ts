@@ -34,12 +34,12 @@ import Node from './node';
 import OfferedSlot from './offeredSlot';
 import Patient from './patient';
 import Query from './query';
-import Recommendation from './recommendation';
 import Review from './review';
 import Search from './search';
 import SearchScope from './searchScope';
 import SearchSuggestions from './searchSuggestions';
 import Service from './service';
+import Subscription from './subscription';
 import User from './user';
 import Weekday from './weekday';
 import Weight from './weight';
@@ -73,7 +73,6 @@ const resolvers: Resolvers = {
     PatientEdge,
     PatientsConnection,
     Query,
-    Recommendation,
     Review,
     ReviewEdge,
     ReviewsConnection,
@@ -83,6 +82,7 @@ const resolvers: Resolvers = {
     Service,
     ServiceEdge,
     ServicesConnection,
+    Subscription,
     URL,
     User,
     UserEdge,

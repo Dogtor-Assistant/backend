@@ -12,16 +12,17 @@ import Patient from 'models/Patient';
 import Service from 'models/Service';
 import User from 'models/User';
 import mongoose from 'mongoose';
+import RecommendationService from 'recommendations';
+import { pubsub } from 'resolvers/subscription';
 import { Doctor as DoctorShim } from 'shims/doctor';
 import { Patient as PatientShim } from 'shims/patient';
 import { patient as patientShim } from 'shims/patient';
 import { user as userShim } from 'shims/user';
-import { deconstructId } from 'utils/ids';
+import { buildId, deconstructId } from 'utils/ids';
 import { Insurance } from 'utils/resolvers';
 
 const Mutation: MutationResolvers = {
     async assignFollowup(_, { followupInput }) {
-
         const deconstructedDoctorId = deconstructId(followupInput.doctorRef);
         const doctorId = deconstructedDoctorId?.[1];
 
@@ -136,7 +137,6 @@ const Mutation: MutationResolvers = {
         if (appointmentIn._id === undefined) throw 'Error';
         return appointmentIn;
     },
-
     async createUserDoctor(_, { input }) {
         try {
             const url = `http://open.mapquestapi.com/geocoding/v1/address?key=${process.env.GEOLOC_KEY}`;
@@ -289,6 +289,10 @@ const Mutation: MutationResolvers = {
         await Appointment.deleteOne({ _id: appointment._id });
 
         const valuePatient = await Patient.findById(appointment.patientRef.patientId);
+        if (valuePatient != null) {
+            await new RecommendationService().storeRemainingRecommendations(valuePatient);
+        }
+
         const patient = valuePatient && new PatientShim(valuePatient);
         const patientUser = await patient?.user();
 
@@ -306,83 +310,6 @@ const Mutation: MutationResolvers = {
         sendGridMail.send(msg);
 
         return true;
-
-    },
-    async generateCheckups(_, { input }) {
-        const deconstructedPatientId = deconstructId(input.id);
-        const patientId = deconstructedPatientId?.[1];
-
-        const patient = await Patient.findById(patientId);
-        
-        if (patient != null) {
-            const { _id, address, insurance } = patient;
-            const recommendations = input.recommendations;
-
-            const user = await User.findOne({ patientRef: _id });
-            if (user == null) return [];
-            const { firstName, lastName } = user;
-
-            const oldCheckups = await Checkup.find({ 'patientRef.patientId': _id });
-
-            const newRec = recommendations.filter(rec => {
-
-                //One time recommendation
-                if (rec.kind === 'single') {
-                    let makeRecommendation = true;
-                    oldCheckups.forEach(oldCheckup => {
-                        if (oldCheckup.services[0] === rec.service.toString()) {
-                            makeRecommendation = false;
-                        }
-                    });
-                    return makeRecommendation;
-                }
-
-                //Periodic recommendation
-                if (rec.kind === 'periodic') {
-                    let makeRecommendation = true;
-                    oldCheckups.forEach(oldCheckup => {
-                        const periodInDays = rec.periodInDays == null ? 0 : rec.periodInDays;
-                        const lim = new Date();
-                        lim.setDate(oldCheckup.suggestedDate.getDate() + periodInDays - 14);
-                        
-                        if (oldCheckup.services[0] === rec.service.toString() &&
-                            new Date() < lim) {
-                            makeRecommendation = false;
-                        }
-                            
-                    });
-                    return makeRecommendation;
-                }
-            });
-
-            // Insert recommendations as checkups in DB
-            const suggestedDate = new Date();
-            suggestedDate.setDate(suggestedDate.getDate() + 14);
-
-            const newCheckups = newRec.map(rec => {
-                return new Checkup({
-                    'isRead': false,
-                    'patientRef': {
-                        'patientAddress': address,
-                        'patientId': _id,
-                        'patientInsurance': insurance,
-                        'patientName': `${firstName} ${lastName}`,
-                    },
-                    'services' : [rec.service.toString()],
-                    'suggestedDate' : suggestedDate,
-                });
-            });
-
-            const insertedCheckups = await Checkup.insertMany(newCheckups);
-
-            if (insertedCheckups.length > 0) {
-                // TODO: send email notification
-                return insertedCheckups;
-            }
-            return [];
-        }
-        
-        return [];
     },
     async makeAppointmentAsDone(_, { id }) {
 
@@ -400,11 +327,48 @@ const Mutation: MutationResolvers = {
         const end = new Date();
         end.setHours(23, 59, 59, 999);
 
+        const allPreviousOfCurrentAppointment = await Appointment.find({
+            'doctorRef.doctorId': appointment.doctorRef.doctorId,
+            expectedTime: { $gte: start, $lt: new Date() },
+            'patientRef.patientId': { $ne: appointment.patientRef.patientId },
+        });
+        const allAfterOfCurrentAppointment = await Appointment.find({
+            'doctorRef.doctorId': appointment.doctorRef.doctorId,
+            expectedTime: { $gt: appointment.expectedTime, $lt: end },
+            'patientRef.patientId': { $ne: appointment.patientRef.patientId },
+        });
+        const differenceInMinutes = allPreviousOfCurrentAppointment.length > 0 ?
+            allPreviousOfCurrentAppointment.map(app => {
+                const diff = Math.abs(app.actualTime ? app.actualTime.valueOf() - app.expectedTime.valueOf() : 0);
+                const minutes = Math.floor(diff / 1000 / 60);
+                return minutes;
+            }) : [0] ;
+
+        const avgWaitingTime = differenceInMinutes.reduce((n, a) => n+a) / differenceInMinutes.length;
+        const patient = await Patient.findById(appointment.patientRef.patientId);
+        if (patient != null) {
+            await new RecommendationService().storeRemainingRecommendations(patient);
+        }
+
         const previousOfCurrentAppointment = await Appointment.find({
             'doctorRef.doctorId': appointment.doctorRef.doctorId,
             expectedTime: { $gte: start, $lt: end },
             'patientRef.patientId': { $ne: appointment.patientRef.patientId },
         }).sort({ _id: -1 }).limit(1);
+
+        let appointmentEnd = new Date();
+
+        for (const app of allAfterOfCurrentAppointment) {
+            const time = new Date(Math.max(app.expectedTime.getTime(), appointmentEnd.getTime()));
+            app.estimatedTime = time;
+            appointmentEnd = new Date(time.getTime()+avgWaitingTime*60*1000);
+            await app.save();
+            if(app._id != null) {
+                pubsub.publish(`estimatedWaitingTime:${buildId('Appointment', app._id)}`,
+                    { estimatedWaitingTime: app });
+            }
+
+        }
 
         if(previousOfCurrentAppointment.length < 1 || previousOfCurrentAppointment === undefined) {
             const diff = Math.abs(new Date().valueOf() - appointment.expectedTime.valueOf());
@@ -415,6 +379,7 @@ const Mutation: MutationResolvers = {
                 app.actualTime = appointment.expectedTime;
                 app.actualDuration = minutes;
                 await app.save();
+                pubsub.publish('appointmentFinished', { appointmentFinished: avgWaitingTime });
                 return true;
             }
             return false;
@@ -439,6 +404,7 @@ const Mutation: MutationResolvers = {
             await app.save();
             return true;
         }
+
         return false;
 
     },
@@ -492,6 +458,7 @@ const Mutation: MutationResolvers = {
             patientUpd.insurance = input.insurance === Insurance.Public ? InsuranceM.PUBLIC : InsuranceM. PRIVATE;
 
             await patientUpd.save();
+            await new RecommendationService().storeRemainingRecommendations(patientUpd);
             if (patientUpd._id !== undefined) return patientShim(patientUpd._id);
         }
 

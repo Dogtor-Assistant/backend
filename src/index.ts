@@ -1,14 +1,20 @@
 
 import 'utils/extensions';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { ApolloServer } from 'apollo-server-express';
 import { authenticationOptional, router as auth } from 'authentication';
 import { context } from 'context';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
-import User from 'models/User';
+import { execute, subscribe } from 'graphql';
+import { createServer } from 'http';
+import Patient from 'models/Patient';
 import mongoose from 'mongoose';
+import cron from 'node-cron';
+import RecommendationService from 'recommendations';
 import resolvers from 'resolvers';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { typeDefs } from 'typeDefs';
 
 dotenv.config();
@@ -34,27 +40,16 @@ app.use(
 app.get('/', (_, res) => res.send('Hello World'));
 app.use('/auth', auth);
 
-app.get('/user/:id', async function(req, res) {
-    const id = req.params.id;
-    const user = await User.findOne({ 'firstName': `Dogtor${id}` });
-
-    if (!user) {
-        res.status(400).send("User doesn't exist");
-    }
-    else {
-        res.status(200).json(user);
-    }
-});
-
 const apollo = new ApolloServer(
     {
         context: ({ req }) => {
             return context(req);
         },
         introspection: true,
-        playground: true,
+        playground: { subscriptionEndpoint: '/subscriptions' },
         resolvers,
         typeDefs,
+        uploads: false,
     },
 );
 
@@ -63,6 +58,9 @@ apollo.applyMiddleware({
     path: '/graphql',
 });
 
+const server = createServer(app);
+const schema = makeExecutableSchema({ resolvers, typeDefs });
+ 
 // database connection
 const dbURI = process.env.MONGO_URI != null ? process.env.MONGO_URI : '';
 mongoose.connect(dbURI, { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true }, err => {
@@ -73,8 +71,26 @@ mongoose.connect(dbURI, { useCreateIndex: true, useNewUrlParser: true, useUnifie
     else {
         console.log('💾[database]: Connected to database successfully');
         
-        app.listen(PORT, () => {
+        server.listen(PORT, () => {
+            new SubscriptionServer({
+                execute,
+                schema,
+                subscribe,
+            }, {
+                path: '/subscriptions',
+                server: server,
+            });
             console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
         });
     }
 });
+
+cron.schedule(
+    '0 0 * * *',
+    async () => {
+        console.log('Writing new recommendations as needed (cron job)');
+        for await (const patient of Patient.find()) {
+            await new RecommendationService().storeRemainingRecommendations(patient);
+        }
+    },
+);

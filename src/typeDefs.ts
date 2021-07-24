@@ -75,6 +75,7 @@ export const typeDefs = gql`
         notes: String
         sharedData: Boolean!
         selectedServices: [Service!]!
+        estimatedStart: DateTime!
         isDone: Boolean!
     }
 
@@ -127,12 +128,6 @@ export const typeDefs = gql`
         end: String!
     }
 
-    type Recommendation {
-        service: String!
-        kind: String!
-        periodInDays: Int
-    }
-
     type Patient implements Node {
         id: ID!
         
@@ -155,7 +150,6 @@ export const typeDefs = gql`
 
         address: Address!
 
-        checkupRecommendations: [Recommendation!]!
         unreadCheckups: [Checkup!]!
         unreadFollowups: [Followup!]!
     }
@@ -391,17 +385,6 @@ export const typeDefs = gql`
         doctorNotes: String
     }
 
-    input RecommendationInput {
-        service: String!
-        kind: String!
-        periodInDays: Int
-    }
-
-    input CheckupsGenInput {
-        id: ID!
-        recommendations: [RecommendationInput!]!
-    }
-
     type Query {
         greeting: String!
         me: User
@@ -436,13 +419,17 @@ export const typeDefs = gql`
         createUserPatient(input: UserPatientInput!): User
         createAppointment(input: AppointmentInput!): Appointment!
         updateUserPatientProfile(input: UserPatientInputUpd!): Patient
-        generateCheckups(input: CheckupsGenInput!): [Checkup!]!
         markCheckupAsRead(id: ID!): Boolean!
         markFollowupAsRead(id: ID!): Boolean!
+    }
+    
+    type Subscription {
+        estimatedWaitingTime(id:ID!): Appointment!
     }
     
     schema {
         query: Query
         mutation: Mutation
+        subscription: Subscription
     }
 `;
