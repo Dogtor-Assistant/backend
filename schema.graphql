@@ -64,6 +64,7 @@ type Appointment implements Node {
   notes: String
   sharedData: Boolean!
   selectedServices: [Service!]!
+  estimatedStart: DateTime!
   isDone: Boolean!
 }
 
@@ -364,4 +365,8 @@ type Mutation {
   createAppointment(input: AppointmentInput!): Appointment!
   updateUserPatientProfile(input: UserPatientInputUpd!): Patient
   markCheckupAsRead(id: ID!): Boolean!
+}
+
+type Subscription {
+  estimatedWaitingTime(id: ID!): Appointment!
 }
