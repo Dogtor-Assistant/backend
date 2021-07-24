@@ -10,7 +10,6 @@ import express from 'express';
 import { execute, subscribe } from 'graphql';
 import { createServer } from 'http';
 import Patient from 'models/Patient';
-import User from 'models/User';
 import mongoose from 'mongoose';
 import cron from 'node-cron';
 import RecommendationService from 'recommendations';
