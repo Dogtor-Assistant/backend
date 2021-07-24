@@ -1,6 +1,7 @@
 import type { MutationResolvers } from '@resolvers';
 
 import sendGridMail from '@sendgrid/mail';
+import axios from 'axios';
 import bcrypt from 'bcrypt';
 import Appointment from 'models/Appointment';
 import Checkup from 'models/Checkup';
@@ -137,82 +138,143 @@ const Mutation: MutationResolvers = {
     },
 
     async createUserDoctor(_, { input }) {
+        try {
+            const url = `http://open.mapquestapi.com/geocoding/v1/address?key=${process.env.GEOLOC_KEY}`;
+            const res = await axios.post(url, {
+                'location': `${input.address.streetNumber} ${input.address.streetName}, ${input.address.city}`,
+                'options': {
+                    'thumbMaps': false,
+                },
+            });
 
-        const session = await mongoose.startSession();
+            const lat = res.data.results[0].locations[0].latLng.lat;
+            const lon = res.data.results[0].locations[0].latLng.lng;
 
-        session.startTransaction();
+            const address = {
+                city: input.address.city,
+                location: {
+                    coordinates: [
+                        lon,
+                        lat,
+                    ],
+                    type: 'Point',
+                },
+                streetName: input.address.streetName,
+                streetNumber: input.address.streetNumber,
+                zipCode: input.address.zipCode,
+            };
 
-        // Insert doctor document
-        const doctorIn = new Doctor({
-            address: input.address,
-            firstName: input.firstName,
-            lastName: input.lastName,
-            offeredSlots: input.offeredSlots,
-            phoneNumber: input.phoneNumber,
-            specialities: input.specialities,
-            webpage: input.webpage,
+            // Insert doctor document
+            const doctorIn = new Doctor({
+                address: address,
+                firstName: input.firstName,
+                lastName: input.lastName,
+                offeredSlots: input.offeredSlots,
+                phoneNumber: input.phoneNumber,
+                specialities: input.specialities,
+                webpage: input.webpage,
 
-        });
-        await doctorIn.save();
+            });
+            await doctorIn.save();
 
-        // Insert user document
-        const salt = await bcrypt.genSalt();
-        const userIn = new User({
-            doctorRef: doctorIn._id,
-            email: input.email,
-            firstName: input.firstName,
-            lastName: input.lastName,
-            password: await bcrypt.hash(input.password, salt),
-        });
-        await userIn.save();
+            // Insert user document
+            const salt = await bcrypt.genSalt();
+            const userIn = new User({
+                doctorRef: doctorIn._id,
+                email: input.email,
+                firstName: input.firstName,
+                lastName: input.lastName,
+                password: await bcrypt.hash(input.password, salt),
+            });
 
-        await session.commitTransaction();
-        session.endSession();
+            try {
+                await userIn.save();
+            }
+            catch (err) {
+                await Doctor.findByIdAndDelete(doctorIn._id);
+                return err;
+            }
 
-        // if statement should never succeed
-        if (userIn._id === undefined) throw 'Error';
-        return userShim(userIn._id);
+            // if statement should never succeed
+            if (userIn._id === undefined) throw 'Error';
+            return userShim(userIn._id);
+
+        } catch (err) {
+            return err;
+        }
     },
     async createUserPatient(_, { input }) {
-        const session = await mongoose.startSession();
 
-        session.startTransaction();
+        try {
+            const url = `http://open.mapquestapi.com/geocoding/v1/address?key=${process.env.GEOLOC_KEY}`;
+            const res = await axios.post(url, {
+                'location': `${input.address.streetNumber} ${input.address.streetName}, ${input.address.city}`,
+                'options': {
+                    'thumbMaps': false,
+                },
+            });
 
-        // Insert patient document
-        const patientIn = new Patient({
-            activityLevel: input.activityLvl,
-            address: input.address,
-            allergies: input.allergies,
-            birthDate: input.birthDate,
-            gender: input.gender,
-            height: input.height,
-            insurance: input.insurance,
-            medicalConditions: input.medConditions,
-            medications: input.medications,
-            phoneNumber: input.phoneNumber,
-            smoker: input.smoker,
-            surgeries: input.surgeries,
-            weight: input.weight,
-        });
-        await patientIn.save();
+            const lat = res.data.results[0].locations[0].latLng.lat;
+            const lon = res.data.results[0].locations[0].latLng.lng;
 
-        // Insert user document
-        const salt = await bcrypt.genSalt();
-        const userIn = new User({
-            email: input.email,
-            firstName: input.firstName,
-            lastName: input.lastName,
-            password: await bcrypt.hash(input.password, salt),
-            patientRef: patientIn._id,
-        });
-        await userIn.save();
+            const address = {
+                city: input.address.city,
+                location: {
+                    coordinates: [
+                        lon,
+                        lat,
+                    ],
+                    type: 'Point',
+                },
+                streetName: input.address.streetName,
+                streetNumber: input.address.streetNumber,
+                zipCode: input.address.zipCode,
+            };
 
-        await session.commitTransaction();
-        session.endSession();
+            // Insert patient document
+            const patientIn = new Patient({
+                activityLevel: input.activityLvl,
+                address: address,
+                allergies: input.allergies,
+                birthDate: input.birthDate,
+                gender: input.gender,
+                height: input.height,
+                insurance: input.insurance,
+                medicalConditions: input.medConditions,
+                medications: input.medications,
+                phoneNumber: input.phoneNumber,
+                smoker: input.smoker,
+                surgeries: input.surgeries,
+                weight: input.weight,
+            });
 
-        // if statement should never succeed
-        if (userIn._id === undefined) throw 'Error';
-        return userShim(userIn._id);
+            await patientIn.save();
+
+            // Insert user document
+            const salt = await bcrypt.genSalt();
+            const userIn = new User({
+                email: input.email,
+                firstName: input.firstName,
+                lastName: input.lastName,
+                password: await bcrypt.hash(input.password, salt),
+                patientRef: patientIn._id,
+            });
+
+            try {
+                await userIn.save();
+            }
+            catch (err) {
+                await Patient.findByIdAndDelete(patientIn._id);
+                return err;
+            }
+
+            // if statement should never succeed
+            if (userIn._id === undefined) throw 'Error';
+            return userShim(userIn._id);
+
+        } catch (err) {
+            return err;
+        }
     },
     async deleteAppointmentById(_, { id }) {
 
