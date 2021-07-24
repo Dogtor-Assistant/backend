@@ -105,11 +105,6 @@ export type Checkup = Node & {
   readonly suggestedDate: Scalars['DateTime'];
 };
 
-export type CheckupsGenInput = {
-  readonly id: Scalars['ID'];
-  readonly recommendations: ReadonlyArray<RecommendationInput>;
-};
-
 export type Coordinates = {
   readonly latitude: Scalars['Float'];
   readonly longitude: Scalars['Float'];
@@ -193,7 +188,6 @@ export type Mutation = {
   readonly createUserPatient: Maybe<User>;
   readonly createAppointment: Appointment;
   readonly updateUserPatientProfile: Maybe<Patient>;
-  readonly generateCheckups: ReadonlyArray<Checkup>;
   readonly markCheckupAsRead: Scalars['Boolean'];
 };
 
@@ -230,11 +224,6 @@ export type MutationCreateAppointmentArgs = {
 
 export type MutationUpdateUserPatientProfileArgs = {
   input: UserPatientInputUpd;
-};
-
-
-export type MutationGenerateCheckupsArgs = {
-  input: CheckupsGenInput;
 };
 
 
@@ -293,7 +282,6 @@ export type Patient = Node & {
   readonly surgeries: ReadonlyArray<Scalars['String']>;
   readonly isSmoker: Maybe<Scalars['Boolean']>;
   readonly address: Address;
-  readonly checkupRecommendations: ReadonlyArray<Recommendation>;
   readonly unreadCheckups: ReadonlyArray<Checkup>;
 };
 
@@ -386,18 +374,6 @@ export type QueryPatientUpcomingAppointmentsArgs = {
 
 export type QueryPatientPreviousAppointmentsArgs = {
   id: Scalars['ID'];
-};
-
-export type Recommendation = {
-  readonly service: Scalars['String'];
-  readonly kind: Scalars['String'];
-  readonly periodInDays: Maybe<Scalars['Int']>;
-};
-
-export type RecommendationInput = {
-  readonly service: Scalars['String'];
-  readonly kind: Scalars['String'];
-  readonly periodInDays: Maybe<Scalars['Int']>;
 };
 
 export type Review = Node & {
@@ -645,7 +621,6 @@ export type ResolversTypes = ResolversObject<{
   AppointmentTime: ResolverTypeWrapper<AppointmentTime>;
   AppointmentsConnection: ResolverTypeWrapper<AppointmentsConnectionModel>;
   Checkup: ResolverTypeWrapper<ICheckupModel>;
-  CheckupsGenInput: CheckupsGenInput;
   Coordinates: ResolverTypeWrapper<Coordinates>;
   CoordinatesInput: CoordinatesInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
@@ -668,8 +643,6 @@ export type ResolversTypes = ResolversObject<{
   PatientEdge: ResolverTypeWrapper<PatientEdgeModel>;
   PatientsConnection: ResolverTypeWrapper<PatientsConnectionModel>;
   Query: ResolverTypeWrapper<{}>;
-  Recommendation: ResolverTypeWrapper<Recommendation>;
-  RecommendationInput: RecommendationInput;
   Review: ResolverTypeWrapper<ReviewModel>;
   ReviewEdge: ResolverTypeWrapper<ReviewEdgeModel>;
   ReviewsConnection: ResolverTypeWrapper<ReviewsConnectionModel>;
@@ -707,7 +680,6 @@ export type ResolversParentTypes = ResolversObject<{
   AppointmentTime: AppointmentTime;
   AppointmentsConnection: AppointmentsConnectionModel;
   Checkup: ICheckupModel;
-  CheckupsGenInput: CheckupsGenInput;
   Coordinates: Coordinates;
   CoordinatesInput: CoordinatesInput;
   DateTime: Scalars['DateTime'];
@@ -728,8 +700,6 @@ export type ResolversParentTypes = ResolversObject<{
   PatientEdge: PatientEdgeModel;
   PatientsConnection: PatientsConnectionModel;
   Query: {};
-  Recommendation: Recommendation;
-  RecommendationInput: RecommendationInput;
   Review: ReviewModel;
   ReviewEdge: ReviewEdgeModel;
   ReviewsConnection: ReviewsConnectionModel;
@@ -867,7 +837,6 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   createUserPatient: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserPatientArgs, 'input'>>;
   createAppointment: Resolver<ResolversTypes['Appointment'], ParentType, ContextType, RequireFields<MutationCreateAppointmentArgs, 'input'>>;
   updateUserPatientProfile: Resolver<Maybe<ResolversTypes['Patient']>, ParentType, ContextType, RequireFields<MutationUpdateUserPatientProfileArgs, 'input'>>;
-  generateCheckups: Resolver<ReadonlyArray<ResolversTypes['Checkup']>, ParentType, ContextType, RequireFields<MutationGenerateCheckupsArgs, 'input'>>;
   markCheckupAsRead: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMarkCheckupAsReadArgs, 'id'>>;
 }>;
 
@@ -913,7 +882,6 @@ export type PatientResolvers<ContextType = Context, ParentType extends Resolvers
   surgeries: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
   isSmoker: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   address: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
-  checkupRecommendations: Resolver<ReadonlyArray<ResolversTypes['Recommendation']>, ParentType, ContextType>;
   unreadCheckups: Resolver<ReadonlyArray<ResolversTypes['Checkup']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -945,13 +913,6 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   patientPreviousAppointments: Resolver<ReadonlyArray<ResolversTypes['Appointment']>, ParentType, ContextType, RequireFields<QueryPatientPreviousAppointmentsArgs, 'id'>>;
   cities: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
   specialities: Resolver<ReadonlyArray<ResolversTypes['String']>, ParentType, ContextType>;
-}>;
-
-export type RecommendationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Recommendation'] = ResolversParentTypes['Recommendation']> = ResolversObject<{
-  service: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  kind: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  periodInDays: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type ReviewResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Review'] = ResolversParentTypes['Review']> = ResolversObject<{
@@ -1085,7 +1046,6 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   PatientEdge: PatientEdgeResolvers<ContextType>;
   PatientsConnection: PatientsConnectionResolvers<ContextType>;
   Query: QueryResolvers<ContextType>;
-  Recommendation: RecommendationResolvers<ContextType>;
   Review: ReviewResolvers<ContextType>;
   ReviewEdge: ReviewEdgeResolvers<ContextType>;
   ReviewsConnection: ReviewsConnectionResolvers<ContextType>;
