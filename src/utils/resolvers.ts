@@ -77,16 +77,6 @@ export type AppointmentEdge = {
   readonly node: Maybe<Appointment>;
 };
 
-export type AppointmentTime = {
-  readonly start: Maybe<Scalars['DateTime']>;
-  readonly duration: Maybe<Scalars['Int']>;
-};
-
-export type AppointmentsConnection = {
-  readonly pageInfo: PageInfo;
-  readonly edges: Maybe<ReadonlyArray<Maybe<AppointmentEdge>>>;
-};
-
 export type AppointmentInput = {
   readonly doctorId: Scalars['ID'];
   readonly expectedDuration: Scalars['Int'];
@@ -97,6 +87,15 @@ export type AppointmentInput = {
   readonly shareData: Scalars['Boolean'];
 };
 
+export type AppointmentTime = {
+  readonly start: Maybe<Scalars['DateTime']>;
+  readonly duration: Maybe<Scalars['Int']>;
+};
+
+export type AppointmentsConnection = {
+  readonly pageInfo: PageInfo;
+  readonly edges: Maybe<ReadonlyArray<Maybe<AppointmentEdge>>>;
+};
 
 export type Checkup = Node & {
   readonly id: Scalars['ID'];
@@ -203,11 +202,6 @@ export type MutationCreateUserDoctorArgs = {
 };
 
 
-export type MutationCreateAppointmentArgs = {
-  input: AppointmentInput;
-};
-
-
 export type MutationDeleteAppointmentByIdArgs = {
   id: Scalars['ID'];
 };
@@ -225,6 +219,11 @@ export type MutationAssignFollowupArgs = {
 
 export type MutationCreateUserPatientArgs = {
   input: UserPatientInput;
+};
+
+
+export type MutationCreateAppointmentArgs = {
+  input: AppointmentInput;
 };
 
 
