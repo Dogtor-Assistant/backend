@@ -284,6 +284,21 @@ const Mutation: MutationResolvers = {
         const end = new Date();
         end.setHours(23, 59, 59, 999);
 
+        const allPreviousOfCurrentAppointment = await Appointment.find({
+            'doctorRef.doctorId': appointment.doctorRef.doctorId,
+            expectedTime: { $gte: start, $lt: end },
+            'patientRef.patientId': { $ne: appointment.patientRef.patientId },
+        });
+
+        const differenceInMinutes = allPreviousOfCurrentAppointment.length > 0 ?
+            allPreviousOfCurrentAppointment.map(app => {
+                const diff = Math.abs(app.actualTime ? app.actualTime.valueOf() - app.expectedTime.valueOf() : 0);
+                const minutes = Math.floor(diff / 1000 / 60);
+                return minutes;
+            }) : [0] ;
+
+        const avgWaitingTime = differenceInMinutes.reduce((n, a) => n+a) / differenceInMinutes.length;
+
         const previousOfCurrentAppointment = await Appointment.find({
             'doctorRef.doctorId': appointment.doctorRef.doctorId,
             expectedTime: { $gte: start, $lt: end },
@@ -300,7 +315,7 @@ const Mutation: MutationResolvers = {
                 app.actualDuration = minutes;
                 await app.save();
                 console.log('saved11');
-                pubsub.publish('appointmentFinished', { appointmentFinished: appointment });
+                pubsub.publish('appointmentFinished', { appointmentFinished: avgWaitingTime });
                 return true;
             }
             return false;
@@ -324,7 +339,7 @@ const Mutation: MutationResolvers = {
             app.actualDuration = actualDurationToBeSet;
             await app.save();
             console.log('saved');
-            pubsub.publish('appointmentFinished', { appointmentFinished: appointment });
+            pubsub.publish('appointmentFinished', { appointmentFinished: avgWaitingTime });
             return true;
         }
         return false;

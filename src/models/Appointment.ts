@@ -4,7 +4,6 @@ import type { IService } from './Service';
 import type { Document, Model } from 'mongoose';
 
 import { model, Schema } from 'mongoose';
-import { pubsub } from 'resolvers/subscription';
 
 const MiniPatientSchema: Schema = new Schema({
     patientId: {

@@ -425,7 +425,7 @@ export const typeDefs = gql`
     }
     
     type Subscription {
-        appointmentFinished(appId: ID!): Appointment!
+        appointmentFinished: Int!
     }
     
     schema {

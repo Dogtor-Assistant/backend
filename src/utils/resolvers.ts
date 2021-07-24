@@ -458,12 +458,7 @@ export type ServicesConnection = {
 };
 
 export type Subscription = {
-  readonly appointmentFinished: Appointment;
-};
-
-
-export type SubscriptionAppointmentFinishedArgs = {
-  appId: Scalars['ID'];
+  readonly appointmentFinished: Scalars['Int'];
 };
 
 
@@ -1004,7 +999,7 @@ export type ServicesConnectionResolvers<ContextType = Context, ParentType extend
 }>;
 
 export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  appointmentFinished: SubscriptionResolver<ResolversTypes['Appointment'], "appointmentFinished", ParentType, ContextType, RequireFields<SubscriptionAppointmentFinishedArgs, 'appId'>>;
+  appointmentFinished: SubscriptionResolver<ResolversTypes['Int'], "appointmentFinished", ParentType, ContextType>;
 }>;
 
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
