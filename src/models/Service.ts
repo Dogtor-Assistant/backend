@@ -43,7 +43,7 @@ export interface IService extends Document<string> {
     publicCovered: boolean,
     privateCovered: boolean,
     timesSelected?: number,
-    doctorRef: IDoctor['_id']
+    doctorRef: IDoctor['_id'],
 }
 
 const Service: Model<IService> = model('Service', ServiceSchema);

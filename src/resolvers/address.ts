@@ -4,6 +4,13 @@ const Address: AddressResolvers = {
     city({ city }) {
         return city;
     },
+    coordinates({ location }) {
+        const [longitude, latitude] = location.coordinates;
+        return {
+            latitude,
+            longitude,
+        };
+    },
     streetName({ streetName }) {
         return streetName;
     },

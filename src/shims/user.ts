@@ -4,7 +4,7 @@ import UserModel from 'models/User';
 import { ObjectID } from 'mongodb';
 import { buildId } from 'utils/ids';
 
-type UserInput = IUser | string | ObjectID
+export type UserInput = IUser | string | ObjectID
 
 function getId(input: UserInput): string {
     if (typeof input === 'string') {

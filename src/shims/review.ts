@@ -5,7 +5,7 @@ import ReviewModel from 'models/Review';
 import { ObjectID } from 'mongodb';
 import { buildId } from 'utils/ids';
 
-type ReviewInput = IReview | IMiniReview | string | ObjectID
+export type ReviewInput = IReview | IMiniReview | string | ObjectID
 
 function getId(input: ReviewInput): string {
     if (typeof input === 'string') {

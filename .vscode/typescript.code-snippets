@@ -39,7 +39,7 @@
             "import { ObjectID } from 'mongodb';",
             "import { buildId } from 'utils/ids';",
             "",
-            "type ${TM_FILENAME_BASE/.*/${0:/capitalize}/}Input = I${TM_FILENAME_BASE/.*/${0:/capitalize}/} | string | ObjectID",
+            "export type ${TM_FILENAME_BASE/.*/${0:/capitalize}/}Input = I${TM_FILENAME_BASE/.*/${0:/capitalize}/} | string | ObjectID",
             "",
             "function getId(input: ${TM_FILENAME_BASE/.*/${0:/capitalize}/}Input): string {",
             "    if (typeof input === 'string') {",

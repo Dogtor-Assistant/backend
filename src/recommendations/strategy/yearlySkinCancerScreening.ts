@@ -6,7 +6,7 @@ const strategy: RecommendationStrategy = {
     recommendation: {
         kind: 'periodic',
         periodInDays: 365,
-        service: 'cancer.skin.screening',
+        service: 'Skin Cancer Screening',
     },
     rule: [
         showIfAgeAbove(35),

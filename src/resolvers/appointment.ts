@@ -33,6 +33,9 @@ const Appointment: AppointmentResolvers = {
     insurance({ insurance }) {
         return insurance;
     },
+    isDone({ actualTime }) {
+        return actualTime != null;
+    },
     notes({ patientNotes }) {
         return patientNotes ?? null;
     },

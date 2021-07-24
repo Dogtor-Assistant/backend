@@ -1,12 +1,29 @@
 import type { DoctorResolvers } from '@resolvers';
 
+import Appointment from 'models/Appointment';
+import ReviewModel from 'models/Review';
+import ServiceModel from 'models/Service';
+import { reviewsConnection } from 'pagination';
 import { Review } from 'shims/review';
 import { Service } from 'shims/service';
+import { deconstructId } from 'utils/ids';
 
 const Doctor: DoctorResolvers = {
     async address(doctor) {
         const { address } = await doctor.full();
         return address;
+    },
+
+    async appointments(doctor) {
+        const id = doctor.id();
+        const deconstructed = deconstructId(id);
+        const doctorId = deconstructed?.[1];
+
+        const appointments = await Appointment.find(
+            { 'doctorRef.doctorId': doctorId },
+        );
+        
+        return appointments;
     },
 
     async firstname(doctor) {
@@ -39,6 +56,28 @@ const Doctor: DoctorResolvers = {
         return starRating ?? 0;
     },
 
+    reviews(doctor, args) {
+        const id = doctor.id();
+        const deconstructed = deconstructId(id);
+        if (deconstructed == null) {
+            return reviewsConnection([], args);
+        }
+        const doctorId = deconstructed[1];
+        const query = ReviewModel.find({ 'doctorRef' : doctorId });
+        return reviewsConnection(query, args);
+    },
+
+    async services(doctor) {
+        const id = doctor.id();
+        const deconstructed = deconstructId(id);
+        const doctorId = deconstructed?.[1];
+
+        const services = await ServiceModel.find(
+            { doctorRef: doctorId },
+        );
+        return services?.map(service => new Service(service)) ?? [];
+    },
+
     async specialities(doctor) {
         const { specialities } = await doctor.full();
         return specialities;
@@ -48,12 +87,10 @@ const Doctor: DoctorResolvers = {
         const { topReviews } = await doctor.full();
         return topReviews?.map(review => new Review(review)) ?? [];
     },
-
     async topServices(doctor) {
         const { topServices } = await doctor.full();
         return topServices?.map(service => new Service(service)) ?? [];
     },
-
     async webpage(doctor) {
         const { webpage } = await doctor.full();
         return webpage ?? null;

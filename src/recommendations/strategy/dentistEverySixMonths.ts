@@ -3,7 +3,7 @@ import type { RecommendationStrategy } from 'recommendations/types';
 const strategy: RecommendationStrategy = {
     'kind': 'periodic',
     'periodInDays': 182,
-    'service': 'dentist.checkup',
+    'service': 'Teeth Cleaning',
 };
 
 export default strategy;
