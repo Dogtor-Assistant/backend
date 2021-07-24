@@ -6,8 +6,11 @@ import { context } from 'context';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import Patient from 'models/Patient';
 import User from 'models/User';
 import mongoose from 'mongoose';
+import cron from 'node-cron';
+import RecommendationService from 'recommendations';
 import resolvers from 'resolvers';
 import { typeDefs } from 'typeDefs';
 
@@ -78,3 +81,13 @@ mongoose.connect(dbURI, { useCreateIndex: true, useNewUrlParser: true, useUnifie
         });
     }
 });
+
+cron.schedule(
+    '0 0 * * *',
+    async () => {
+        console.log('Writing new recommendations as needed (cron job)');
+        for await (const patient of Patient.find()) {
+            await new RecommendationService().storeRemainingRecommendations(patient);
+        }
+    },
+);

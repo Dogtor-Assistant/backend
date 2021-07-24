@@ -11,6 +11,7 @@ import Patient from 'models/Patient';
 import Service from 'models/Service';
 import User from 'models/User';
 import mongoose from 'mongoose';
+import RecommendationService from 'recommendations';
 import { Doctor as DoctorShim } from 'shims/doctor';
 import { Patient as PatientShim } from 'shims/patient';
 import { patient as patientShim } from 'shims/patient';
@@ -20,7 +21,6 @@ import { Insurance } from 'utils/resolvers';
 
 const Mutation: MutationResolvers = {
     async assignFollowup(_, { followupInput }) {
-
         const deconstructedDoctorId = deconstructId(followupInput.doctorRef);
         const doctorId = deconstructedDoctorId?.[1];
 
@@ -196,6 +196,8 @@ const Mutation: MutationResolvers = {
         });
         await patientIn.save();
 
+        await new RecommendationService().storeRemainingRecommendations(patientIn);
+
         // Insert user document
         const salt = await bcrypt.genSalt();
         const userIn = new User({
@@ -227,6 +229,10 @@ const Mutation: MutationResolvers = {
         await Appointment.deleteOne({ _id: appointment._id });
 
         const valuePatient = await Patient.findById(appointment.patientRef.patientId);
+        if (valuePatient != null) {
+            await new RecommendationService().storeRemainingRecommendations(valuePatient);
+        }
+
         const patient = valuePatient && new PatientShim(valuePatient);
         const patientUser = await patient?.user();
 
@@ -244,83 +250,6 @@ const Mutation: MutationResolvers = {
         sendGridMail.send(msg);
 
         return true;
-
-    },
-    async generateCheckups(_, { input }) {
-        const deconstructedPatientId = deconstructId(input.id);
-        const patientId = deconstructedPatientId?.[1];
-
-        const patient = await Patient.findById(patientId);
-        
-        if (patient != null) {
-            const { _id, address, insurance } = patient;
-            const recommendations = input.recommendations;
-
-            const user = await User.findOne({ patientRef: _id });
-            if (user == null) return [];
-            const { firstName, lastName } = user;
-
-            const oldCheckups = await Checkup.find({ 'patientRef.patientId': _id });
-
-            const newRec = recommendations.filter(rec => {
-
-                //One time recommendation
-                if (rec.kind === 'single') {
-                    let makeRecommendation = true;
-                    oldCheckups.forEach(oldCheckup => {
-                        if (oldCheckup.services[0] === rec.service.toString()) {
-                            makeRecommendation = false;
-                        }
-                    });
-                    return makeRecommendation;
-                }
-
-                //Periodic recommendation
-                if (rec.kind === 'periodic') {
-                    let makeRecommendation = true;
-                    oldCheckups.forEach(oldCheckup => {
-                        const periodInDays = rec.periodInDays == null ? 0 : rec.periodInDays;
-                        const lim = new Date();
-                        lim.setDate(oldCheckup.suggestedDate.getDate() + periodInDays - 14);
-                        
-                        if (oldCheckup.services[0] === rec.service.toString() &&
-                            new Date() < lim) {
-                            makeRecommendation = false;
-                        }
-                            
-                    });
-                    return makeRecommendation;
-                }
-            });
-
-            // Insert recommendations as checkups in DB
-            const suggestedDate = new Date();
-            suggestedDate.setDate(suggestedDate.getDate() + 14);
-
-            const newCheckups = newRec.map(rec => {
-                return new Checkup({
-                    'isRead': false,
-                    'patientRef': {
-                        'patientAddress': address,
-                        'patientId': _id,
-                        'patientInsurance': insurance,
-                        'patientName': `${firstName} ${lastName}`,
-                    },
-                    'services' : [rec.service.toString()],
-                    'suggestedDate' : suggestedDate,
-                });
-            });
-
-            const insertedCheckups = await Checkup.insertMany(newCheckups);
-
-            if (insertedCheckups.length > 0) {
-                // TODO: send email notification
-                return insertedCheckups;
-            }
-            return [];
-        }
-        
-        return [];
     },
     async makeAppointmentAsDone(_, { id }) {
 
@@ -337,6 +266,11 @@ const Mutation: MutationResolvers = {
 
         const end = new Date();
         end.setHours(23, 59, 59, 999);
+
+        const patient = await Patient.findById(appointment.patientRef.patientId);
+        if (patient != null) {
+            await new RecommendationService().storeRemainingRecommendations(patient);
+        }
 
         const previousOfCurrentAppointment = await Appointment.find({
             'doctorRef.doctorId': appointment.doctorRef.doctorId,
@@ -415,6 +349,7 @@ const Mutation: MutationResolvers = {
             patientUpd.insurance = input.insurance === Insurance.Public ? InsuranceM.PUBLIC : InsuranceM. PRIVATE;
 
             await patientUpd.save();
+            await new RecommendationService().storeRemainingRecommendations(patientUpd);
             if (patientUpd._id !== undefined) return patientShim(patientUpd._id);
         }
 
