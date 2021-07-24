@@ -40,7 +40,8 @@
     "jsonwebtoken": "^8.5.1",
     "keyv": "^3.1.0",
     "mongoose": "^5.12.7",
-    "natural": "^5.0.3"
+    "natural": "^5.0.3",
+    "react": "^17.0.2"
   },
   "devDependencies": {
     "@graphql-codegen/add": "^2.0.2",
