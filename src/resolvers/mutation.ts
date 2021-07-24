@@ -16,7 +16,7 @@ import { Doctor as DoctorShim } from 'shims/doctor';
 import { Patient as PatientShim } from 'shims/patient';
 import { patient as patientShim } from 'shims/patient';
 import { user as userShim } from 'shims/user';
-import { deconstructId } from 'utils/ids';
+import { buildId, deconstructId } from 'utils/ids';
 import { Insurance } from 'utils/resolvers';
 
 const Mutation: MutationResolvers = {
@@ -340,10 +340,14 @@ const Mutation: MutationResolvers = {
 
         const allPreviousOfCurrentAppointment = await Appointment.find({
             'doctorRef.doctorId': appointment.doctorRef.doctorId,
-            expectedTime: { $gte: start, $lt: end },
+            expectedTime: { $gte: start, $lt: new Date() },
             'patientRef.patientId': { $ne: appointment.patientRef.patientId },
         });
-
+        const allAfterOfCurrentAppointment = await Appointment.find({
+            'doctorRef.doctorId': appointment.doctorRef.doctorId,
+            expectedTime: { $gt: appointment.expectedTime, $lt: end },
+            'patientRef.patientId': { $ne: appointment.patientRef.patientId },
+        });
         const differenceInMinutes = allPreviousOfCurrentAppointment.length > 0 ?
             allPreviousOfCurrentAppointment.map(app => {
                 const diff = Math.abs(app.actualTime ? app.actualTime.valueOf() - app.expectedTime.valueOf() : 0);
@@ -358,6 +362,20 @@ const Mutation: MutationResolvers = {
             expectedTime: { $gte: start, $lt: end },
             'patientRef.patientId': { $ne: appointment.patientRef.patientId },
         }).sort({ _id: -1 }).limit(1);
+
+        let appointmentEnd = new Date();
+
+        for (const app of allAfterOfCurrentAppointment) {
+            const time = new Date(Math.max(app.expectedTime.getTime(), appointmentEnd.getTime()));
+            app.estimatedTime = time;
+            appointmentEnd = new Date(time.getTime()+avgWaitingTime*60*1000);
+            await app.save();
+            if(app._id != null) {
+                pubsub.publish(`estimatedWaitingTime:${buildId('Appointment', app._id)}`,
+                    { estimatedWaitingTime: app });
+            }
+
+        }
 
         if(previousOfCurrentAppointment.length < 1 || previousOfCurrentAppointment === undefined) {
             const diff = Math.abs(new Date().valueOf() - appointment.expectedTime.valueOf());
@@ -391,9 +409,9 @@ const Mutation: MutationResolvers = {
             app.actualTime = actualTimeToBeSet;
             app.actualDuration = actualDurationToBeSet;
             await app.save();
-            pubsub.publish('appointmentFinished', { appointmentFinished: avgWaitingTime });
             return true;
         }
+
         return false;
 
     },

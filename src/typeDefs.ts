@@ -75,6 +75,7 @@ export const typeDefs = gql`
         notes: String
         sharedData: Boolean!
         selectedServices: [Service!]!
+        estimatedStart: DateTime!
         isDone: Boolean!
     }
 
@@ -437,7 +438,7 @@ export const typeDefs = gql`
     }
     
     type Subscription {
-        appointmentFinished: Int!
+        estimatedWaitingTime(id:ID!): Appointment!
     }
     
     schema {

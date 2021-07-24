@@ -18,6 +18,9 @@ const Appointment: AppointmentResolvers = {
     doctor({ doctorRef }) {
         return new Doctor(doctorRef);
     },
+    estimatedStart({ estimatedTime }) {
+        return estimatedTime;
+    },
     expectedTime({ expectedDuration, expectedTime }) {
         return {
             duration: expectedDuration,

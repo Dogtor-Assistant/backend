@@ -5,9 +5,10 @@ import { PubSub } from 'graphql-subscriptions';
 export const pubsub = new PubSub();
 
 const Subscription: SubscriptionResolvers = {
-    appointmentFinished: {
-        subscribe: () => pubsub.asyncIterator('appointmentFinished'),
+    estimatedWaitingTime: {
+        subscribe: (_, { id }) => pubsub.asyncIterator(`estimatedWaitingTime:${id}`),
     },
+
 };
 
 export default Subscription;

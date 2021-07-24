@@ -69,22 +69,13 @@ export type Appointment = Node & {
   readonly notes: Maybe<Scalars['String']>;
   readonly sharedData: Scalars['Boolean'];
   readonly selectedServices: ReadonlyArray<Service>;
+  readonly estimatedStart: Scalars['DateTime'];
   readonly isDone: Scalars['Boolean'];
 };
 
 export type AppointmentEdge = {
   readonly cursor: Scalars['String'];
   readonly node: Maybe<Appointment>;
-};
-
-export type AppointmentTime = {
-  readonly start: Maybe<Scalars['DateTime']>;
-  readonly duration: Maybe<Scalars['Int']>;
-};
-
-export type AppointmentsConnection = {
-  readonly pageInfo: PageInfo;
-  readonly edges: Maybe<ReadonlyArray<Maybe<AppointmentEdge>>>;
 };
 
 export type AppointmentInput = {
@@ -97,6 +88,15 @@ export type AppointmentInput = {
   readonly shareData: Scalars['Boolean'];
 };
 
+export type AppointmentTime = {
+  readonly start: Maybe<Scalars['DateTime']>;
+  readonly duration: Maybe<Scalars['Int']>;
+};
+
+export type AppointmentsConnection = {
+  readonly pageInfo: PageInfo;
+  readonly edges: Maybe<ReadonlyArray<Maybe<AppointmentEdge>>>;
+};
 
 export type Checkup = Node & {
   readonly id: Scalars['ID'];
@@ -203,11 +203,6 @@ export type MutationCreateUserDoctorArgs = {
 };
 
 
-export type MutationCreateAppointmentArgs = {
-  input: AppointmentInput;
-};
-
-
 export type MutationDeleteAppointmentByIdArgs = {
   id: Scalars['ID'];
 };
@@ -225,6 +220,11 @@ export type MutationAssignFollowupArgs = {
 
 export type MutationCreateUserPatientArgs = {
   input: UserPatientInput;
+};
+
+
+export type MutationCreateAppointmentArgs = {
+  input: AppointmentInput;
 };
 
 
@@ -475,7 +475,12 @@ export type ServicesConnection = {
 };
 
 export type Subscription = {
-  readonly appointmentFinished: Scalars['Int'];
+  readonly estimatedWaitingTime: Appointment;
+};
+
+
+export type SubscriptionEstimatedWaitingTimeArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -767,6 +772,7 @@ export type AppointmentResolvers<ContextType = Context, ParentType extends Resol
   notes: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sharedData: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   selectedServices: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
+  estimatedStart: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   isDone: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1019,7 +1025,7 @@ export type ServicesConnectionResolvers<ContextType = Context, ParentType extend
 }>;
 
 export type SubscriptionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  appointmentFinished: SubscriptionResolver<ResolversTypes['Int'], "appointmentFinished", ParentType, ContextType>;
+  estimatedWaitingTime: SubscriptionResolver<ResolversTypes['Appointment'], "estimatedWaitingTime", ParentType, ContextType, RequireFields<SubscriptionEstimatedWaitingTimeArgs, 'id'>>;
 }>;
 
 export interface UrlScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['URL'], any> {
