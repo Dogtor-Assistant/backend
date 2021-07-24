@@ -309,8 +309,6 @@ export const typeDefs = gql`
         streetNumber: Int!
         city: String!
         zipCode: Int!
-        lat: Float!
-        lon: Float!
     }
 
     input OfferedSlotInput {
