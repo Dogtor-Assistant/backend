@@ -156,7 +156,7 @@ export type Followup = Node & {
   readonly id: Scalars['ID'];
   readonly isRead: Scalars['Boolean'];
   readonly doctor: Doctor;
-  readonly services: ReadonlyArray<Service>;
+  readonly services: ReadonlyArray<MiniService>;
   readonly suggestedDate: Scalars['DateTime'];
 };
 
@@ -181,6 +181,11 @@ export enum Insurance {
   Private = 'Private'
 }
 
+
+export type MiniService = {
+  readonly serviceId: Scalars['ID'];
+  readonly serviceName: Scalars['String'];
+};
 
 export type Mutation = {
   readonly createUserDoctor: Maybe<User>;
@@ -292,6 +297,7 @@ export type Patient = Node & {
   readonly address: Address;
   readonly checkupRecommendations: ReadonlyArray<Recommendation>;
   readonly unreadCheckups: ReadonlyArray<Checkup>;
+  readonly unreadFollowups: ReadonlyArray<Followup>;
 };
 
 export type PatientEdge = {
@@ -645,6 +651,7 @@ export type ResolversTypes = ResolversObject<{
   Gender: ResolverTypeWrapper<GenderModel>;
   Insurance: ResolverTypeWrapper<InsuranceModel>;
   Length: ResolverTypeWrapper<Scalars['Length']>;
+  MiniService: ResolverTypeWrapper<MiniService>;
   Mutation: ResolverTypeWrapper<{}>;
   NearbyLocation: ResolverTypeWrapper<NearbyLocation>;
   NearbyLocationInput: NearbyLocationInput;
@@ -704,6 +711,7 @@ export type ResolversParentTypes = ResolversObject<{
   Followup: IFollowupModel;
   FollowupInput: FollowupInput;
   Length: Scalars['Length'];
+  MiniService: MiniService;
   Mutation: {};
   NearbyLocation: NearbyLocation;
   NearbyLocationInput: NearbyLocationInput;
@@ -831,7 +839,7 @@ export type FollowupResolvers<ContextType = Context, ParentType extends Resolver
   id: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   isRead: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   doctor: Resolver<ResolversTypes['Doctor'], ParentType, ContextType>;
-  services: Resolver<ReadonlyArray<ResolversTypes['Service']>, ParentType, ContextType>;
+  services: Resolver<ReadonlyArray<ResolversTypes['MiniService']>, ParentType, ContextType>;
   suggestedDate: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -843,6 +851,12 @@ export type InsuranceResolvers = EnumResolverSignature<{ Public: any, Private: a
 export interface LengthScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Length'], any> {
   name: 'Length';
 }
+
+export type MiniServiceResolvers<ContextType = Context, ParentType extends ResolversParentTypes['MiniService'] = ResolversParentTypes['MiniService']> = ResolversObject<{
+  serviceId: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  serviceName: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createUserDoctor: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserDoctorArgs, 'input'>>;
@@ -900,6 +914,7 @@ export type PatientResolvers<ContextType = Context, ParentType extends Resolvers
   address: Resolver<ResolversTypes['Address'], ParentType, ContextType>;
   checkupRecommendations: Resolver<ReadonlyArray<ResolversTypes['Recommendation']>, ParentType, ContextType>;
   unreadCheckups: Resolver<ReadonlyArray<ResolversTypes['Checkup']>, ParentType, ContextType>;
+  unreadFollowups: Resolver<ReadonlyArray<ResolversTypes['Followup']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1057,6 +1072,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   Gender: GenderResolvers;
   Insurance: InsuranceResolvers;
   Length: GraphQLScalarType;
+  MiniService: MiniServiceResolvers<ContextType>;
   Mutation: MutationResolvers<ContextType>;
   NearbyLocation: NearbyLocationResolvers<ContextType>;
   Node: NodeResolvers<ContextType>;

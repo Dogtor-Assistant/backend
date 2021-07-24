@@ -107,12 +107,17 @@ export const typeDefs = gql`
         services: [Service!]!
     }
 
+    type MiniService {
+        serviceId: ID!
+        serviceName: String!
+    }
+
     type Followup implements Node {
         id: ID!
         isRead: Boolean!
 
         doctor: Doctor!
-        services: [Service!]!
+        services: [MiniService!]!
         suggestedDate: DateTime!
     }
 
@@ -152,6 +157,7 @@ export const typeDefs = gql`
 
         checkupRecommendations: [Recommendation!]!
         unreadCheckups: [Checkup!]!
+        unreadFollowups: [Followup!]!
     }
 
     type Review implements Node {

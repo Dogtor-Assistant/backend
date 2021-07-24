@@ -27,6 +27,7 @@ import Followup from './followup';
 import Gender from './gender';
 import Insurance from './insurance';
 import Length from './length';
+import MiniService from './miniService';
 import Mutation from './mutation';
 import NearbyLocation from './nearbyLocation';
 import Node from './node';
@@ -62,6 +63,7 @@ const resolvers: Resolvers = {
     Gender,
     Insurance,
     Length,
+    MiniService,
     Mutation,
     NearbyLocation,
     Node,
