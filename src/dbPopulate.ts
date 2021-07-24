@@ -6,7 +6,6 @@ import type { IPatient } from './models/Patient';
 import type { IReview } from './models/Review';
 import type { IService } from './models/Service';
 import type { IUser } from './models/User';
-import type { Document, Model } from 'mongoose';
 
 import Appointment from './models/Appointment';
 import Checkup from './models/Checkup';
@@ -70,8 +69,8 @@ async function createPatients(): Promise<IPatient[]> {
     const patientsArray: Array<IPatient> = [];
     for (i = 0; i < 100; i++) {
         const randomIndex = Math.floor(Math.random() * 6);
-        const startDate = new Date(1980, 1, 1);
-        const endDate = new Date(1980, 1, 1);
+        const startDate = new Date(1980, 1, 1, 2);
+        const endDate = new Date(1980, 1, 1, 2);
         const slicer = Math.floor(Math.random() * 7) + 2;
         const num = Math.floor(Math.random() * 90000000) + 10000000;
 
@@ -143,8 +142,6 @@ async function createDoctors(names: any[]): Promise<IDoctor[]> {
             phoneNumber: `170${num.toString()}`,
             specialities: specialties[Math.floor(Math.random() * specialties.length)],
             starRating: 0,
-            topReviews: [],
-            topServices: [],
         }));
     }
     return await Doctor.insertMany(doctorsArray);
@@ -195,14 +192,27 @@ async function createReviews(patientsId: any[], doctorsId: any[], names: any[]):
     return await Review.insertMany(reviewsArray);
 }
 
-async function createServices(doctorsId: any[]): Promise<IService[]> {
+async function createServices(doctorsId: any[], doctorSpec: string[]): Promise<IService[]> {
     let i = 0;
     let j =0;
 
     const durations = [15, 20, 25, 30, 35, 40, 45, 50, 60, 90];
 
+    const dict: { [id: string]: string[]; } = {
+        'Dentist': ['Teeth Cleaning', 'Implant placement', 'Periodontal therapy'],
+        'Dermatologist': ['Laser treatment', 'Treatment of cystic acne', 'Phototherapy'],
+        'General Practicioner': ['Routine Exam', 'Chronic ilness care', 'Write prescritpion'],
+        'Neurologist': ['Electroencephalogram', 'Tensilon test', 'Lumbar puncture'],
+        'Opthalmologist': ['Eye exam', 'Cataracts treatment', 'Retinal Tomography'],
+        'Pathologist': ['Medication prescription', 'Annual screening', 'Complete blood count'],
+        'Pediatrician': ['Immunization', 'Baby physical exam', 'School physicals'],
+        'Psychiatrist': ['Mental health check-up', 'Phychological test', 'Brain stimulation therapy'],
+        'Surgeon': ['Chest operation', 'Knee operation', 'Spine operation'],
+        'Urologist': ['Prostate cancer check', 'Cystoscopy', 'Enlarged prostate treatment'],
+    };
     const servicesArray: Array<IService> = [];
     for (i = 0; i < 40; i++) {
+
         for (j = 0; j < 3; j++) {
             servicesArray.push(new Service({
                 description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus ac lorem sed ligula 
@@ -211,7 +221,7 @@ async function createServices(doctorsId: any[]): Promise<IService[]> {
                 hendrerit rutrum neque. Sed ac.`,
                 doctorRef: mongoose.Types.ObjectId(doctorsId[i].toString()),
                 estimatedDuration: durations[Math.floor(Math.random() * durations.length)],
-                name: `Service-${j+1}`,
+                name: dict[doctorSpec[i]][j],
                 privateCovered: j < 2 ? true : false,
                 publicCovered: j > 0 ? true : false,
                 timesSelected: Math.floor(Math.random() * 15),
@@ -233,7 +243,7 @@ async function createAppointments(patientsId: any[], servicesInfo: any[], names:
             const hours = Math.floor(Math.random() * 8) + 10;
             const minutes = Math.floor(Math.random() * 60);
             const dur = servicesInfo[i].dur + Math.floor(Math.random() * 20);
-            const expTime = new Date(2021, month, day, hours, minutes);
+            const expTime = new Date(2021, month, day, hours+2, minutes);
             
             const doc = await User.findOne({ 'doctorRef': servicesInfo[i].docRef });
             if (!doc) continue;
@@ -274,7 +284,7 @@ async function createCheckups(patientsId: any[], patientsInfo: any[], names: any
     for (i = 0; i < 50; i++) {
         const month = Math.floor(Math.random() * 6) + 6;
         const day = Math.floor(Math.random() * 28) + 1;
-        const date = new Date(2021, month, day);
+        const date = new Date(2021, month, day, 2);
         const patInd = Math.floor(Math.random() * patientsId.length);
         const patId = patientsId[patInd];
         const patAddr = patientsInfo[patInd].address;
@@ -303,7 +313,7 @@ async function createFollowups(patientsId: any[], doctorsId: any[], patientsInfo
     for (i = 0; i < 50; i++) {
         const month = Math.floor(Math.random() * 6) + 6;
         const day = Math.floor(Math.random() * 28) + 1;
-        const date = new Date(2021, month, day);
+        const date = new Date(2021, month, day, 2);
         const patInd = Math.floor(Math.random() * patientsId.length);
         const patId = patientsId[patInd];
         const patAddr = patientsInfo[patInd].address;
@@ -353,7 +363,7 @@ async function fixTopServices(doctorsId: any[]) {
 
         });
         await Doctor.updateOne({ '_id': doctorsId[i]._id },
-            { 'topServices': topServicesR.slice(10) as IMiniService[] });
+            { $push: { 'topServices': { $each: topServicesR }}});
     }
 }
 
@@ -371,7 +381,7 @@ async function fixTopReviews(doctorsId: any[]) {
 
         });
         await Doctor.updateOne({ '_id': doctorsId[i]._id },
-            { 'topReviews': topReviewsR.slice(10) as IMiniReview[] });
+            { $push: { 'topReviews': { $each: topReviewsR.slice(0, 10) }}});
     }
 }
 
@@ -420,6 +430,7 @@ export async function populateDB() {
     // Insert Doctors
     const doctors = await createDoctors(names);
     const doctorsId = doctors.map(function(doctor) { return doctor._id; });
+    const doctorSpec = doctors.map(function(doctor) { return doctor.specialities[0]; });
     console.log('Insert Doctors OK');
 
     // Insert Users
@@ -431,7 +442,7 @@ export async function populateDB() {
     console.log('Insert Reviews OK');
 
     // Insert Services
-    const services = await createServices(doctorsId);
+    const services = await createServices(doctorsId, doctorSpec);
     const servicesInfo = services.map(function(service) {
         return {
             '_id': service._id,
