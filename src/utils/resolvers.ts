@@ -197,6 +197,7 @@ export type Mutation = {
   readonly updateUserPatientProfile: Maybe<Patient>;
   readonly generateCheckups: ReadonlyArray<Checkup>;
   readonly markCheckupAsRead: Scalars['Boolean'];
+  readonly markFollowupAsRead: Scalars['Boolean'];
 };
 
 
@@ -241,6 +242,11 @@ export type MutationGenerateCheckupsArgs = {
 
 
 export type MutationMarkCheckupAsReadArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationMarkFollowupAsReadArgs = {
   id: Scalars['ID'];
 };
 
@@ -868,6 +874,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   updateUserPatientProfile: Resolver<Maybe<ResolversTypes['Patient']>, ParentType, ContextType, RequireFields<MutationUpdateUserPatientProfileArgs, 'input'>>;
   generateCheckups: Resolver<ReadonlyArray<ResolversTypes['Checkup']>, ParentType, ContextType, RequireFields<MutationGenerateCheckupsArgs, 'input'>>;
   markCheckupAsRead: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMarkCheckupAsReadArgs, 'id'>>;
+  markFollowupAsRead: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMarkFollowupAsReadArgs, 'id'>>;
 }>;
 
 export type NearbyLocationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['NearbyLocation'] = ResolversParentTypes['NearbyLocation']> = ResolversObject<{
