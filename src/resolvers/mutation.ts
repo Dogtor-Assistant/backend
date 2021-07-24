@@ -11,6 +11,7 @@ import Patient from 'models/Patient';
 import Service from 'models/Service';
 import User from 'models/User';
 import mongoose from 'mongoose';
+import RecommendationService from 'recommendations';
 import { Doctor as DoctorShim } from 'shims/doctor';
 import { Patient as PatientShim } from 'shims/patient';
 import { patient as patientShim } from 'shims/patient';
@@ -20,7 +21,6 @@ import { Insurance } from 'utils/resolvers';
 
 const Mutation: MutationResolvers = {
     async assignFollowup(_, { followupInput }) {
-
         const deconstructedDoctorId = deconstructId(followupInput.doctorRef);
         const doctorId = deconstructedDoctorId?.[1];
 
@@ -196,6 +196,8 @@ const Mutation: MutationResolvers = {
         });
         await patientIn.save();
 
+        await new RecommendationService().storeRemainingRecommendations(patientIn);
+
         // Insert user document
         const salt = await bcrypt.genSalt();
         const userIn = new User({
@@ -227,6 +229,10 @@ const Mutation: MutationResolvers = {
         await Appointment.deleteOne({ _id: appointment._id });
 
         const valuePatient = await Patient.findById(appointment.patientRef.patientId);
+        if (valuePatient != null) {
+            await new RecommendationService().storeRemainingRecommendations(valuePatient);
+        }
+
         const patient = valuePatient && new PatientShim(valuePatient);
         const patientUser = await patient?.user();
 
@@ -260,6 +266,11 @@ const Mutation: MutationResolvers = {
 
         const end = new Date();
         end.setHours(23, 59, 59, 999);
+
+        const patient = await Patient.findById(appointment.patientRef.patientId);
+        if (patient != null) {
+            await new RecommendationService().storeRemainingRecommendations(patient);
+        }
 
         const previousOfCurrentAppointment = await Appointment.find({
             'doctorRef.doctorId': appointment.doctorRef.doctorId,
@@ -338,6 +349,7 @@ const Mutation: MutationResolvers = {
             patientUpd.insurance = input.insurance === Insurance.Public ? InsuranceM.PUBLIC : InsuranceM. PRIVATE;
 
             await patientUpd.save();
+            await new RecommendationService().storeRemainingRecommendations(patientUpd);
             if (patientUpd._id !== undefined) return patientShim(patientUpd._id);
         }
 
