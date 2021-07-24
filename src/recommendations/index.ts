@@ -199,8 +199,6 @@ class RecommendationService {
             });
         });
 
-        console.log(newCheckups);
-
         // TODO: send email notification
         await Checkup.insertMany(newCheckups);
     }
