@@ -368,7 +368,6 @@ const Mutation: MutationResolvers = {
                 app.actualTime = appointment.expectedTime;
                 app.actualDuration = minutes;
                 await app.save();
-                console.log('saved11');
                 pubsub.publish('appointmentFinished', { appointmentFinished: avgWaitingTime });
                 return true;
             }
@@ -392,7 +391,6 @@ const Mutation: MutationResolvers = {
             app.actualTime = actualTimeToBeSet;
             app.actualDuration = actualDurationToBeSet;
             await app.save();
-            console.log('saved');
             pubsub.publish('appointmentFinished', { appointmentFinished: avgWaitingTime });
             return true;
         }
