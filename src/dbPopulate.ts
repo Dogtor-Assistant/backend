@@ -198,7 +198,7 @@ async function createServices(doctorsId: any[], doctorSpec: string[]): Promise<I
 
     const durations = [15, 20, 25, 30, 35, 40, 45, 50, 60, 90];
 
-    const dict: { [id: string]: string[]; } = {
+    const dict: { [id: string]: string[] } = {
         'Dentist': ['Teeth Cleaning', 'Implant placement', 'Periodontal therapy'],
         'Dermatologist': ['Laser treatment', 'Treatment of cystic acne', 'Phototherapy'],
         'General Practicioner': ['Routine Exam', 'Chronic ilness care', 'Write prescritpion'],
