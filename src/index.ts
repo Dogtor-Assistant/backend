@@ -50,17 +50,6 @@ app.get('/populateDB', async function(_, res) {
         res.status(400).send('An error occured!');
     }
 });
-app.get('/user/:id', async function(req, res) {
-    const id = req.params.id;
-    const user = await User.findOne({ 'firstName': `Dogtor${id}` });
-
-    if (!user) {
-        res.status(400).send("User doesn't exist");
-    }
-    else {
-        res.status(200).json(user);
-    }
-});
 
 const apollo = new ApolloServer(
     {
