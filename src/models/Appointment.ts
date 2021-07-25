@@ -78,10 +78,6 @@ const AppointmentSchema: Schema = new Schema({
         type: MiniDoctorSchema,
     },
     estimatedTime: {
-        default: () => {
-            const appointment = this as unknown as IAppointment;
-            return appointment.expectedTime;
-        },
         required: false,
         type: Date,
     },
@@ -126,7 +122,7 @@ export interface IAppointment extends Document<string> {
     __typename: 'Appointment',
     patientRef: IMiniPatient,
     doctorRef: IMiniDoctor,
-    estimatedTime: Date,
+    estimatedTime?: Date,
     expectedTime: Date,
     actualTime?: Date,
     expectedDuration: number,

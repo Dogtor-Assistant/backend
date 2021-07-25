@@ -58,8 +58,8 @@ export const typeDefs = gql`
     }
 
     type AppointmentTime {
-        start: DateTime
-        duration: Int
+        start: DateTime!
+        duration: Int!
     }
 
     type Appointment implements Node {

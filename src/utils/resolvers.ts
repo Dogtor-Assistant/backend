@@ -87,8 +87,8 @@ export type AppointmentInput = {
 };
 
 export type AppointmentTime = {
-  readonly start: Maybe<Scalars['DateTime']>;
-  readonly duration: Maybe<Scalars['Int']>;
+  readonly start: Scalars['DateTime'];
+  readonly duration: Scalars['Int'];
 };
 
 export type AppointmentsConnection = {
@@ -766,8 +766,8 @@ export type AppointmentEdgeResolvers<ContextType = Context, ParentType extends R
 }>;
 
 export type AppointmentTimeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['AppointmentTime'] = ResolversParentTypes['AppointmentTime']> = ResolversObject<{
-  start: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  duration: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  start: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  duration: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
