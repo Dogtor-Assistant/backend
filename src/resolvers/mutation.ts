@@ -1,6 +1,7 @@
 import type { MutationResolvers } from '@resolvers';
 
 import sendGridMail from '@sendgrid/mail';
+import axios from 'axios';
 import bcrypt from 'bcrypt';
 import Appointment from 'models/Appointment';
 import Checkup from 'models/Checkup';
@@ -8,18 +9,20 @@ import Doctor from 'models/Doctor';
 import Followup from 'models/Followup';
 import { Gender as GenderM, Insurance as InsuranceM } from 'models/Patient';
 import Patient from 'models/Patient';
+import Service from 'models/Service';
 import User from 'models/User';
 import mongoose from 'mongoose';
+import RecommendationService from 'recommendations';
+import { pubsub } from 'resolvers/subscription';
 import { Doctor as DoctorShim } from 'shims/doctor';
 import { Patient as PatientShim } from 'shims/patient';
 import { patient as patientShim } from 'shims/patient';
 import { user as userShim } from 'shims/user';
-import { deconstructId } from 'utils/ids';
+import { buildId, deconstructId } from 'utils/ids';
 import { Insurance } from 'utils/resolvers';
 
 const Mutation: MutationResolvers = {
     async assignFollowup(_, { followupInput }) {
-
         const deconstructedDoctorId = deconstructId(followupInput.doctorRef);
         const doctorId = deconstructedDoctorId?.[1];
 
@@ -81,83 +84,197 @@ const Mutation: MutationResolvers = {
         }
 
     },
-    async createUserDoctor(_, { input }) {
+    async createAppointment(_, { input }, { authenticated }) {
+
+        if(authenticated == null) {
+            throw new Error('not logged in');
+        }
+        
+        const user = await authenticated.full();
+        if(user.patientRef == null) {
+            throw new Error('user not patient');
+        }
+
+        const dogtorID = deconstructId(input.doctorId);
+        if(dogtorID == null) {
+            throw new Error('no valid doctor');
+        }
+        const doctor = new DoctorShim(dogtorID[1]);
+        const { lastName, firstName } = await doctor.full();
+
+        const selectedServices = input.selectedServices.compactMap(id => deconstructId(id)?.[1]);
+        const services = await Service.find({ _id:{ $in:selectedServices }});
 
         const session = await mongoose.startSession();
 
         session.startTransaction();
 
         // Insert doctor document
-        const doctorIn = new Doctor({
-            address: input.address,
-            firstName: input.firstName,
-            lastName: input.lastName,
-            offeredSlots: input.offeredSlots,
-            phoneNumber: input.phoneNumber,
-            specialities: input.specialities,
-            webpage: input.webpage,
-
+        const appointmentIn = new Appointment({
+            doctorRef: {
+                doctorId: dogtorID[1],
+                doctorName: firstName + lastName,
+            },
+            expectedDuration: input.expectedDuration,
+            expectedTime: input.expectedTime,
+            insurance: input.insurance,
+            patientNotes: input.patientNotes,
+            patientRef:{
+                patientId: user.patientRef,
+                patientName: user.firstName + user.lastName,
+            },
+            selectedServices: services.map(service => {
+                return { serviceId:service.id, serviceName: service.name };
+            }),
+            sharedData: input.shareData,
         });
-        await doctorIn.save();
-
-        // Insert user document
-        const salt = await bcrypt.genSalt();
-        const userIn = new User({
-            doctorRef: doctorIn._id,
-            email: input.email,
-            firstName: input.firstName,
-            lastName: input.lastName,
-            password: await bcrypt.hash(input.password, salt),
-        });
-        await userIn.save();
+        await appointmentIn.save();
 
         await session.commitTransaction();
         session.endSession();
 
         // if statement should never succeed
-        if (userIn._id === undefined) throw 'Error';
-        return userShim(userIn._id);
+        if (appointmentIn._id === undefined) throw 'Error';
+        return appointmentIn;
+    },
+    async createUserDoctor(_, { input }) {
+        try {
+            const url = `http://open.mapquestapi.com/geocoding/v1/address?key=${process.env.GEOLOC_KEY}`;
+            const res = await axios.post(url, {
+                'location': `${input.address.streetNumber} ${input.address.streetName}, ${input.address.city}`,
+                'options': {
+                    'thumbMaps': false,
+                },
+            });
+
+            const lat = res.data.results[0].locations[0].latLng.lat;
+            const lon = res.data.results[0].locations[0].latLng.lng;
+
+            const address = {
+                city: input.address.city,
+                location: {
+                    coordinates: [
+                        lon,
+                        lat,
+                    ],
+                    type: 'Point',
+                },
+                streetName: input.address.streetName,
+                streetNumber: input.address.streetNumber,
+                zipCode: input.address.zipCode,
+            };
+
+            // Insert doctor document
+            const doctorIn = new Doctor({
+                address: address,
+                firstName: input.firstName,
+                lastName: input.lastName,
+                offeredSlots: input.offeredSlots,
+                phoneNumber: input.phoneNumber,
+                specialities: input.specialities,
+                webpage: input.webpage,
+
+            });
+            await doctorIn.save();
+
+            // Insert user document
+            const salt = await bcrypt.genSalt();
+            const userIn = new User({
+                doctorRef: doctorIn._id,
+                email: input.email,
+                firstName: input.firstName,
+                lastName: input.lastName,
+                password: await bcrypt.hash(input.password, salt),
+            });
+
+            try {
+                await userIn.save();
+            }
+            catch (err) {
+                await Doctor.findByIdAndDelete(doctorIn._id);
+                return err;
+            }
+
+            // if statement should never succeed
+            if (userIn._id === undefined) throw 'Error';
+            return userShim(userIn._id);
+
+        } catch (err) {
+            return err;
+        }
     },
     async createUserPatient(_, { input }) {
-        const session = await mongoose.startSession();
 
-        session.startTransaction();
+        try {
+            const url = `http://open.mapquestapi.com/geocoding/v1/address?key=${process.env.GEOLOC_KEY}`;
+            const res = await axios.post(url, {
+                'location': `${input.address.streetNumber} ${input.address.streetName}, ${input.address.city}`,
+                'options': {
+                    'thumbMaps': false,
+                },
+            });
 
-        // Insert patient document
-        const patientIn = new Patient({
-            activityLevel: input.activityLvl,
-            address: input.address,
-            allergies: input.allergies,
-            birthDate: input.birthDate,
-            gender: input.gender,
-            height: input.height,
-            insurance: input.insurance,
-            medicalConditions: input.medConditions,
-            medications: input.medications,
-            phoneNumber: input.phoneNumber,
-            smoker: input.smoker,
-            surgeries: input.surgeries,
-            weight: input.weight,
-        });
-        await patientIn.save();
+            const lat = res.data.results[0].locations[0].latLng.lat;
+            const lon = res.data.results[0].locations[0].latLng.lng;
 
-        // Insert user document
-        const salt = await bcrypt.genSalt();
-        const userIn = new User({
-            email: input.email,
-            firstName: input.firstName,
-            lastName: input.lastName,
-            password: await bcrypt.hash(input.password, salt),
-            patientRef: patientIn._id,
-        });
-        await userIn.save();
+            const address = {
+                city: input.address.city,
+                location: {
+                    coordinates: [
+                        lon,
+                        lat,
+                    ],
+                    type: 'Point',
+                },
+                streetName: input.address.streetName,
+                streetNumber: input.address.streetNumber,
+                zipCode: input.address.zipCode,
+            };
 
-        await session.commitTransaction();
-        session.endSession();
+            // Insert patient document
+            const patientIn = new Patient({
+                activityLevel: input.activityLvl,
+                address: address,
+                allergies: input.allergies,
+                birthDate: input.birthDate,
+                gender: input.gender,
+                height: input.height,
+                insurance: input.insurance,
+                medicalConditions: input.medConditions,
+                medications: input.medications,
+                phoneNumber: input.phoneNumber,
+                smoker: input.smoker,
+                surgeries: input.surgeries,
+                weight: input.weight,
+            });
 
-        // if statement should never succeed
-        if (userIn._id === undefined) throw 'Error';
-        return userShim(userIn._id);
+            await patientIn.save();
+
+            // Insert user document
+            const salt = await bcrypt.genSalt();
+            const userIn = new User({
+                email: input.email,
+                firstName: input.firstName,
+                lastName: input.lastName,
+                password: await bcrypt.hash(input.password, salt),
+                patientRef: patientIn._id,
+            });
+
+            try {
+                await userIn.save();
+            }
+            catch (err) {
+                await Patient.findByIdAndDelete(patientIn._id);
+                return err;
+            }
+
+            // if statement should never succeed
+            if (userIn._id === undefined) throw 'Error';
+            return userShim(userIn._id);
+
+        } catch (err) {
+            return err;
+        }
     },
     async deleteAppointmentById(_, { id }) {
 
@@ -172,6 +289,10 @@ const Mutation: MutationResolvers = {
         await Appointment.deleteOne({ _id: appointment._id });
 
         const valuePatient = await Patient.findById(appointment.patientRef.patientId);
+        if (valuePatient != null) {
+            await new RecommendationService().storeRemainingRecommendations(valuePatient);
+        }
+
         const patient = valuePatient && new PatientShim(valuePatient);
         const patientUser = await patient?.user();
 
@@ -189,83 +310,6 @@ const Mutation: MutationResolvers = {
         sendGridMail.send(msg);
 
         return true;
-
-    },
-    async generateCheckups(_, { input }) {
-        const deconstructedPatientId = deconstructId(input.id);
-        const patientId = deconstructedPatientId?.[1];
-
-        const patient = await Patient.findById(patientId);
-        
-        if (patient != null) {
-            const { _id, address, insurance } = patient;
-            const recommendations = input.recommendations;
-
-            const user = await User.findOne({ patientRef: _id });
-            if (user == null) return [];
-            const { firstName, lastName } = user;
-
-            const oldCheckups = await Checkup.find({ 'patientRef.patientId': _id });
-
-            const newRec = recommendations.filter(rec => {
-
-                //One time recommendation
-                if (rec.kind === 'single') {
-                    let makeRecommendation = true;
-                    oldCheckups.forEach(oldCheckup => {
-                        if (oldCheckup.services[0] === rec.service.toString()) {
-                            makeRecommendation = false;
-                        }
-                    });
-                    return makeRecommendation;
-                }
-
-                //Periodic recommendation
-                if (rec.kind === 'periodic') {
-                    let makeRecommendation = true;
-                    oldCheckups.forEach(oldCheckup => {
-                        const periodInDays = rec.periodInDays == null ? 0 : rec.periodInDays;
-                        const lim = new Date();
-                        lim.setDate(oldCheckup.suggestedDate.getDate() + periodInDays - 14);
-                        
-                        if (oldCheckup.services[0] === rec.service.toString() &&
-                            new Date() < lim) {
-                            makeRecommendation = false;
-                        }
-                            
-                    });
-                    return makeRecommendation;
-                }
-            });
-
-            // Insert recommendations as checkups in DB
-            const suggestedDate = new Date();
-            suggestedDate.setDate(suggestedDate.getDate() + 14);
-
-            const newCheckups = newRec.map(rec => {
-                return new Checkup({
-                    'isRead': false,
-                    'patientRef': {
-                        'patientAddress': address,
-                        'patientId': _id,
-                        'patientInsurance': insurance,
-                        'patientName': `${firstName} ${lastName}`,
-                    },
-                    'services' : [rec.service.toString()],
-                    'suggestedDate' : suggestedDate,
-                });
-            });
-
-            const insertedCheckups = await Checkup.insertMany(newCheckups);
-
-            if (insertedCheckups.length > 0) {
-                // TODO: send email notification
-                return insertedCheckups;
-            }
-            return [];
-        }
-        
-        return [];
     },
     async makeAppointmentAsDone(_, { id }) {
 
@@ -283,11 +327,48 @@ const Mutation: MutationResolvers = {
         const end = new Date();
         end.setHours(23, 59, 59, 999);
 
+        const allPreviousOfCurrentAppointment = await Appointment.find({
+            'doctorRef.doctorId': appointment.doctorRef.doctorId,
+            expectedTime: { $gte: start, $lt: new Date() },
+            'patientRef.patientId': { $ne: appointment.patientRef.patientId },
+        });
+        const allAfterOfCurrentAppointment = await Appointment.find({
+            'doctorRef.doctorId': appointment.doctorRef.doctorId,
+            expectedTime: { $gt: appointment.expectedTime, $lt: end },
+            'patientRef.patientId': { $ne: appointment.patientRef.patientId },
+        });
+        const differenceInMinutes = allPreviousOfCurrentAppointment.length > 0 ?
+            allPreviousOfCurrentAppointment.map(app => {
+                const diff = Math.abs(app.actualTime ? app.actualTime.valueOf() - app.expectedTime.valueOf() : 0);
+                const minutes = Math.floor(diff / 1000 / 60);
+                return minutes;
+            }) : [0] ;
+
+        const avgWaitingTime = differenceInMinutes.reduce((n, a) => n+a) / differenceInMinutes.length;
+        const patient = await Patient.findById(appointment.patientRef.patientId);
+        if (patient != null) {
+            await new RecommendationService().storeRemainingRecommendations(patient);
+        }
+
         const previousOfCurrentAppointment = await Appointment.find({
             'doctorRef.doctorId': appointment.doctorRef.doctorId,
             expectedTime: { $gte: start, $lt: end },
             'patientRef.patientId': { $ne: appointment.patientRef.patientId },
         }).sort({ _id: -1 }).limit(1);
+
+        let appointmentEnd = new Date();
+
+        for (const app of allAfterOfCurrentAppointment) {
+            const time = new Date(Math.max(app.expectedTime.getTime(), appointmentEnd.getTime()));
+            app.estimatedTime = time;
+            appointmentEnd = new Date(time.getTime()+avgWaitingTime*60*1000);
+            await app.save();
+            if(app._id != null) {
+                pubsub.publish(`estimatedWaitingTime:${buildId('Appointment', app._id)}`,
+                    { estimatedWaitingTime: app });
+            }
+
+        }
 
         if(previousOfCurrentAppointment.length < 1 || previousOfCurrentAppointment === undefined) {
             const diff = Math.abs(new Date().valueOf() - appointment.expectedTime.valueOf());
@@ -298,6 +379,7 @@ const Mutation: MutationResolvers = {
                 app.actualTime = appointment.expectedTime;
                 app.actualDuration = minutes;
                 await app.save();
+                pubsub.publish('appointmentFinished', { appointmentFinished: avgWaitingTime });
                 return true;
             }
             return false;
@@ -322,6 +404,7 @@ const Mutation: MutationResolvers = {
             await app.save();
             return true;
         }
+
         return false;
 
     },
@@ -337,6 +420,21 @@ const Mutation: MutationResolvers = {
         }
 
         await Checkup.updateOne({ _id: checkupId }, { isRead: true });
+
+        return true;
+    },
+    async markFollowupAsRead(_, { id }) {
+        const deconstructed = deconstructId(id);
+        
+        const nodeType = deconstructed?.[0];
+        const followupId = deconstructed?.[1];
+
+        if (nodeType !== 'Followup')
+        {
+            return false;
+        }
+
+        await Followup.updateOne({ _id: followupId }, { isRead: true });
 
         return true;
     },
@@ -360,6 +458,7 @@ const Mutation: MutationResolvers = {
             patientUpd.insurance = input.insurance === Insurance.Public ? InsuranceM.PUBLIC : InsuranceM. PRIVATE;
 
             await patientUpd.save();
+            await new RecommendationService().storeRemainingRecommendations(patientUpd);
             if (patientUpd._id !== undefined) return patientShim(patientUpd._id);
         }
 

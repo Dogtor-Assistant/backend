@@ -1,7 +1,7 @@
 import type { PatientResolvers } from '@resolvers';
 
 import Checkup from 'models/Checkup';
-import RecommendationService from 'recommendations';
+import Followup from 'models/Followup';
 import { deconstructId } from 'utils/ids';
 
 const Patient: PatientResolvers = {
@@ -20,40 +20,6 @@ const Patient: PatientResolvers = {
     async birthDate(patient) {
         const { birthDate } = await patient.full();
         return birthDate ?? null;
-    },
-    async checkupRecommendations(patient) {
-        const recService = new RecommendationService();
-        const { birthDate, insurance, gender, medications, medicalConditions } = await patient.full();
-        if (birthDate && insurance && medications && medicalConditions) {
-            const dateOfBirth = new Date(birthDate);
-            
-            const insuranceStr: 'Public' | 'Private' = insurance === 1 ? 'Private' : 'Public';
-
-            const genderArr: ('Male' | 'Female' | 'TransgenderMale' | 'TransgenderFemale' | 'NonBinary' | undefined)[] =
-            ['Female', 'Male', 'TransgenderFemale', 'TransgenderMale', 'NonBinary'];
-            
-            const genderStr = gender ? genderArr[gender] : undefined;
-            const userData = {
-                conditions: medicalConditions,
-                dateOfBirth,
-                gender: genderStr,
-                insurance: insuranceStr,
-                medications,
-            };
-            
-            const recommendations = recService.recommendations(userData);
-
-            const recArr = recommendations.map(rec => {
-                return {
-                    'kind': rec.kind.toString(),
-                    'periodInDays': 'periodInDays' in rec ? rec.periodInDays : null,
-                    'service': rec.service.toString(),
-                };
-            });
-            return recArr;
-        }
-
-        return [];
     },
     async firstname(patient) {
         const { firstName } = await patient.user();
@@ -109,6 +75,22 @@ const Patient: PatientResolvers = {
 
         const unreadCheckups = await Checkup.find({ isRead: false, 'patientRef.patientId': patientId });
         return unreadCheckups;
+    },
+    async unreadFollowups(patient) {
+        const id = await patient.id();
+        
+        const deconstructed = deconstructId(id);
+        if (deconstructed == null) {
+            return [];
+        }
+
+        const [nodeType, patientId] = deconstructed;
+        if (nodeType !== 'Patient') {
+            return [];
+        }
+
+        const unreadFollowups = await Followup.find({ isRead: false, 'patientRef.patientId': patientId });
+        return unreadFollowups;
     },
     async weight(patient) {
         const { weight } = await patient.full();

@@ -101,7 +101,7 @@ const Query: QueryResolvers = {
             return Appointment.find({
                 expectedTime: { $lt: new Date() },
                 'patientRef.patientId': mongoose.Types.ObjectId(id),
-            });
+            }).sort({ expectedTime: -1 });
         }
         return [];
     },
@@ -117,7 +117,7 @@ const Query: QueryResolvers = {
             return await Appointment.find({
                 expectedTime: { $gte: new Date() },
                 'patientRef.patientId': mongoose.Types.ObjectId(id),
-            });
+            }).sort({ expectedTime: -1 });
         }
         return [];
     },

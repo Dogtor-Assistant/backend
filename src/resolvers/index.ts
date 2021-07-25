@@ -27,18 +27,19 @@ import Followup from './followup';
 import Gender from './gender';
 import Insurance from './insurance';
 import Length from './length';
+import MiniService from './miniService';
 import Mutation from './mutation';
 import NearbyLocation from './nearbyLocation';
 import Node from './node';
 import OfferedSlot from './offeredSlot';
 import Patient from './patient';
 import Query from './query';
-import Recommendation from './recommendation';
 import Review from './review';
 import Search from './search';
 import SearchScope from './searchScope';
 import SearchSuggestions from './searchSuggestions';
 import Service from './service';
+import Subscription from './subscription';
 import User from './user';
 import Weekday from './weekday';
 import Weight from './weight';
@@ -62,6 +63,7 @@ const resolvers: Resolvers = {
     Gender,
     Insurance,
     Length,
+    MiniService,
     Mutation,
     NearbyLocation,
     Node,
@@ -71,7 +73,6 @@ const resolvers: Resolvers = {
     PatientEdge,
     PatientsConnection,
     Query,
-    Recommendation,
     Review,
     ReviewEdge,
     ReviewsConnection,
@@ -81,6 +82,7 @@ const resolvers: Resolvers = {
     Service,
     ServiceEdge,
     ServicesConnection,
+    Subscription,
     URL,
     User,
     UserEdge,

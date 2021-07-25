@@ -22,6 +22,10 @@ type OneTimeRecommendation = BasicRecommendation & {
 
 export type Recommendation = PeriodicRecommendation | OneTimeRecommendation;
 
+export type ConcreteRecommendation = BasicRecommendation & {
+    suggestedDate: Date,
+}
+
 export type InferenceRuleResult = 'Skip' | 'Show' | 'Deny'
 export type InferenceRule = ((data: UserMedicalData) => InferenceRuleResult) | InferenceRule[] | InferenceRuleResult
 

@@ -1,7 +1,6 @@
 import type { FollowupResolvers } from '@resolvers';
 
 import { Doctor } from 'shims/doctor';
-import { Service } from 'shims/service';
 import { buildId } from 'utils/ids';
 
 const Followup: FollowupResolvers = {
@@ -19,7 +18,11 @@ const Followup: FollowupResolvers = {
         return isRead;
     },
     services({ services }) {
-        return services.map(service => new Service(service)) ?? [];
+        return services.map(service => {
+            const id = service.serviceId === undefined ? '' : service.serviceId;
+            const name = service.serviceName === undefined ? '' : service.serviceName;
+            return { 'serviceId': id, 'serviceName': name };
+        }) ?? [];
     },
     suggestedDate({ suggestedDate }) {
         return suggestedDate;

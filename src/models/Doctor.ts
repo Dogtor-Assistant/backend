@@ -134,6 +134,8 @@ DoctorSchema.index(
     {
         'address.city': 'text',
         'address.streetName': 'text',
+        'firstName': 'text',
+        'lastName': 'text',
         'specialities': 'text',
         'topServices.serviceName': 'text',
         'webpage': 'text',
@@ -148,9 +150,6 @@ DoctorSchema.index(
         },
     },
 );
-
-// eslint-disable-next-line sort-keys-fix/sort-keys-fix
-DoctorSchema.index({ lastName: 'text', firstName: 'text' });
 
 export interface IDoctor extends Document<string> {
     address: IAddress,
