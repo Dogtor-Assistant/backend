@@ -351,8 +351,9 @@ const Mutation: MutationResolvers = {
         }
 
         const previousOfCurrentAppointment = await Appointment.find({
+            actualTime: { $exists: true },
             'doctorRef.doctorId': appointment.doctorRef.doctorId,
-            expectedTime: { $gte: start, $lt: end },
+            expectedTime: { $gte: start, $lt: new Date() },
             'patientRef.patientId': { $ne: appointment.patientRef.patientId },
         }).sort({ _id: -1 }).limit(1);
 
